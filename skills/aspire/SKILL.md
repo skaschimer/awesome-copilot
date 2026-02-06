@@ -38,25 +38,37 @@ When you need deeper or newer information than this skill provides, use **Contex
 
 **Step 1 — Resolve the library ID** (one-time per session):
 
-Call `mcp_context7_resolve-library-id` with `libraryName: ".NET Aspire"` to get the Context7-compatible library IDs. The key libraries are:
+Call `mcp_context7_resolve-library-id` with `libraryName: ".NET Aspire"` to get the Context7-compatible library IDs. Context7 indexes both GitHub repos and websites — below is a quality-ranked breakdown based on testing:
 
-| Library ID | Source | Snippets | Use when |
-|---|---|---|---|
-| `/microsoft/aspire.dev` | Official docs site (MDX) | 1865 | General docs, guides, integrations, deployment |
-| `/dotnet/aspire` | Runtime source (C#) | 1185 | API internals, source-level details |
-| `/dotnet/docs-aspire` | Conceptual docs | 482 | Conceptual overviews, tutorials |
-| `/communitytoolkit/aspire` | Community Toolkit | 311 | Golang, Java, Node.js, Ollama integrations |
+| Rank | Library ID | Source type | Snippets | Quality | Use when |
+|---|---|---|---|---|---|
+| 1 | `/microsoft/aspire.dev` | GitHub repo (MDX source) | 1865 | **Best** — most complete, highest detail, full Aspire 13+ coverage | Primary source. Guides, integrations, CLI reference, what's-new, deployment. |
+| 2 | `/websites/learn_microsoft-en-us-dotnet-aspire` | Website crawl (learn.microsoft.com) | 2506 | **Good** — mirrors Learn content, occasionally has formatting artifacts | Rendered docs. Good alternative if repo source has gaps. |
+| 3 | `/dotnet/aspire` | GitHub repo (runtime C#) | 1185 | **Good** — source code, READMEs, test scenarios, playground examples | API internals, source-level implementation details, playground demos. |
+| 4 | `/communitytoolkit/aspire` | GitHub repo (community) | 311 | **Best for community** — Golang, Java, Node.js, Vite, Ollama | Non-Microsoft polyglot integrations, community-contributed hosting packages. |
+| 5 | `/dotnet/docs-aspire` | GitHub repo (old docs) | 482 | **Superseded** — compatibility/breaking-change notes only, missing newer APIs | Avoid for tutorials. Only useful for migration/deprecation references. |
+
+> **Important:** `/dotnet/docs-aspire` is the **legacy** docs repo being superseded by `microsoft/aspire.dev`. It lacks newer APIs (e.g., `AddPythonExecutable`, `AddPythonModule`) and tutorials. Prefer `/microsoft/aspire.dev` for all general lookups.
 
 **Step 2 — Query docs**:
 
 Call `mcp_context7_query-docs` with the library ID and a descriptive query. Be specific — include method names, concepts, or language names for best results.
 
 ```
-# Examples of effective queries:
-libraryId: "/microsoft/aspire.dev", query: "Python integration AddPythonApp service discovery"
+# Primary source — covers most needs:
+libraryId: "/microsoft/aspire.dev", query: "Python integration AddPythonApp AddUvicornApp service discovery"
 libraryId: "/microsoft/aspire.dev", query: "deployment Azure Container Apps Kubernetes publish manifest"
+libraryId: "/microsoft/aspire.dev", query: "aspire CLI commands aspire run aspire publish aspire new"
 libraryId: "/microsoft/aspire.dev", query: "Redis caching integration WithReference"
+
+# Community integrations (Golang, Java, Node.js):
 libraryId: "/communitytoolkit/aspire", query: "Golang Java Node.js community integrations"
+
+# Runtime source (when you need API internals or test patterns):
+libraryId: "/dotnet/aspire", query: "PythonAppResource AddPythonApp implementation"
+
+# Microsoft Learn website (alternative rendered view):
+libraryId: "/websites/learn_microsoft-en-us-dotnet-aspire", query: "aspire starter template quickstart"
 ```
 
 Each result includes the code snippet, source URL, and context — no second tool call needed.
