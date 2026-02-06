@@ -32,38 +32,50 @@ This skill follows progressive disclosure. The sections below cover essentials. 
 
 ## 1. Researching Aspire Documentation (Agent Guidance)
 
-When you need deeper or newer information than this skill provides, search the **official documentation repo** on GitHub. The source-of-truth MDX files live here:
+When you need deeper or newer information than this skill provides, use **Context7** (`mcp_context7`) to query up-to-date documentation and code examples directly. This is the fastest approach — a single query returns code snippets, explanations, and source links without needing to search and then separately read files.
 
-- **Docs repo:** `microsoft/aspire.dev` — Astro site, MDX format
-- **Docs path:** `src/frontend/src/content/docs/`
+### Preferred: Context7 (single-step lookup)
+
+**Step 1 — Resolve the library ID** (one-time per session):
+
+Call `mcp_context7_resolve-library-id` with `libraryName: ".NET Aspire"` to get the Context7-compatible library IDs. The key libraries are:
+
+| Library ID | Source | Snippets | Use when |
+|---|---|---|---|
+| `/microsoft/aspire.dev` | Official docs site (MDX) | 1865 | General docs, guides, integrations, deployment |
+| `/dotnet/aspire` | Runtime source (C#) | 1185 | API internals, source-level details |
+| `/dotnet/docs-aspire` | Conceptual docs | 482 | Conceptual overviews, tutorials |
+| `/communitytoolkit/aspire` | Community Toolkit | 311 | Golang, Java, Node.js, Ollama integrations |
+
+**Step 2 — Query docs**:
+
+Call `mcp_context7_query-docs` with the library ID and a descriptive query. Be specific — include method names, concepts, or language names for best results.
+
+```
+# Examples of effective queries:
+libraryId: "/microsoft/aspire.dev", query: "Python integration AddPythonApp service discovery"
+libraryId: "/microsoft/aspire.dev", query: "deployment Azure Container Apps Kubernetes publish manifest"
+libraryId: "/microsoft/aspire.dev", query: "Redis caching integration WithReference"
+libraryId: "/communitytoolkit/aspire", query: "Golang Java Node.js community integrations"
+```
+
+Each result includes the code snippet, source URL, and context — no second tool call needed.
+
+### Fallback: GitHub search (when Context7 is unavailable)
+
+If Context7 tools are not available, fall back to searching the official documentation repos on GitHub. The source-of-truth MDX files live here:
+
+- **Docs repo:** `microsoft/aspire.dev` — path: `src/frontend/src/content/docs/`
 - **Source repo:** `dotnet/aspire` — runtime (C#)
 - **Samples repo:** `dotnet/aspire-samples`
 - **Community integrations:** `CommunityToolkit/Aspire`
 
-### How to search for documentation
-
-Use `mcp_github_search_code` with these patterns:
-
+Use `mcp_github_search_code` with patterns like:
 ```
-# Find all English docs (298+ MDX files)
-path:src/frontend/src/content/docs/ extension:mdx repo:microsoft/aspire.dev
-
-# Search for a specific topic (e.g., Python integration)
-path:src/frontend/src/content/docs/ extension:mdx repo:microsoft/aspire.dev python
-
-# Find integration docs
-path:src/frontend/src/content/docs/integrations extension:mdx repo:microsoft/aspire.dev
-
-# Find CLI reference
-path:src/frontend/src/content/docs/reference/cli extension:mdx repo:microsoft/aspire.dev
-
-# Find deployment docs
-path:src/frontend/src/content/docs/deployment extension:mdx repo:microsoft/aspire.dev
+path:src/frontend/src/content/docs/ extension:mdx repo:microsoft/aspire.dev <topic>
 ```
 
-**Exclude** `path:src/frontend/src/content/docs/ja/` (Japanese translations).
-
-After finding file paths, use the GitHub file contents tool to read the full MDX for authoritative details.
+**Exclude** `path:src/frontend/src/content/docs/ja/` (Japanese translations). After finding file paths, use the GitHub file contents tool to read the full MDX.
 
 ### Documentation map
 
