@@ -2,6 +2,8 @@
 
 The Aspire CLI (`aspire`) is the primary interface for creating, running, and publishing distributed applications. It is cross-platform and installed standalone (not coupled to the .NET CLI, though `dotnet` commands also work).
 
+**Tested against:** Aspire CLI 13.1.0
+
 ---
 
 ## Installation
@@ -16,9 +18,23 @@ irm https://aspire.dev/install.ps1 | iex
 # Verify
 aspire --version
 
-# Update to latest
-aspire update
+# Update the CLI itself
+aspire update --self
 ```
+
+---
+
+## Global Options
+
+All commands support these options:
+
+| Option                | Description                                    |
+| --------------------- | ---------------------------------------------- |
+| `-d, --debug`         | Enable debug logging to the console            |
+| `--non-interactive`   | Disable all interactive prompts and spinners   |
+| `--wait-for-debugger` | Wait for a debugger to attach before executing |
+| `-?, -h, --help`      | Show help and usage information                |
+| `--version`           | Show version information                       |
 
 ---
 
@@ -29,26 +45,29 @@ aspire update
 Create a new project from a template.
 
 ```bash
-aspire new <template-name> [options]
+aspire new [<template>] [options]
 
 # Options:
-#   -o, --output <dir>     Output directory
-#   -n, --name <name>      Project name
-#   --force                Overwrite existing files
+#   -n, --name <name>        Project name
+#   -o, --output <dir>       Output directory
+#   -s, --source <source>    NuGet source for templates
+#   -v, --version <version>  Version of templates to use
+#   --channel <channel>      Channel (stable, daily)
 
 # Examples:
 aspire new aspire-starter
 aspire new aspire-starter -n MyApp -o ./my-app
 aspire new aspire-ts-cs-starter
 aspire new aspire-py-starter
-aspire new aspire   # empty AppHost only
+aspire new aspire-apphost-singlefile
 ```
 
 Available templates:
-- `aspire-starter` — .NET API + web frontend + AppHost + ServiceDefaults + test project
-- `aspire-ts-cs-starter` — TypeScript (Vite) frontend + C# API + AppHost
-- `aspire-py-starter` — Python (FastAPI) backend + AppHost
-- `aspire` — empty AppHost only
+
+- `aspire-starter` — ASP.NET Core/Blazor starter + AppHost + tests
+- `aspire-ts-cs-starter` — ASP.NET Core/React + AppHost
+- `aspire-py-starter` — FastAPI/React + AppHost
+- `aspire-apphost-singlefile` — Empty single-file AppHost
 
 ### `aspire init`
 
@@ -58,8 +77,9 @@ Initialize Aspire in an existing project or solution.
 aspire init [options]
 
 # Options:
-#   --apphost-project <path>   Existing project to use as AppHost
-#   --enlist <projects>        Projects to add to the AppHost
+#   -s, --source <source>    NuGet source for templates
+#   -v, --version <version>  Version of templates to use
+#   --channel <channel>      Channel (stable, daily)
 
 # Example:
 cd my-existing-solution
@@ -73,22 +93,18 @@ Adds AppHost and ServiceDefaults projects to an existing solution. Interactive p
 Start all resources locally using the DCP (Developer Control Plane).
 
 ```bash
-aspire run [options]
+aspire run [options] [-- <additional arguments>]
 
 # Options:
-#   --project <path>       Path to AppHost project (default: current dir)
-#   --no-dashboard         Skip launching the dashboard
-#   --dashboard-port <n>   Override dashboard port (default: auto-assigned)
-#   --watch                Enable hot reload / file watching
+#   --project <path>       Path to AppHost project file
 
 # Examples:
 aspire run
 aspire run --project ./src/MyApp.AppHost
-aspire run --no-dashboard
-aspire run --watch
 ```
 
 Behavior:
+
 1. Builds the AppHost project
 2. Starts the DCP engine
 3. Creates resources in dependency order (DAG)
@@ -98,158 +114,194 @@ Behavior:
 
 Press `Ctrl+C` to gracefully stop all resources.
 
-### `aspire publish`
+### `aspire add`
+
+Add a hosting integration to the AppHost.
+
+```bash
+aspire add [<integration>] [options]
+
+# Options:
+#   --project <path>         Target project file
+#   -v, --version <version>  Version of integration to add
+#   -s, --source <source>    NuGet source for integration
+
+# Examples:
+aspire add redis
+aspire add postgresql
+aspire add mongodb
+```
+
+### `aspire publish` (Preview)
 
 Generate deployment manifests from the AppHost resource model.
 
 ```bash
-aspire publish [options]
+aspire publish [options] [-- <additional arguments>]
 
 # Options:
-#   -p, --publisher <name>   Target publisher (docker, kubernetes, azure, appservice)
-#   --project <path>         Path to AppHost project
-#   -o, --output <dir>       Output directory for manifests
+#   --project <path>                   Path to AppHost project file
+#   -o, --output-path <path>           Output directory (default: ./aspire-output)
+#   --log-level <level>                Log level (trace, debug, information, warning, error, critical)
+#   -e, --environment <env>            Environment (default: Production)
+#   --include-exception-details        Include stack traces in pipeline logs
 
 # Examples:
-aspire publish -p docker
-aspire publish -p kubernetes -o ./k8s-manifests
-aspire publish -p azure
-aspire publish -p appservice
+aspire publish
+aspire publish --output-path ./deploy
+aspire publish -e Staging
 ```
-
-Publishers:
-- `docker` — Generates `docker-compose.yml` and Dockerfiles
-- `kubernetes` — Generates Helm charts / K8s YAML manifests
-- `azure` — Generates Bicep templates for Azure Container Apps
-- `appservice` — Generates Bicep templates for Azure App Service
-
-### `aspire add`
-
-Add an integration to the AppHost or a service project.
-
-```bash
-aspire add <integration> [options]
-
-# Options:
-#   --project <path>       Target project (default: current dir)
-#   --hosting              Add hosting package only (AppHost side)
-#   --client               Add client package only (service side)
-
-# Examples:
-aspire add redis
-aspire add postgresql --hosting
-aspire add mongodb --client
-```
-
-### `aspire build`
-
-Build the AppHost project.
-
-```bash
-aspire build [options]
-
-# Options:
-#   --project <path>       Path to AppHost project
-#   -c, --configuration <config>  Build configuration (Debug/Release)
-```
-
-### `aspire test`
-
-Run integration tests.
-
-```bash
-aspire test [options]
-
-# Options:
-#   --project <path>       Path to test project
-#   --filter <filter>      Test filter expression
-
-# Examples:
-aspire test
-aspire test --project ./tests/MyApp.Tests
-aspire test --filter "Category=Integration"
-```
-
-### `aspire dev`
-
-Start in dev mode with file watching and hot reload.
-
-```bash
-aspire dev [options]
-
-# Options:
-#   --project <path>       Path to AppHost project
-```
-
-### `aspire mcp init`
-
-Configure the MCP (Model Context Protocol) server for AI assistants.
-
-```bash
-aspire mcp init [options]
-
-# Interactive — prompts you to select your AI assistant:
-# - Claude Code
-# - OpenAI Codex CLI
-# - GitHub Copilot (VS Code)
-# - Cursor
-# - VS Code Chat
-```
-
-Generates the appropriate configuration file for your selected AI tool (e.g., `.mcp.json`, `claude_desktop_config.json`). See [MCP Server](mcp-server.md) for details.
 
 ### `aspire config`
 
-Manage Aspire configuration.
+Manage Aspire configuration settings.
 
 ```bash
-aspire config [options]
+aspire config <subcommand>
 
 # Subcommands:
-#   set <key> <value>      Set a configuration value
 #   get <key>              Get a configuration value
-#   list                   List all configuration
+#   set <key> <value>      Set a configuration value
+#   list                   List all configuration values
+#   delete <key>           Delete a configuration value
+
+# Examples:
+aspire config list
+aspire config set telemetry.enabled false
+aspire config get telemetry.enabled
+aspire config delete telemetry.enabled
 ```
 
-### `aspire list`
+### `aspire cache`
 
-List available resources.
+Manage disk cache for CLI operations.
 
 ```bash
-aspire list [options]
+aspire cache <subcommand>
 
 # Subcommands:
-#   templates              List available project templates
-#   integrations           List available integrations
+#   clear                  Clear all cache entries
+
+# Example:
+aspire cache clear
 ```
 
-### `aspire update`
+### `aspire deploy` (Preview)
 
-Update the Aspire CLI to the latest version.
+Deploy the contents of an Aspire apphost to its defined deployment targets.
 
 ```bash
-aspire update
+aspire deploy [options] [-- <additional arguments>]
+
+# Options:
+#   --project <path>                   Path to AppHost project file
+#   -o, --output-path <path>           Output path for deployment artifacts
+#   --log-level <level>                Log level (trace, debug, information, warning, error, critical)
+#   -e, --environment <env>            Environment (default: Production)
+#   --include-exception-details        Include stack traces in pipeline logs
+#   --clear-cache                      Clear deployment cache for current environment
+
+# Example:
+aspire deploy --project ./src/MyApp.AppHost
 ```
 
-### `aspire --version`
+### `aspire do` (Preview)
 
-Display the installed CLI version.
+Execute a specific pipeline step and its dependencies.
 
 ```bash
-aspire --version
+aspire do <step> [options] [-- <additional arguments>]
+
+# Options:
+#   --project <path>                   Path to AppHost project file
+#   -o, --output-path <path>           Output path for artifacts
+#   --log-level <level>                Log level (trace, debug, information, warning, error, critical)
+#   -e, --environment <env>            Environment (default: Production)
+#   --include-exception-details        Include stack traces in pipeline logs
+
+# Example:
+aspire do build-images --project ./src/MyApp.AppHost
 ```
+
+### `aspire update` (Preview)
+
+Update integrations in the Aspire project, or update the CLI itself.
+
+```bash
+aspire update [options]
+
+# Options:
+#   --project <path>       Path to AppHost project file
+#   --self                 Update the Aspire CLI itself to the latest version
+#   --channel <channel>    Channel to update to (stable, daily)
+
+# Examples:
+aspire update                          # Update project integrations
+aspire update --self                   # Update the CLI itself
+aspire update --self --channel daily   # Update CLI to daily build
+```
+
+### `aspire mcp`
+
+Manage the MCP (Model Context Protocol) server.
+
+```bash
+aspire mcp <subcommand>
+
+# Subcommands:
+#   init    Initialize MCP server configuration for detected agent environments
+#   start   Start the MCP server
+```
+
+#### `aspire mcp init`
+
+```bash
+aspire mcp init
+
+# Interactive — detects your AI environment and creates config files.
+# Supported environments:
+# - VS Code (GitHub Copilot)
+# - Copilot CLI
+# - Claude Code
+# - OpenCode
+```
+
+Generates the appropriate configuration file for your detected AI tool.
+See [MCP Server](mcp-server.md) for details.
+
+#### `aspire mcp start`
+
+```bash
+aspire mcp start
+
+# Starts the MCP server using STDIO transport.
+# This is typically invoked by your AI tool, not run manually.
+```
+
+---
+
+## Commands That Do NOT Exist
+
+The following commands are **not valid** in Aspire CLI 13.1. Use alternatives:
+
+| Invalid Command | Alternative                                                          |
+| --------------- | -------------------------------------------------------------------- |
+| `aspire build`  | Use `dotnet build ./AppHost`                                         |
+| `aspire test`   | Use `dotnet test ./Tests`                                            |
+| `aspire dev`    | Use `aspire run` (includes file watching)                            |
+| `aspire list`   | Use `aspire new --help` for templates, `aspire add` for integrations |
 
 ---
 
 ## .NET CLI equivalents
 
-The `dotnet` CLI can also manage Aspire projects:
+The `dotnet` CLI can perform some Aspire tasks:
 
-| Aspire CLI | .NET CLI Equivalent |
-|---|---|
-| `aspire new aspire-starter` | `dotnet new aspire-starter` |
-| `aspire run` | `dotnet run --project ./AppHost` |
-| `aspire build` | `dotnet build ./AppHost` |
-| `aspire test` | `dotnet test ./Tests` |
+| Aspire CLI                  | .NET CLI Equivalent              |
+| --------------------------- | -------------------------------- |
+| `aspire new aspire-starter` | `dotnet new aspire-starter`      |
+| `aspire run`                | `dotnet run --project ./AppHost` |
+| N/A                         | `dotnet build ./AppHost`         |
+| N/A                         | `dotnet test ./Tests`            |
 
-The Aspire CLI adds value with `publish`, `add`, `mcp init`, and `config` — commands that have no direct `dotnet` equivalent.
+The Aspire CLI adds value with `publish`, `deploy`, `add`, `mcp`, `config`, `cache`, `do`, and `update` — commands that have no direct `dotnet` equivalent.

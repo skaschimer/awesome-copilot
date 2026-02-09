@@ -9,6 +9,7 @@ The Aspire Dashboard provides real-time observability for all resources in your 
 ### Resources view
 
 Displays all resources (projects, containers, executables) with:
+
 - **Name** and **type** (Project, Container, Executable)
 - **State** (Starting, Running, Stopped, FailedToStart, etc.)
 - **Start time** and **uptime**
@@ -19,6 +20,7 @@ Displays all resources (projects, containers, executables) with:
 ### Console logs
 
 Aggregated raw stdout/stderr from all resources:
+
 - Filter by resource name
 - Search within logs
 - Auto-scroll with pause
@@ -27,6 +29,7 @@ Aggregated raw stdout/stderr from all resources:
 ### Structured logs
 
 Application-level structured logs (via ILogger, OpenTelemetry):
+
 - **Filterable** by resource, log level, category, message content
 - **Expandable** — click to see full log entry with all properties
 - **Correlated** with traces — click to jump to the related trace
@@ -36,6 +39,7 @@ Application-level structured logs (via ILogger, OpenTelemetry):
 ### Distributed traces
 
 End-to-end request traces across all services:
+
 - **Waterfall view** — shows the full call chain with timing
 - **Span details** — HTTP method, URL, status code, duration
 - **Database spans** — SQL queries, connection details
@@ -46,6 +50,7 @@ End-to-end request traces across all services:
 ### Metrics
 
 Real-time and historical metrics:
+
 - **Runtime metrics** — CPU, memory, GC, thread pool
 - **HTTP metrics** — request rate, error rate, latency percentiles
 - **Custom metrics** — any metrics your services emit via OpenTelemetry
@@ -54,6 +59,7 @@ Real-time and historical metrics:
 ### GenAI Visualizer
 
 For applications using AI/LLM integrations:
+
 - **Token usage** — prompt tokens, completion tokens, total tokens per request
 - **Prompt/completion pairs** — see the exact prompt sent and response received
 - **Model metadata** — which model, temperature, max tokens
@@ -65,8 +71,9 @@ For applications using AI/LLM integrations:
 ## Dashboard URL
 
 By default, the dashboard runs on an auto-assigned port. Find it:
+
 - In the terminal output when `aspire run` starts
-- Via MCP: `get_dashboard_url` tool
+- Via MCP: `list_resources` tool
 - Override with `--dashboard-port`:
 
 ```bash
@@ -80,16 +87,15 @@ aspire run --dashboard-port 18888
 Run the dashboard without an AppHost — useful for existing applications that already emit OpenTelemetry:
 
 ```bash
-docker run --rm -it \
+docker run --rm -d \
   -p 18888:18888 \
   -p 4317:18889 \
-  -d aspire-dashboard \
   mcr.microsoft.com/dotnet/aspire-dashboard:latest
 ```
 
-| Port | Purpose |
-|---|---|
-| `18888` | Dashboard web UI |
+| Port             | Purpose                                                      |
+| ---------------- | ------------------------------------------------------------ |
+| `18888`          | Dashboard web UI                                             |
 | `4317` → `18889` | OTLP gRPC receiver (standard OTel port → dashboard internal) |
 
 ### Configure your services
@@ -134,7 +140,7 @@ services:
 The standalone dashboard supports authentication via browser tokens:
 
 ```bash
-docker run --rm -it \
+docker run --rm -d \
   -p 18888:18888 \
   -p 4317:18889 \
   -e DASHBOARD__FRONTEND__AUTHMODE=BrowserToken \
@@ -174,6 +180,7 @@ docker run --rm -it \
 ## Copilot integration
 
 The dashboard integrates with GitHub Copilot in VS Code:
+
 - Ask questions about resource status
 - Query logs and traces in natural language
 - The MCP server (see [MCP Server](mcp-server.md)) provides the bridge
@@ -204,14 +211,14 @@ trace.set_tracer_provider(provider)
 ### JavaScript (OpenTelemetry SDK)
 
 ```javascript
-const { NodeTracerProvider } = require('@opentelemetry/sdk-trace-node');
-const { OTLPTraceExporter } = require('@opentelemetry/exporter-trace-otlp-grpc');
+const { NodeTracerProvider } = require("@opentelemetry/sdk-trace-node");
+const { OTLPTraceExporter } = require("@opentelemetry/exporter-trace-otlp-grpc");
 
 const provider = new NodeTracerProvider();
 provider.addSpanProcessor(
   new BatchSpanProcessor(
     new OTLPTraceExporter({
-      url: process.env.OTEL_EXPORTER_OTLP_ENDPOINT || 'http://localhost:4317'
+      url: process.env.OTEL_EXPORTER_OTLP_ENDPOINT || "http://localhost:4317",
     })
   )
 );
