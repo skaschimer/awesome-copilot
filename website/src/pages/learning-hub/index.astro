@@ -1,0 +1,66 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const base = import.meta.env.BASE_URL;
+const articles = await getCollection('learning-hub');
+
+const recommendedOrder = [
+  'what-are-agents-prompts-instructions',
+  'understanding-copilot-context',
+  'copilot-configuration-basics',
+  'defining-custom-instructions',
+  'creating-effective-prompts',
+];
+
+const sortedArticles = articles.sort((a, b) => {
+  const aIndex = recommendedOrder.indexOf(a.id);
+  const bIndex = recommendedOrder.indexOf(b.id);
+  const aOrder = aIndex === -1 ? recommendedOrder.length : aIndex;
+  const bOrder = bIndex === -1 ? recommendedOrder.length : bIndex;
+  return aOrder - bOrder;
+});
+---
+
+<BaseLayout title="Learning Hub" description="Curated articles and walkthroughs to help you unlock everything you can do with GitHub Copilot" activeNav="learning-hub">
+  <main id="main-content">
+    <div class="page-header">
+      <div class="container">
+        <h1>📚 Learning Hub</h1>
+        <p>Curated articles, walkthroughs, and reference material to help you unlock everything you can do with GitHub Copilot</p>
+      </div>
+    </div>
+
+    <div class="page-content">
+      <div class="container">
+        <section class="learning-hub-section">
+          <h2>Fundamentals</h2>
+          <p class="section-description">Essential concepts to tailor GitHub Copilot beyond its default experience.</p>
+          <div class="article-list">
+            {sortedArticles.map((article, index) => (
+              <a href={`${base}learning-hub/${article.id}/`} class="article-card">
+                <div class="article-number" aria-hidden="true">{index + 1}</div>
+                <div class="article-info">
+                  <h3>{article.data.title}</h3>
+                  <p>{article.data.description}</p>
+                  <div class="article-meta">
+                    {article.data.estimatedReadingTime && (
+                      <span class="meta-item">📖 {article.data.estimatedReadingTime}</span>
+                    )}
+                    {article.data.tags && article.data.tags.length > 0 && (
+                      <span class="meta-item">
+                        {article.data.tags.map((tag) => (
+                          <span class="tag">{tag}</span>
+                        ))}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
