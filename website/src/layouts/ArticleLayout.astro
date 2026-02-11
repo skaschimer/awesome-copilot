@@ -1,5 +1,6 @@
 ---
 import BaseLayout from './BaseLayout.astro';
+import { getCollection } from 'astro:content';
 
 interface Props {
   title: string;
@@ -11,6 +12,31 @@ interface Props {
 
 const { title, description, estimatedReadingTime, lastUpdated, tags } = Astro.props;
 const base = import.meta.env.BASE_URL;
+
+const articles = await getCollection('learning-hub');
+
+const fundamentalsOrder = [
+  'what-are-agents-prompts-instructions',
+  'understanding-copilot-context',
+  'copilot-configuration-basics',
+  'defining-custom-instructions',
+  'creating-effective-prompts',
+  'before-after-customization-examples',
+];
+
+const referenceOrder = [
+  'github-copilot-terminology-glossary',
+];
+
+const fundamentals = articles
+  .filter((a) => fundamentalsOrder.includes(a.id))
+  .sort((a, b) => fundamentalsOrder.indexOf(a.id) - fundamentalsOrder.indexOf(b.id));
+
+const reference = articles
+  .filter((a) => referenceOrder.includes(a.id))
+  .sort((a, b) => referenceOrder.indexOf(a.id) - referenceOrder.indexOf(b.id));
+
+const currentSlug = Astro.url.pathname.replace(/\/$/, '').split('/').pop();
 ---
 
 <BaseLayout title={title} description={description} activeNav="learning-hub">
@@ -38,9 +64,45 @@ const base = import.meta.env.BASE_URL;
 
     <div class="page-content">
       <div class="container">
-        <article class="article-content">
-          <slot />
-        </article>
+        <div class="learning-hub-layout">
+          <nav class="learning-hub-sidebar" aria-label="Learning Hub articles">
+            <div class="sidebar-section">
+              <h3>Fundamentals</h3>
+              <ol class="sidebar-nav-list">
+                {fundamentals.map((article) => (
+                  <li>
+                    <a
+                      href={`${base}learning-hub/${article.id}/`}
+                      class={currentSlug === article.id ? 'active' : ''}
+                      aria-current={currentSlug === article.id ? 'page' : undefined}
+                    >
+                      {article.data.title}
+                    </a>
+                  </li>
+                ))}
+              </ol>
+            </div>
+            <div class="sidebar-section">
+              <h3>Reference</h3>
+              <ul class="sidebar-nav-list">
+                {reference.map((article) => (
+                  <li>
+                    <a
+                      href={`${base}learning-hub/${article.id}/`}
+                      class={currentSlug === article.id ? 'active' : ''}
+                      aria-current={currentSlug === article.id ? 'page' : undefined}
+                    >
+                      {article.data.title}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </nav>
+          <article class="article-content">
+            <slot />
+          </article>
+        </div>
       </div>
     </div>
   </main>

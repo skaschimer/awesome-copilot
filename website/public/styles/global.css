@@ -1594,6 +1594,84 @@ a:hover {
   color: var(--color-warning);
 }
 
+/* Learning Hub - Sidebar Layout */
+.learning-hub-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 48px;
+  align-items: start;
+}
+
+.learning-hub-sidebar {
+  position: sticky;
+  top: 24px;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+}
+
+.sidebar-section {
+  margin-bottom: 24px;
+}
+
+.sidebar-section h3 {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+  margin-bottom: 8px;
+  padding: 0 12px;
+}
+
+.sidebar-nav-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-nav-list li {
+  margin: 0;
+}
+
+.sidebar-nav-list a {
+  display: block;
+  padding: 6px 12px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  border-radius: 6px;
+  border-left: 2px solid transparent;
+  transition: color 0.15s, background-color 0.15s, border-color 0.15s;
+}
+
+.sidebar-nav-list a:hover {
+  color: var(--color-text);
+  background-color: var(--color-glass);
+}
+
+.sidebar-nav-list a.active {
+  color: var(--color-text-emphasis);
+  background-color: var(--color-glass);
+  border-left-color: var(--color-accent);
+  font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .learning-hub-layout {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .learning-hub-sidebar {
+    position: static;
+    max-height: none;
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 20px;
+    margin-bottom: 32px;
+  }
+}
+
 /* Learning Hub - Article Styles */
 .breadcrumb {
   margin-bottom: 16px;
