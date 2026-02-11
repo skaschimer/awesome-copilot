@@ -19,7 +19,6 @@ Usage:
 """
 
 import asyncio
-import subprocess
 import sys
 from pathlib import Path
 
@@ -32,14 +31,9 @@ async def ralph_loop(mode: str = "build", max_iterations: int = 50):
     client = CopilotClient()
     await client.start()
 
-    branch = subprocess.check_output(
-        ["git", "branch", "--show-current"], text=True
-    ).strip()
-
     print("━" * 40)
     print(f"Mode:   {mode}")
     print(f"Prompt: {prompt_file}")
-    print(f"Branch: {branch}")
     print(f"Max:    {max_iterations} iterations")
     print("━" * 40)
 
@@ -59,16 +53,6 @@ async def ralph_loop(mode: str = "build", max_iterations: int = 50):
                 )
             finally:
                 await session.destroy()
-
-            # Push changes after each iteration
-            try:
-                subprocess.run(
-                    ["git", "push", "origin", branch], check=True
-                )
-            except subprocess.CalledProcessError:
-                subprocess.run(
-                    ["git", "push", "-u", "origin", branch], check=True
-                )
 
             print(f"\nIteration {i} complete.")
 

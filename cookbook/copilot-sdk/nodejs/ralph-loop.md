@@ -82,7 +82,6 @@ The full Ralph pattern with planning and building modes, matching the [Ralph Pla
 
 ```typescript
 import { readFile } from "fs/promises";
-import { execSync } from "child_process";
 import { CopilotClient } from "@github/copilot-sdk";
 
 type Mode = "plan" | "build";
@@ -92,8 +91,7 @@ async function ralphLoop(mode: Mode, maxIterations: number = 50) {
     const client = new CopilotClient();
     await client.start();
 
-    const branch = execSync("git branch --show-current", { encoding: "utf-8" }).trim();
-    console.log(`Mode: ${mode} | Prompt: ${promptFile} | Branch: ${branch}`);
+    console.log(`Mode: ${mode} | Prompt: ${promptFile}`);
 
     try {
         const prompt = await readFile(promptFile, "utf-8");
@@ -107,13 +105,6 @@ async function ralphLoop(mode: Mode, maxIterations: number = 50) {
                 await session.sendAndWait({ prompt }, 600_000);
             } finally {
                 await session.destroy();
-            }
-
-            // Push changes after each iteration
-            try {
-                execSync(`git push origin ${branch}`, { stdio: "inherit" });
-            } catch {
-                execSync(`git push -u origin ${branch}`, { stdio: "inherit" });
             }
 
             console.log(`Iteration ${i} complete.`);

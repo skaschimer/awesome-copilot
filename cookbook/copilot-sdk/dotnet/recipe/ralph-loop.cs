@@ -1,7 +1,6 @@
 #:package GitHub.Copilot.SDK@*
 #:property PublishAot=false
 
-using System.Diagnostics;
 using GitHub.Copilot.SDK;
 
 // Ralph loop: autonomous AI task loop with fresh context per iteration.
@@ -28,15 +27,9 @@ var promptFile = mode == "plan" ? "PROMPT_plan.md" : "PROMPT_build.md";
 var client = new CopilotClient();
 await client.StartAsync();
 
-var branchProc = Process.Start(new ProcessStartInfo("git", "branch --show-current")
-    { RedirectStandardOutput = true })!;
-var branch = (await branchProc.StandardOutput.ReadToEndAsync()).Trim();
-await branchProc.WaitForExitAsync();
-
 Console.WriteLine(new string('━', 40));
 Console.WriteLine($"Mode:   {mode}");
 Console.WriteLine($"Prompt: {promptFile}");
-Console.WriteLine($"Branch: {branch}");
 Console.WriteLine($"Max:    {maxIterations} iterations");
 Console.WriteLine(new string('━', 40));
 
@@ -67,16 +60,6 @@ try
         finally
         {
             await session.DisposeAsync();
-        }
-
-        // Push changes after each iteration
-        try
-        {
-            Process.Start("git", $"push origin {branch}")!.WaitForExit();
-        }
-        catch
-        {
-            Process.Start("git", $"push -u origin {branch}")!.WaitForExit();
         }
 
         Console.WriteLine($"\nIteration {i} complete.");

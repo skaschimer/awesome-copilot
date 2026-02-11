@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"os/exec"
 	"strconv"
 	"strings"
 
@@ -40,13 +39,9 @@ func ralphLoop(ctx context.Context, mode string, maxIterations int) error {
 	}
 	defer client.Stop()
 
-	branchOut, _ := exec.Command("git", "branch", "--show-current").Output()
-	branch := strings.TrimSpace(string(branchOut))
-
 	fmt.Println(strings.Repeat("━", 40))
 	fmt.Printf("Mode:   %s\n", mode)
 	fmt.Printf("Prompt: %s\n", promptFile)
-	fmt.Printf("Branch: %s\n", branch)
 	fmt.Printf("Max:    %d iterations\n", maxIterations)
 	fmt.Println(strings.Repeat("━", 40))
 
@@ -72,11 +67,6 @@ func ralphLoop(ctx context.Context, mode string, maxIterations int) error {
 		session.Destroy()
 		if err != nil {
 			return fmt.Errorf("send failed on iteration %d: %w", i, err)
-		}
-
-		// Push changes after each iteration
-		if err := exec.Command("git", "push", "origin", branch).Run(); err != nil {
-			exec.Command("git", "push", "-u", "origin", branch).Run()
 		}
 
 		fmt.Printf("\nIteration %d complete.\n", i)

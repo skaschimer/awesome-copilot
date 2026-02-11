@@ -92,7 +92,6 @@ This is all you need to get started. The prompt file tells the agent what to do;
 The full Ralph pattern with planning and building modes, matching the [Ralph Playbook](https://github.com/ClaytonFarr/ralph-playbook) architecture:
 
 ```csharp
-using System.Diagnostics;
 using GitHub.Copilot.SDK;
 
 // Parse args: dotnet run [plan] [max_iterations]
@@ -104,16 +103,9 @@ var promptFile = mode == "plan" ? "PROMPT_plan.md" : "PROMPT_build.md";
 var client = new CopilotClient();
 await client.StartAsync();
 
-var branchInfo = new ProcessStartInfo("git", "branch --show-current")
-    { RedirectStandardOutput = true };
-var branch = Process.Start(branchInfo)!;
-var branchName = (await branch.StandardOutput.ReadToEndAsync()).Trim();
-await branch.WaitForExitAsync();
-
 Console.WriteLine(new string('━', 40));
 Console.WriteLine($"Mode:   {mode}");
 Console.WriteLine($"Prompt: {promptFile}");
-Console.WriteLine($"Branch: {branchName}");
 Console.WriteLine($"Max:    {maxIterations} iterations");
 Console.WriteLine(new string('━', 40));
 
@@ -143,16 +135,6 @@ try
         finally
         {
             await session.DisposeAsync();
-        }
-
-        // Push changes after each iteration
-        try
-        {
-            Process.Start("git", $"push origin {branchName}")!.WaitForExit();
-        }
-        catch
-        {
-            Process.Start("git", $"push -u origin {branchName}")!.WaitForExit();
         }
 
         Console.WriteLine($"\nIteration {i} complete.");

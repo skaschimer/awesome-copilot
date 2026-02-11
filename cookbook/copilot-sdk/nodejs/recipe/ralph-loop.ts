@@ -1,5 +1,4 @@
 import { readFile } from "fs/promises";
-import { execSync } from "child_process";
 import { CopilotClient } from "@github/copilot-sdk";
 
 /**
@@ -28,12 +27,9 @@ async function ralphLoop(mode: Mode, maxIterations: number) {
     const client = new CopilotClient();
     await client.start();
 
-    const branch = execSync("git branch --show-current", { encoding: "utf-8" }).trim();
-
     console.log("━".repeat(40));
     console.log(`Mode:   ${mode}`);
     console.log(`Prompt: ${promptFile}`);
-    console.log(`Branch: ${branch}`);
     console.log(`Max:    ${maxIterations} iterations`);
     console.log("━".repeat(40));
 
@@ -52,13 +48,6 @@ async function ralphLoop(mode: Mode, maxIterations: number) {
                 await session.sendAndWait({ prompt }, 600_000);
             } finally {
                 await session.destroy();
-            }
-
-            // Push changes after each iteration
-            try {
-                execSync(`git push origin ${branch}`, { stdio: "inherit" });
-            } catch {
-                execSync(`git push -u origin ${branch}`, { stdio: "inherit" });
             }
 
             console.log(`\nIteration ${i} complete.`);
