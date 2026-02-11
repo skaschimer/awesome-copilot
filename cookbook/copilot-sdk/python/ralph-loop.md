@@ -1,6 +1,6 @@
-# RALPH-loop: Iterative Self-Referential AI Loops
+# Ralph Loop: Autonomous AI Task Loops
 
-Implement self-referential feedback loops where an AI agent iteratively improves work by reading its own previous output.
+Build autonomous coding loops where an AI agent picks tasks, implements them, validates against backpressure (tests, builds), commits, and repeats — each iteration in a fresh context window.
 
 > **Runnable example:** [recipe/ralph_loop.py](recipe/ralph_loop.py)
 >
@@ -8,196 +8,235 @@ Implement self-referential feedback loops where an AI agent iteratively improves
 > cd recipe && pip install -r requirements.txt
 > python ralph_loop.py
 > ```
-## What is RALPH-loop?
 
-RALPH-loop is a development methodology for iterative AI-powered task completion. Named after the Ralph Wiggum technique, it embodies the philosophy of persistent iteration:
+## What is a Ralph Loop?
 
-- **One prompt, multiple iterations**: The same prompt is processed repeatedly
-- **Self-referential feedback**: The AI reads its own previous work (file changes, git history)
-- **Completion detection**: Loop exits when a completion promise is detected in output
-- **Safety limits**: Always include a maximum iteration count to prevent infinite loops
+A [Ralph loop](https://ghuntley.com/ralph/) is an autonomous development workflow where an AI agent iterates through tasks in isolated context windows. The key insight: **state lives on disk, not in the model's context**. Each iteration starts fresh, reads the current state from files, does one task, writes results back to disk, and exits.
 
-## Example Scenario
-
-You need to iteratively improve code until all tests pass. Instead of asking Copilot to "write perfect code," you use RALPH-loop to:
-
-1. Send the initial prompt with clear success criteria
-2. Copilot writes code and tests
-3. Copilot runs tests and sees failures
-4. Loop automatically re-sends the prompt
-5. Copilot reads test output and previous code, fixes issues
-6. Repeat until all tests pass and completion promise is output
-
-## Basic Implementation
-
-```python
-import asyncio
-from copilot import CopilotClient, MessageOptions, SessionConfig
-
-class RalphLoop:
-    """Iterative self-referential feedback loop using Copilot."""
-    
-    def __init__(self, max_iterations=10, completion_promise="COMPLETE"):
-        self.client = CopilotClient()
-        self.iteration = 0
-        self.max_iterations = max_iterations
-        self.completion_promise = completion_promise
-        self.last_response = None
-
-    async def run(self, initial_prompt):
-        """Run the RALPH-loop until completion promise detected or max iterations reached."""
-        await self.client.start()
-        session = await self.client.create_session(
-            SessionConfig(model="gpt-5.1-codex-mini")
-        )
-
-        try:
-            while self.iteration < self.max_iterations:
-                self.iteration += 1
-                print(f"\n--- Iteration {self.iteration}/{self.max_iterations} ---")
-
-                # Build prompt including previous response as context
-                if self.iteration == 1:
-                    prompt = initial_prompt
-                else:
-                    prompt = f"{initial_prompt}\n\nPrevious attempt:\n{self.last_response}\n\nContinue improving..."
-
-                result = await session.send_and_wait(
-                    MessageOptions(prompt=prompt), timeout=300
-                )
-
-                self.last_response = result.data.content if result else ""
-                print(f"Response ({len(self.last_response)} chars)")
-
-                # Check for completion promise
-                if self.completion_promise in self.last_response:
-                    print(f"✓ Completion promise detected: {self.completion_promise}")
-                    return self.last_response
-
-                print(f"Continuing to iteration {self.iteration + 1}...")
-
-            raise RuntimeError(
-                f"Max iterations ({self.max_iterations}) reached without completion promise"
-            )
-        finally:
-            await session.destroy()
-            await self.client.stop()
-
-# Usage
-async def main():
-    loop = RalphLoop(5, "COMPLETE")
-    result = await loop.run("Your task here")
-    print(result)
-
-asyncio.run(main())
+```
+┌─────────────────────────────────────────────────┐
+│                   loop.sh                       │
+│  while true:                                    │
+│    ┌─────────────────────────────────────────┐  │
+│    │  Fresh session (isolated context)       │  │
+│    │                                         │  │
+│    │  1. Read PROMPT.md + AGENTS.md          │  │
+│    │  2. Study specs/* and code              │  │
+│    │  3. Pick next task from plan            │  │
+│    │  4. Implement + run tests               │  │
+│    │  5. Update plan, commit, exit           │  │
+│    └─────────────────────────────────────────┘  │
+│    ↻ next iteration (fresh context)             │
+└─────────────────────────────────────────────────┘
 ```
 
-## With File Persistence
+**Core principles:**
 
-For tasks involving code generation, persist state to files so the AI can see changes:
+- **Fresh context per iteration**: Each loop creates a new session — no context accumulation, always in the "smart zone"
+- **Disk as shared state**: `IMPLEMENTATION_PLAN.md` persists between iterations and acts as the coordination mechanism
+- **Backpressure steers quality**: Tests, builds, and lints reject bad work — the agent must fix issues before committing
+- **Two modes**: PLANNING (gap analysis → generate plan) and BUILDING (implement from plan)
+
+## Simple Version
+
+The minimal Ralph loop — the SDK equivalent of `while :; do cat PROMPT.md | claude ; done`:
 
 ```python
 import asyncio
 from pathlib import Path
 from copilot import CopilotClient, MessageOptions, SessionConfig
 
-class PersistentRalphLoop:
-    """RALPH-loop with file-based state persistence."""
-    
-    def __init__(self, work_dir, max_iterations=10):
-        self.client = CopilotClient()
-        self.work_dir = Path(work_dir)
-        self.work_dir.mkdir(parents=True, exist_ok=True)
-        self.iteration = 0
-        self.max_iterations = max_iterations
 
-    async def run(self, initial_prompt):
-        """Run the loop with persistent state."""
-        await self.client.start()
-        session = await self.client.create_session(
-            SessionConfig(model="gpt-5.1-codex-mini")
-        )
+async def ralph_loop(prompt_file: str, max_iterations: int = 50):
+    client = CopilotClient()
+    await client.start()
 
-        try:
-            # Store initial prompt
-            (self.work_dir / "prompt.md").write_text(initial_prompt)
+    try:
+        prompt = Path(prompt_file).read_text()
 
-            while self.iteration < self.max_iterations:
-                self.iteration += 1
-                print(f"\n--- Iteration {self.iteration} ---")
+        for i in range(1, max_iterations + 1):
+            print(f"\n=== Iteration {i}/{max_iterations} ===")
 
-                # Build context from previous outputs
-                context = initial_prompt
-                prev_output = self.work_dir / f"output-{self.iteration - 1}.txt"
-                if prev_output.exists():
-                    context += f"\n\nPrevious iteration:\n{prev_output.read_text()}"
-
-                result = await session.send_and_wait(
-                    MessageOptions(prompt=context), timeout=300
+            # Fresh session each iteration — context isolation is the point
+            session = await client.create_session(
+                SessionConfig(model="claude-sonnet-4.5")
+            )
+            try:
+                await session.send_and_wait(
+                    MessageOptions(prompt=prompt), timeout=600
                 )
-                response = result.data.content if result else ""
+            finally:
+                await session.destroy()
 
-                # Persist output
-                output_file = self.work_dir / f"output-{self.iteration}.txt"
-                output_file.write_text(response)
+            print(f"Iteration {i} complete.")
+    finally:
+        await client.stop()
 
-                if "COMPLETE" in response:
-                    return response
 
-            raise RuntimeError("Max iterations reached")
-        finally:
-            await session.destroy()
-            await self.client.stop()
+# Usage: point at your PROMPT.md
+asyncio.run(ralph_loop("PROMPT.md", 20))
+```
+
+This is all you need to get started. The prompt file tells the agent what to do; the agent reads project files, does work, commits, and exits. The loop restarts with a clean slate.
+
+## Ideal Version
+
+The full Ralph pattern with planning and building modes, matching the [Ralph Playbook](https://github.com/ClaytonFarr/ralph-playbook) architecture:
+
+```python
+import asyncio
+import subprocess
+import sys
+from pathlib import Path
+
+from copilot import CopilotClient, MessageOptions, SessionConfig
+
+
+async def ralph_loop(mode: str = "build", max_iterations: int = 50):
+    prompt_file = "PROMPT_plan.md" if mode == "plan" else "PROMPT_build.md"
+    client = CopilotClient()
+    await client.start()
+
+    branch = subprocess.check_output(
+        ["git", "branch", "--show-current"], text=True
+    ).strip()
+
+    print("━" * 40)
+    print(f"Mode:   {mode}")
+    print(f"Prompt: {prompt_file}")
+    print(f"Branch: {branch}")
+    print(f"Max:    {max_iterations} iterations")
+    print("━" * 40)
+
+    try:
+        prompt = Path(prompt_file).read_text()
+
+        for i in range(1, max_iterations + 1):
+            print(f"\n=== Iteration {i}/{max_iterations} ===")
+
+            # Fresh session — each task gets full context budget
+            session = await client.create_session(
+                SessionConfig(model="claude-sonnet-4.5")
+            )
+            try:
+                await session.send_and_wait(
+                    MessageOptions(prompt=prompt), timeout=600
+                )
+            finally:
+                await session.destroy()
+
+            # Push changes after each iteration
+            try:
+                subprocess.run(
+                    ["git", "push", "origin", branch], check=True
+                )
+            except subprocess.CalledProcessError:
+                subprocess.run(
+                    ["git", "push", "-u", "origin", branch], check=True
+                )
+
+            print(f"\nIteration {i} complete.")
+
+        print(f"\nReached max iterations: {max_iterations}")
+    finally:
+        await client.stop()
+
+
+if __name__ == "__main__":
+    args = sys.argv[1:]
+    mode = "plan" if "plan" in args else "build"
+    max_iter = next((int(a) for a in args if a.isdigit()), 50)
+    asyncio.run(ralph_loop(mode, max_iter))
+```
+
+### Required Project Files
+
+The ideal version expects this file structure in your project:
+
+```
+project-root/
+├── PROMPT_plan.md              # Planning mode instructions
+├── PROMPT_build.md             # Building mode instructions
+├── AGENTS.md                   # Operational guide (build/test commands)
+├── IMPLEMENTATION_PLAN.md      # Task list (generated by planning mode)
+├── specs/                      # Requirement specs (one per topic)
+│   ├── auth.md
+│   └── data-pipeline.md
+└── src/                        # Your source code
+```
+
+### Example `PROMPT_plan.md`
+
+```markdown
+0a. Study `specs/*` to learn the application specifications.
+0b. Study IMPLEMENTATION_PLAN.md (if present) to understand the plan so far.
+0c. Study `src/` to understand existing code and shared utilities.
+
+1. Compare specs against code (gap analysis). Create or update
+   IMPLEMENTATION_PLAN.md as a prioritized bullet-point list of tasks
+   yet to be implemented. Do NOT implement anything.
+
+IMPORTANT: Do NOT assume functionality is missing — search the
+codebase first to confirm. Prefer updating existing utilities over
+creating ad-hoc copies.
+```
+
+### Example `PROMPT_build.md`
+
+```markdown
+0a. Study `specs/*` to learn the application specifications.
+0b. Study IMPLEMENTATION_PLAN.md.
+0c. Study `src/` for reference.
+
+1. Choose the most important item from IMPLEMENTATION_PLAN.md. Before
+   making changes, search the codebase (don't assume not implemented).
+2. After implementing, run the tests. If functionality is missing, add it.
+3. When you discover issues, update IMPLEMENTATION_PLAN.md immediately.
+4. When tests pass, update IMPLEMENTATION_PLAN.md, then `git add -A`
+   then `git commit` with a descriptive message.
+
+99999. When authoring documentation, capture the why.
+999999. Implement completely. No placeholders or stubs.
+9999999. Keep IMPLEMENTATION_PLAN.md current — future iterations depend on it.
+```
+
+### Example `AGENTS.md`
+
+Keep this brief (~60 lines). It's loaded every iteration, so bloat wastes context.
+
+```markdown
+## Build & Run
+
+python -m pytest
+
+## Validation
+
+- Tests: `pytest`
+- Typecheck: `mypy src/`
+- Lint: `ruff check src/`
 ```
 
 ## Best Practices
 
-1. **Write clear completion criteria**: Include exactly what "done" looks like
-2. **Use output markers**: Include `<promise>COMPLETE</promise>` or similar in completion condition
-3. **Always set max iterations**: Prevents infinite loops on impossible tasks
-4. **Persist state**: Save files so AI can see what changed between iterations
-5. **Include context**: Feed previous iteration output back as context
-6. **Monitor progress**: Log each iteration to track what's happening
+1. **Fresh context per iteration**: Never accumulate context across iterations — that's the whole point
+2. **Disk is your database**: `IMPLEMENTATION_PLAN.md` is shared state between isolated sessions
+3. **Backpressure is essential**: Tests, builds, lints in `AGENTS.md` — the agent must pass them before committing
+4. **Start with PLANNING mode**: Generate the plan first, then switch to BUILDING
+5. **Observe and tune**: Watch early iterations, add guardrails to prompts when the agent fails in specific ways
+6. **The plan is disposable**: If the agent goes off track, delete `IMPLEMENTATION_PLAN.md` and re-plan
+7. **Keep `AGENTS.md` brief**: It's loaded every iteration — operational info only, no progress notes
+8. **Use a sandbox**: The agent runs autonomously with full tool access — isolate it
 
-## Example: Iterative Code Generation
-
-```python
-prompt = """Write a function that:
-1. Parses CSV data
-2. Validates required fields
-3. Returns parsed records or error
-4. Has unit tests
-5. Output <promise>COMPLETE</promise> when done"""
-
-async def main():
-    loop = RalphLoop(10, "COMPLETE")
-    result = await loop.run(prompt)
-
-asyncio.run(main())
-```
-
-## Handling Failures
-
-```python
-try:
-    result = await loop.run(prompt)
-    print("Task completed successfully!")
-except RuntimeError as e:
-    print(f"Task failed: {e}")
-    if loop.last_response:
-        print(f"\nLast attempt:\n{loop.last_response}")
-```
-
-## When to Use RALPH-loop
+## When to Use a Ralph Loop
 
 **Good for:**
-- Code generation with automatic verification (tests, linters)
-- Tasks with clear success criteria
-- Iterative refinement where each attempt learns from previous failures
-- Unattended long-running improvements
+- Implementing features from specs with test-driven validation
+- Large refactors broken into many small tasks
+- Unattended, long-running development with clear requirements
+- Any work where backpressure (tests/builds) can verify correctness
 
 **Not good for:**
-- Tasks requiring human judgment or design input
-- One-shot operations
-- Tasks with vague success criteria
-- Real-time interactive debugging
+- Tasks requiring human judgment mid-loop
+- One-shot operations that don't benefit from iteration
+- Vague requirements without testable acceptance criteria
+- Exploratory prototyping where direction isn't clear

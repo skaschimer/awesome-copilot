@@ -1,141 +1,90 @@
 #:package GitHub.Copilot.SDK@*
 #:property PublishAot=false
 
+using System.Diagnostics;
 using GitHub.Copilot.SDK;
-using System.Text;
 
-// RALPH-loop: Iterative self-referential AI loops.
-// The same prompt is sent repeatedly, with AI reading its own previous output.
-// Loop continues until completion promise is detected in the response.
+// Ralph loop: autonomous AI task loop with fresh context per iteration.
+//
+// Two modes:
+//   - "plan": reads PROMPT_plan.md, generates/updates IMPLEMENTATION_PLAN.md
+//   - "build": reads PROMPT_build.md, implements tasks, runs tests, commits
+//
+// Each iteration creates a fresh session so the agent always operates in
+// the "smart zone" of its context window. State is shared between
+// iterations via files on disk (IMPLEMENTATION_PLAN.md, AGENTS.md, specs/*).
+//
+// Usage:
+//   dotnet run                      # build mode, 50 iterations
+//   dotnet run plan                 # planning mode
+//   dotnet run 20                   # build mode, 20 iterations
+//   dotnet run plan 5               # planning mode, 5 iterations
 
-var prompt = @"You are iteratively building a small library. Follow these phases IN ORDER.
-Do NOT skip ahead — only do the current phase, then stop and wait for the next iteration.
+var mode = args.Contains("plan") ? "plan" : "build";
+var maxArg = args.FirstOrDefault(a => int.TryParse(a, out _));
+var maxIterations = maxArg != null ? int.Parse(maxArg) : 50;
+var promptFile = mode == "plan" ? "PROMPT_plan.md" : "PROMPT_build.md";
 
-Phase 1: Design a DataValidator class that validates records against a schema.
-  - Schema defines field names, types (string, int, float, bool), and whether required.
-  - Return a list of validation errors per record.
-  - Show the class code only. Do NOT output COMPLETE.
+var client = new CopilotClient();
+await client.StartAsync();
 
-Phase 2: Write at least 4 unit tests covering: missing required field, wrong type,
-  valid record, and empty input. Show test code only. Do NOT output COMPLETE.
+var branchProc = Process.Start(new ProcessStartInfo("git", "branch --show-current")
+    { RedirectStandardOutput = true })!;
+var branch = (await branchProc.StandardOutput.ReadToEndAsync()).Trim();
+await branchProc.WaitForExitAsync();
 
-Phase 3: Review the code from phases 1 and 2. Fix any bugs, add docstrings, and add
-  an extra edge-case test. Show the final consolidated code with all fixes.
-  When this phase is fully done, output the exact text: COMPLETE";
-
-var loop = new RalphLoop(maxIterations: 5, completionPromise: "COMPLETE");
+Console.WriteLine(new string('━', 40));
+Console.WriteLine($"Mode:   {mode}");
+Console.WriteLine($"Prompt: {promptFile}");
+Console.WriteLine($"Branch: {branch}");
+Console.WriteLine($"Max:    {maxIterations} iterations");
+Console.WriteLine(new string('━', 40));
 
 try
 {
-    var result = await loop.RunAsync(prompt);
-    Console.WriteLine("\n=== FINAL RESULT ===");
-    Console.WriteLine(result);
-}
-catch (InvalidOperationException ex)
-{
-    Console.WriteLine($"\nTask did not complete: {ex.Message}");
-    if (loop.LastResponse != null)
+    var prompt = await File.ReadAllTextAsync(promptFile);
+
+    for (var i = 1; i <= maxIterations; i++)
     {
-        Console.WriteLine($"\nLast attempt:\n{loop.LastResponse}");
-    }
-}
+        Console.WriteLine($"\n=== Iteration {i}/{maxIterations} ===");
 
-// --- RalphLoop class definition ---
-
-public class RalphLoop
-{
-    private readonly CopilotClient _client;
-    private int _iteration = 0;
-    private readonly int _maxIterations;
-    private readonly string _completionPromise;
-    private string? _lastResponse;
-
-    public RalphLoop(int maxIterations = 10, string completionPromise = "COMPLETE")
-    {
-        _client = new CopilotClient();
-        _maxIterations = maxIterations;
-        _completionPromise = completionPromise;
-    }
-
-    public string? LastResponse => _lastResponse;
-
-    public async Task<string> RunAsync(string initialPrompt)
-    {
-        await _client.StartAsync();
+        // Fresh session — each task gets full context budget
+        var session = await client.CreateSessionAsync(
+            new SessionConfig { Model = "claude-sonnet-4.5" });
 
         try
         {
-            var session = await _client.CreateSessionAsync(new SessionConfig 
-            { 
-                Model = "gpt-5.1-codex-mini"
+            var done = new TaskCompletionSource<string>();
+            session.On(evt =>
+            {
+                if (evt is AssistantMessageEvent msg)
+                    done.TrySetResult(msg.Data.Content);
             });
 
-            try
-            {
-                var done = new TaskCompletionSource<string>();
-                session.On(evt =>
-                {
-                    if (evt is AssistantMessageEvent msg)
-                    {
-                        _lastResponse = msg.Data.Content;
-                        done.TrySetResult(msg.Data.Content);
-                    }
-                });
-
-                while (_iteration < _maxIterations)
-                {
-                    _iteration++;
-                    Console.WriteLine($"\n=== Iteration {_iteration}/{_maxIterations} ===");
-
-                    done = new TaskCompletionSource<string>();
-
-                    var currentPrompt = BuildIterationPrompt(initialPrompt);
-                    Console.WriteLine($"Sending prompt (length: {currentPrompt.Length})...");
-
-                    await session.SendAsync(new MessageOptions { Prompt = currentPrompt });
-                    var response = await done.Task;
-
-                    var summary = response.Length > 200 
-                        ? response.Substring(0, 200) + "..." 
-                        : response;
-                    Console.WriteLine($"Response: {summary}");
-
-                    if (response.Contains(_completionPromise))
-                    {
-                        Console.WriteLine($"\n✓ Completion promise detected: '{_completionPromise}'");
-                        return response;
-                    }
-
-                    Console.WriteLine($"Iteration {_iteration} complete. Continuing...");
-                }
-
-                throw new InvalidOperationException(
-                    $"Max iterations ({_maxIterations}) reached without completion promise: '{_completionPromise}'");
-            }
-            finally
-            {
-                await session.DisposeAsync();
-            }
+            await session.SendAsync(new MessageOptions { Prompt = prompt });
+            await done.Task;
         }
         finally
         {
-            await _client.StopAsync();
+            await session.DisposeAsync();
         }
+
+        // Push changes after each iteration
+        try
+        {
+            Process.Start("git", $"push origin {branch}")!.WaitForExit();
+        }
+        catch
+        {
+            Process.Start("git", $"push -u origin {branch}")!.WaitForExit();
+        }
+
+        Console.WriteLine($"\nIteration {i} complete.");
     }
 
-    private string BuildIterationPrompt(string initialPrompt)
-    {
-        if (_iteration == 1)
-            return initialPrompt;
-
-        var sb = new StringBuilder();
-        sb.AppendLine(initialPrompt);
-        sb.AppendLine();
-        sb.AppendLine("=== CONTEXT FROM PREVIOUS ITERATION ===");
-        sb.AppendLine(_lastResponse);
-        sb.AppendLine("=== END CONTEXT ===");
-        sb.AppendLine();
-        sb.AppendLine("Continue working on this task. Review the previous attempt and improve upon it.");
-        return sb.ToString();
-    }
+    Console.WriteLine($"\nReached max iterations: {maxIterations}");
+}
+finally
+{
+    await client.StopAsync();
 }

@@ -1,6 +1,6 @@
-# RALPH-loop: Iterative Self-Referential AI Loops
+# Ralph Loop: Autonomous AI Task Loops
 
-Implement self-referential feedback loops where an AI agent iteratively improves work by reading its own previous output.
+Build autonomous coding loops where an AI agent picks tasks, implements them, validates against backpressure (tests, builds), commits, and repeats — each iteration in a fresh context window.
 
 > **Runnable example:** [recipe/ralph-loop.ts](recipe/ralph-loop.ts)
 >
@@ -9,200 +9,217 @@ Implement self-referential feedback loops where an AI agent iteratively improves
 > npx tsx ralph-loop.ts
 > ```
 
-## What is RALPH-loop?
+## What is a Ralph Loop?
 
-RALPH-loop is a development methodology for iterative AI-powered task completion. Named after the Ralph Wiggum technique, it embodies the philosophy of persistent iteration:
+A [Ralph loop](https://ghuntley.com/ralph/) is an autonomous development workflow where an AI agent iterates through tasks in isolated context windows. The key insight: **state lives on disk, not in the model's context**. Each iteration starts fresh, reads the current state from files, does one task, writes results back to disk, and exits.
 
-- **One prompt, multiple iterations**: The same prompt is processed repeatedly
-- **Self-referential feedback**: The AI reads its own previous work (file changes, git history)
-- **Completion detection**: Loop exits when a completion promise is detected in output
-- **Safety limits**: Always include a maximum iteration count to prevent infinite loops
-
-## Example Scenario
-
-You need to iteratively improve code until all tests pass. Instead of asking Copilot to "write perfect code," you use RALPH-loop to:
-
-1. Send the initial prompt with clear success criteria
-2. Copilot writes code and tests
-3. Copilot runs tests and sees failures
-4. Loop automatically re-sends the prompt
-5. Copilot reads test output and previous code, fixes issues
-6. Repeat until all tests pass and completion promise is output
-
-## Basic Implementation
-
-```typescript
-import { CopilotClient } from "@github/copilot-sdk";
-
-class RalphLoop {
-    private client: CopilotClient;
-    private iteration: number = 0;
-    private maxIterations: number;
-    private completionPromise: string;
-    private lastResponse: string | null = null;
-
-    constructor(maxIterations: number = 10, completionPromise: string = "COMPLETE") {
-        this.client = new CopilotClient();
-        this.maxIterations = maxIterations;
-        this.completionPromise = completionPromise;
-    }
-
-    async run(initialPrompt: string): Promise<string> {
-        await this.client.start();
-        const session = await this.client.createSession({ model: "gpt-5.1-codex-mini" });
-
-        try {
-            while (this.iteration < this.maxIterations) {
-                this.iteration++;
-                console.log(`\n--- Iteration ${this.iteration}/${this.maxIterations} ---`);
-
-                // Build prompt including previous response as context
-                const prompt = this.iteration === 1
-                    ? initialPrompt
-                    : `${initialPrompt}\n\nPrevious attempt:\n${this.lastResponse}\n\nContinue improving...`;
-
-                const response = await session.sendAndWait({ prompt });
-                this.lastResponse = response?.data.content || "";
-
-                console.log(`Response (${this.lastResponse.length} chars)`);
-
-                // Check for completion promise
-                if (this.lastResponse.includes(this.completionPromise)) {
-                    console.log(`✓ Completion promise detected: ${this.completionPromise}`);
-                    return this.lastResponse;
-                }
-
-                console.log(`Continuing to iteration ${this.iteration + 1}...`);
-            }
-
-            throw new Error(
-                `Max iterations (${this.maxIterations}) reached without completion promise`
-            );
-        } finally {
-            await session.destroy();
-            await this.client.stop();
-        }
-    }
-}
-
-// Usage
-const loop = new RalphLoop(5, "COMPLETE");
-const result = await loop.run("Your task here");
-console.log(result);
+```
+┌─────────────────────────────────────────────────┐
+│                   loop.sh                       │
+│  while true:                                    │
+│    ┌─────────────────────────────────────────┐  │
+│    │  Fresh session (isolated context)       │  │
+│    │                                         │  │
+│    │  1. Read PROMPT.md + AGENTS.md          │  │
+│    │  2. Study specs/* and code              │  │
+│    │  3. Pick next task from plan            │  │
+│    │  4. Implement + run tests               │  │
+│    │  5. Update plan, commit, exit           │  │
+│    └─────────────────────────────────────────┘  │
+│    ↻ next iteration (fresh context)             │
+└─────────────────────────────────────────────────┘
 ```
 
-## With File Persistence
+**Core principles:**
 
-For tasks involving code generation, persist state to files so the AI can see changes:
+- **Fresh context per iteration**: Each loop creates a new session — no context accumulation, always in the "smart zone"
+- **Disk as shared state**: `IMPLEMENTATION_PLAN.md` persists between iterations and acts as the coordination mechanism
+- **Backpressure steers quality**: Tests, builds, and lints reject bad work — the agent must fix issues before committing
+- **Two modes**: PLANNING (gap analysis → generate plan) and BUILDING (implement from plan)
+
+## Simple Version
+
+The minimal Ralph loop — the SDK equivalent of `while :; do cat PROMPT.md | claude ; done`:
 
 ```typescript
-import fs from "fs/promises";
-import path from "path";
+import { readFile } from "fs/promises";
 import { CopilotClient } from "@github/copilot-sdk";
 
-class PersistentRalphLoop {
-    private client: CopilotClient;
-    private workDir: string;
-    private iteration: number = 0;
-    private maxIterations: number;
+async function ralphLoop(promptFile: string, maxIterations: number = 50) {
+    const client = new CopilotClient();
+    await client.start();
 
-    constructor(workDir: string, maxIterations: number = 10) {
-        this.client = new CopilotClient();
-        this.workDir = workDir;
-        this.maxIterations = maxIterations;
-    }
+    try {
+        const prompt = await readFile(promptFile, "utf-8");
 
-    async run(initialPrompt: string): Promise<string> {
-        await fs.mkdir(this.workDir, { recursive: true });
-        await this.client.start();
-        const session = await this.client.createSession({ model: "gpt-5.1-codex-mini" });
+        for (let i = 1; i <= maxIterations; i++) {
+            console.log(`\n=== Iteration ${i}/${maxIterations} ===`);
 
-        try {
-            // Store initial prompt
-            await fs.writeFile(path.join(this.workDir, "prompt.md"), initialPrompt);
-
-            while (this.iteration < this.maxIterations) {
-                this.iteration++;
-                console.log(`\n--- Iteration ${this.iteration} ---`);
-
-                // Build context from previous outputs
-                let context = initialPrompt;
-                const prevOutputFile = path.join(this.workDir, `output-${this.iteration - 1}.txt`);
-                try {
-                    const prevOutput = await fs.readFile(prevOutputFile, "utf-8");
-                    context += `\n\nPrevious iteration:\n${prevOutput}`;
-                } catch {
-                    // No previous output yet
-                }
-
-                const response = await session.sendAndWait({ prompt: context });
-                const output = response?.data.content || "";
-
-                // Persist output
-                await fs.writeFile(
-                    path.join(this.workDir, `output-${this.iteration}.txt`),
-                    output
-                );
-
-                if (output.includes("COMPLETE")) {
-                    return output;
-                }
+            // Fresh session each iteration — context isolation is the point
+            const session = await client.createSession({ model: "claude-sonnet-4.5" });
+            try {
+                await session.sendAndWait({ prompt }, 600_000);
+            } finally {
+                await session.destroy();
             }
 
-            throw new Error("Max iterations reached");
-        } finally {
-            await session.destroy();
-            await this.client.stop();
+            console.log(`Iteration ${i} complete.`);
         }
+    } finally {
+        await client.stop();
     }
 }
+
+// Usage: point at your PROMPT.md
+ralphLoop("PROMPT.md", 20);
+```
+
+This is all you need to get started. The prompt file tells the agent what to do; the agent reads project files, does work, commits, and exits. The loop restarts with a clean slate.
+
+## Ideal Version
+
+The full Ralph pattern with planning and building modes, matching the [Ralph Playbook](https://github.com/ClaytonFarr/ralph-playbook) architecture:
+
+```typescript
+import { readFile } from "fs/promises";
+import { execSync } from "child_process";
+import { CopilotClient } from "@github/copilot-sdk";
+
+type Mode = "plan" | "build";
+
+async function ralphLoop(mode: Mode, maxIterations: number = 50) {
+    const promptFile = mode === "plan" ? "PROMPT_plan.md" : "PROMPT_build.md";
+    const client = new CopilotClient();
+    await client.start();
+
+    const branch = execSync("git branch --show-current", { encoding: "utf-8" }).trim();
+    console.log(`Mode: ${mode} | Prompt: ${promptFile} | Branch: ${branch}`);
+
+    try {
+        const prompt = await readFile(promptFile, "utf-8");
+
+        for (let i = 1; i <= maxIterations; i++) {
+            console.log(`\n=== Iteration ${i}/${maxIterations} ===`);
+
+            // Fresh session — each task gets full context budget
+            const session = await client.createSession({ model: "claude-sonnet-4.5" });
+            try {
+                await session.sendAndWait({ prompt }, 600_000);
+            } finally {
+                await session.destroy();
+            }
+
+            // Push changes after each iteration
+            try {
+                execSync(`git push origin ${branch}`, { stdio: "inherit" });
+            } catch {
+                execSync(`git push -u origin ${branch}`, { stdio: "inherit" });
+            }
+
+            console.log(`Iteration ${i} complete.`);
+        }
+    } finally {
+        await client.stop();
+    }
+}
+
+// Parse CLI args: npx tsx ralph-loop.ts [plan] [max_iterations]
+const args = process.argv.slice(2);
+const mode: Mode = args.includes("plan") ? "plan" : "build";
+const maxArg = args.find(a => /^\d+$/.test(a));
+const maxIterations = maxArg ? parseInt(maxArg) : 50;
+
+ralphLoop(mode, maxIterations);
+```
+
+### Required Project Files
+
+The ideal version expects this file structure in your project:
+
+```
+project-root/
+├── PROMPT_plan.md              # Planning mode instructions
+├── PROMPT_build.md             # Building mode instructions
+├── AGENTS.md                   # Operational guide (build/test commands)
+├── IMPLEMENTATION_PLAN.md      # Task list (generated by planning mode)
+├── specs/                      # Requirement specs (one per topic)
+│   ├── auth.md
+│   └── data-pipeline.md
+└── src/                        # Your source code
+```
+
+### Example `PROMPT_plan.md`
+
+```markdown
+0a. Study `specs/*` to learn the application specifications.
+0b. Study IMPLEMENTATION_PLAN.md (if present) to understand the plan so far.
+0c. Study `src/` to understand existing code and shared utilities.
+
+1. Compare specs against code (gap analysis). Create or update
+   IMPLEMENTATION_PLAN.md as a prioritized bullet-point list of tasks
+   yet to be implemented. Do NOT implement anything.
+
+IMPORTANT: Do NOT assume functionality is missing — search the
+codebase first to confirm. Prefer updating existing utilities over
+creating ad-hoc copies.
+```
+
+### Example `PROMPT_build.md`
+
+```markdown
+0a. Study `specs/*` to learn the application specifications.
+0b. Study IMPLEMENTATION_PLAN.md.
+0c. Study `src/` for reference.
+
+1. Choose the most important item from IMPLEMENTATION_PLAN.md. Before
+   making changes, search the codebase (don't assume not implemented).
+2. After implementing, run the tests. If functionality is missing, add it.
+3. When you discover issues, update IMPLEMENTATION_PLAN.md immediately.
+4. When tests pass, update IMPLEMENTATION_PLAN.md, then `git add -A`
+   then `git commit` with a descriptive message.
+
+99999. When authoring documentation, capture the why.
+999999. Implement completely. No placeholders or stubs.
+9999999. Keep IMPLEMENTATION_PLAN.md current — future iterations depend on it.
+```
+
+### Example `AGENTS.md`
+
+Keep this brief (~60 lines). It's loaded every iteration, so bloat wastes context.
+
+```markdown
+## Build & Run
+
+npm run build
+
+## Validation
+
+- Tests: `npm test`
+- Typecheck: `npx tsc --noEmit`
+- Lint: `npm run lint`
 ```
 
 ## Best Practices
 
-1. **Write clear completion criteria**: Include exactly what "done" looks like
-2. **Use output markers**: Include `<promise>COMPLETE</promise>` or similar in completion condition
-3. **Always set max iterations**: Prevents infinite loops on impossible tasks
-4. **Persist state**: Save files so AI can see what changed between iterations
-5. **Include context**: Feed previous iteration output back as context
-6. **Monitor progress**: Log each iteration to track what's happening
+1. **Fresh context per iteration**: Never accumulate context across iterations — that's the whole point
+2. **Disk is your database**: `IMPLEMENTATION_PLAN.md` is shared state between isolated sessions
+3. **Backpressure is essential**: Tests, builds, lints in `AGENTS.md` — the agent must pass them before committing
+4. **Start with PLANNING mode**: Generate the plan first, then switch to BUILDING
+5. **Observe and tune**: Watch early iterations, add guardrails to prompts when the agent fails in specific ways
+6. **The plan is disposable**: If the agent goes off track, delete `IMPLEMENTATION_PLAN.md` and re-plan
+7. **Keep `AGENTS.md` brief**: It's loaded every iteration — operational info only, no progress notes
+8. **Use a sandbox**: The agent runs autonomously with full tool access — isolate it
 
-## Example: Iterative Code Generation
-
-```typescript
-const prompt = `Write a function that:
-1. Parses CSV data
-2. Validates required fields
-3. Returns parsed records or error
-4. Has unit tests
-5. Output <promise>COMPLETE</promise> when done`;
-
-const loop = new RalphLoop(10, "COMPLETE");
-const result = await loop.run(prompt);
-```
-
-## Handling Failures
-
-```typescript
-try {
-    const result = await loop.run(prompt);
-    console.log("Task completed successfully!");
-} catch (error) {
-    console.error("Task failed:", error.message);
-    // Analyze what was attempted and suggest alternatives
-}
-```
-
-## When to Use RALPH-loop
+## When to Use a Ralph Loop
 
 **Good for:**
-- Code generation with automatic verification (tests, linters)
-- Tasks with clear success criteria
-- Iterative refinement where each attempt learns from previous failures
-- Unattended long-running improvements
+- Implementing features from specs with test-driven validation
+- Large refactors broken into many small tasks
+- Unattended, long-running development with clear requirements
+- Any work where backpressure (tests/builds) can verify correctness
 
 **Not good for:**
-- Tasks requiring human judgment or design input
-- One-shot operations
-- Tasks with vague success criteria
-- Real-time interactive debugging
+- Tasks requiring human judgment mid-loop
+- One-shot operations that don't benefit from iteration
+- Vague requirements without testable acceptance criteria
+- Exploratory prototyping where direction isn't clear

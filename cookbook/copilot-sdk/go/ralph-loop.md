@@ -1,6 +1,6 @@
-# RALPH-loop: Iterative Self-Referential AI Loops
+# Ralph Loop: Autonomous AI Task Loops
 
-Implement self-referential feedback loops where an AI agent iteratively improves work by reading its own previous output.
+Build autonomous coding loops where an AI agent picks tasks, implements them, validates against backpressure (tests, builds), commits, and repeats — each iteration in a fresh context window.
 
 > **Runnable example:** [recipe/ralph-loop.go](recipe/ralph-loop.go)
 >
@@ -9,27 +9,37 @@ Implement self-referential feedback loops where an AI agent iteratively improves
 > go run recipe/ralph-loop.go
 > ```
 
-## What is RALPH-loop?
+## What is a Ralph Loop?
 
-RALPH-loop is a development methodology for iterative AI-powered task completion. Named after the Ralph Wiggum technique, it embodies the philosophy of persistent iteration:
+A [Ralph loop](https://ghuntley.com/ralph/) is an autonomous development workflow where an AI agent iterates through tasks in isolated context windows. The key insight: **state lives on disk, not in the model's context**. Each iteration starts fresh, reads the current state from files, does one task, writes results back to disk, and exits.
 
-- **One prompt, multiple iterations**: The same prompt is processed repeatedly
-- **Self-referential feedback**: The AI reads its own previous work (file changes, git history)
-- **Completion detection**: Loop exits when a completion promise is detected in output
-- **Safety limits**: Always include a maximum iteration count to prevent infinite loops
+```
+┌─────────────────────────────────────────────────┐
+│                   loop.sh                       │
+│  while true:                                    │
+│    ┌─────────────────────────────────────────┐  │
+│    │  Fresh session (isolated context)       │  │
+│    │                                         │  │
+│    │  1. Read PROMPT.md + AGENTS.md          │  │
+│    │  2. Study specs/* and code              │  │
+│    │  3. Pick next task from plan            │  │
+│    │  4. Implement + run tests               │  │
+│    │  5. Update plan, commit, exit           │  │
+│    └─────────────────────────────────────────┘  │
+│    ↻ next iteration (fresh context)             │
+└─────────────────────────────────────────────────┘
+```
 
-## Example Scenario
+**Core principles:**
 
-You need to iteratively improve code until all tests pass. Instead of asking Copilot to "write perfect code," you use RALPH-loop to:
+- **Fresh context per iteration**: Each loop creates a new session — no context accumulation, always in the "smart zone"
+- **Disk as shared state**: `IMPLEMENTATION_PLAN.md` persists between iterations and acts as the coordination mechanism
+- **Backpressure steers quality**: Tests, builds, and lints reject bad work — the agent must fix issues before committing
+- **Two modes**: PLANNING (gap analysis → generate plan) and BUILDING (implement from plan)
 
-1. Send the initial prompt with clear success criteria
-2. Copilot writes code and tests
-3. Copilot runs tests and sees failures
-4. Loop automatically re-sends the prompt
-5. Copilot reads test output and previous code, fixes issues
-6. Repeat until all tests pass and completion promise is output
+## Simple Version
 
-## Basic Implementation
+The minimal Ralph loop — the SDK equivalent of `while :; do cat PROMPT.md | claude ; done`:
 
 ```go
 package main
@@ -38,81 +48,59 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"strings"
+	"os"
 
 	copilot "github.com/github/copilot-sdk/go"
 )
 
-type RalphLoop struct {
-	client            *copilot.Client
-	iteration         int
-	maxIterations     int
-	completionPromise string
-	LastResponse      string
-}
-
-func NewRalphLoop(maxIterations int, completionPromise string) *RalphLoop {
-	return &RalphLoop{
-		client:            copilot.NewClient(nil),
-		maxIterations:     maxIterations,
-		completionPromise: completionPromise,
+func ralphLoop(ctx context.Context, promptFile string, maxIterations int) error {
+	client := copilot.NewClient(nil)
+	if err := client.Start(ctx); err != nil {
+		return err
 	}
-}
+	defer client.Stop()
 
-func (r *RalphLoop) Run(ctx context.Context, initialPrompt string) (string, error) {
-	if err := r.client.Start(ctx); err != nil {
-		return "", err
-	}
-	defer r.client.Stop()
-
-	session, err := r.client.CreateSession(ctx, &copilot.SessionConfig{
-		Model: "gpt-5.1-codex-mini",
-	})
+	prompt, err := os.ReadFile(promptFile)
 	if err != nil {
-		return "", err
+		return err
 	}
-	defer session.Destroy()
 
-	for r.iteration < r.maxIterations {
-		r.iteration++
-		fmt.Printf("\n--- Iteration %d/%d ---\n", r.iteration, r.maxIterations)
+	for i := 1; i <= maxIterations; i++ {
+		fmt.Printf("\n=== Iteration %d/%d ===\n", i, maxIterations)
 
-		prompt := r.buildIterationPrompt(initialPrompt)
-
-		result, err := session.SendAndWait(ctx, copilot.MessageOptions{Prompt: prompt})
+		// Fresh session each iteration — context isolation is the point
+		session, err := client.CreateSession(ctx, &copilot.SessionConfig{
+			Model: "claude-sonnet-4.5",
+		})
 		if err != nil {
-			return "", err
+			return err
 		}
 
-		if result != nil && result.Data.Content != nil {
-			r.LastResponse = *result.Data.Content
+		_, err = session.SendAndWait(ctx, copilot.MessageOptions{
+			Prompt: string(prompt),
+		})
+		session.Destroy()
+		if err != nil {
+			return err
 		}
 
-		if strings.Contains(r.LastResponse, r.completionPromise) {
-			fmt.Printf("✓ Completion promise detected: %s\n", r.completionPromise)
-			return r.LastResponse, nil
-		}
+		fmt.Printf("Iteration %d complete.\n", i)
 	}
-
-	return "", fmt.Errorf("max iterations (%d) reached without completion promise",
-		r.maxIterations)
+	return nil
 }
 
-// Usage
 func main() {
-	ctx := context.Background()
-	loop := NewRalphLoop(5, "COMPLETE")
-	result, err := loop.Run(ctx, "Your task here")
-	if err != nil {
+	if err := ralphLoop(context.Background(), "PROMPT.md", 20); err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(result)
 }
 ```
 
-## With File Persistence
+This is all you need to get started. The prompt file tells the agent what to do; the agent reads project files, does work, commits, and exits. The loop restarts with a clean slate.
 
-For tasks involving code generation, persist state to files so the AI can see changes:
+## Ideal Version
+
+The full Ralph pattern with planning and building modes, matching the [Ralph Playbook](https://github.com/ClaytonFarr/ralph-playbook) architecture:
 
 ```go
 package main
@@ -120,121 +108,178 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
-	"path/filepath"
+	"os/exec"
+	"strconv"
 	"strings"
 
 	copilot "github.com/github/copilot-sdk/go"
 )
 
-type PersistentRalphLoop struct {
-	client        *copilot.Client
-	workDir       string
-	iteration     int
-	maxIterations int
-}
-
-func NewPersistentRalphLoop(workDir string, maxIterations int) *PersistentRalphLoop {
-	os.MkdirAll(workDir, 0755)
-	return &PersistentRalphLoop{
-		client:        copilot.NewClient(nil),
-		workDir:       workDir,
-		maxIterations: maxIterations,
+func ralphLoop(ctx context.Context, mode string, maxIterations int) error {
+	promptFile := "PROMPT_build.md"
+	if mode == "plan" {
+		promptFile = "PROMPT_plan.md"
 	}
-}
 
-func (p *PersistentRalphLoop) Run(ctx context.Context, initialPrompt string) (string, error) {
-	if err := p.client.Start(ctx); err != nil {
-		return "", err
+	client := copilot.NewClient(nil)
+	if err := client.Start(ctx); err != nil {
+		return err
 	}
-	defer p.client.Stop()
+	defer client.Stop()
 
-	os.WriteFile(filepath.Join(p.workDir, "prompt.md"), []byte(initialPrompt), 0644)
+	branchOut, _ := exec.Command("git", "branch", "--show-current").Output()
+	branch := strings.TrimSpace(string(branchOut))
 
-	session, err := p.client.CreateSession(ctx, &copilot.SessionConfig{
-		Model: "gpt-5.1-codex-mini",
-	})
+	fmt.Println(strings.Repeat("━", 40))
+	fmt.Printf("Mode:   %s\n", mode)
+	fmt.Printf("Prompt: %s\n", promptFile)
+	fmt.Printf("Branch: %s\n", branch)
+	fmt.Printf("Max:    %d iterations\n", maxIterations)
+	fmt.Println(strings.Repeat("━", 40))
+
+	prompt, err := os.ReadFile(promptFile)
 	if err != nil {
-		return "", err
+		return err
 	}
-	defer session.Destroy()
 
-	for p.iteration < p.maxIterations {
-		p.iteration++
+	for i := 1; i <= maxIterations; i++ {
+		fmt.Printf("\n=== Iteration %d/%d ===\n", i, maxIterations)
 
-		prompt := initialPrompt
-		prevFile := filepath.Join(p.workDir, fmt.Sprintf("output-%d.txt", p.iteration-1))
-		if data, err := os.ReadFile(prevFile); err == nil {
-			prompt = fmt.Sprintf("%s\n\nPrevious iteration:\n%s", initialPrompt, string(data))
-		}
-
-		result, err := session.SendAndWait(ctx, copilot.MessageOptions{Prompt: prompt})
+		// Fresh session — each task gets full context budget
+		session, err := client.CreateSession(ctx, &copilot.SessionConfig{
+			Model: "claude-sonnet-4.5",
+		})
 		if err != nil {
-			return "", err
+			return err
 		}
 
-		response := ""
-		if result != nil && result.Data.Content != nil {
-			response = *result.Data.Content
+		_, err = session.SendAndWait(ctx, copilot.MessageOptions{
+			Prompt: string(prompt),
+		})
+		session.Destroy()
+		if err != nil {
+			return err
 		}
 
-		os.WriteFile(filepath.Join(p.workDir, fmt.Sprintf("output-%d.txt", p.iteration)),
-			[]byte(response), 0644)
+		// Push changes after each iteration
+		if err := exec.Command("git", "push", "origin", branch).Run(); err != nil {
+			exec.Command("git", "push", "-u", "origin", branch).Run()
+		}
 
-		if strings.Contains(response, "COMPLETE") {
-			return response, nil
+		fmt.Printf("\nIteration %d complete.\n", i)
+	}
+
+	fmt.Printf("\nReached max iterations: %d\n", maxIterations)
+	return nil
+}
+
+func main() {
+	mode := "build"
+	maxIterations := 50
+
+	for _, arg := range os.Args[1:] {
+		if arg == "plan" {
+			mode = "plan"
+		} else if n, err := strconv.Atoi(arg); err == nil {
+			maxIterations = n
 		}
 	}
 
-	return "", fmt.Errorf("max iterations reached")
+	if err := ralphLoop(context.Background(), mode, maxIterations); err != nil {
+		log.Fatal(err)
+	}
 }
+```
+
+### Required Project Files
+
+The ideal version expects this file structure in your project:
+
+```
+project-root/
+├── PROMPT_plan.md              # Planning mode instructions
+├── PROMPT_build.md             # Building mode instructions
+├── AGENTS.md                   # Operational guide (build/test commands)
+├── IMPLEMENTATION_PLAN.md      # Task list (generated by planning mode)
+├── specs/                      # Requirement specs (one per topic)
+│   ├── auth.md
+│   └── data-pipeline.md
+└── src/                        # Your source code
+```
+
+### Example `PROMPT_plan.md`
+
+```markdown
+0a. Study `specs/*` to learn the application specifications.
+0b. Study IMPLEMENTATION_PLAN.md (if present) to understand the plan so far.
+0c. Study `src/` to understand existing code and shared utilities.
+
+1. Compare specs against code (gap analysis). Create or update
+   IMPLEMENTATION_PLAN.md as a prioritized bullet-point list of tasks
+   yet to be implemented. Do NOT implement anything.
+
+IMPORTANT: Do NOT assume functionality is missing — search the
+codebase first to confirm. Prefer updating existing utilities over
+creating ad-hoc copies.
+```
+
+### Example `PROMPT_build.md`
+
+```markdown
+0a. Study `specs/*` to learn the application specifications.
+0b. Study IMPLEMENTATION_PLAN.md.
+0c. Study `src/` for reference.
+
+1. Choose the most important item from IMPLEMENTATION_PLAN.md. Before
+   making changes, search the codebase (don't assume not implemented).
+2. After implementing, run the tests. If functionality is missing, add it.
+3. When you discover issues, update IMPLEMENTATION_PLAN.md immediately.
+4. When tests pass, update IMPLEMENTATION_PLAN.md, then `git add -A`
+   then `git commit` with a descriptive message.
+
+99999. When authoring documentation, capture the why.
+999999. Implement completely. No placeholders or stubs.
+9999999. Keep IMPLEMENTATION_PLAN.md current — future iterations depend on it.
+```
+
+### Example `AGENTS.md`
+
+Keep this brief (~60 lines). It's loaded every iteration, so bloat wastes context.
+
+```markdown
+## Build & Run
+
+go build ./...
+
+## Validation
+
+- Tests: `go test ./...`
+- Vet: `go vet ./...`
 ```
 
 ## Best Practices
 
-1. **Write clear completion criteria**: Include exactly what "done" looks like
-2. **Use output markers**: Include `<promise>COMPLETE</promise>` or similar in completion condition
-3. **Always set max iterations**: Prevents infinite loops on impossible tasks
-4. **Persist state**: Save files so AI can see what changed between iterations
-5. **Include context**: Feed previous iteration output back as context
-6. **Monitor progress**: Log each iteration to track what's happening
+1. **Fresh context per iteration**: Never accumulate context across iterations — that's the whole point
+2. **Disk is your database**: `IMPLEMENTATION_PLAN.md` is shared state between isolated sessions
+3. **Backpressure is essential**: Tests, builds, lints in `AGENTS.md` — the agent must pass them before committing
+4. **Start with PLANNING mode**: Generate the plan first, then switch to BUILDING
+5. **Observe and tune**: Watch early iterations, add guardrails to prompts when the agent fails in specific ways
+6. **The plan is disposable**: If the agent goes off track, delete `IMPLEMENTATION_PLAN.md` and re-plan
+7. **Keep `AGENTS.md` brief**: It's loaded every iteration — operational info only, no progress notes
+8. **Use a sandbox**: The agent runs autonomously with full tool access — isolate it
 
-## Example: Iterative Code Generation
-
-```go
-prompt := `Write a function that:
-1. Parses CSV data
-2. Validates required fields
-3. Returns parsed records or error
-4. Has unit tests
-5. Output <promise>COMPLETE</promise> when done`
-
-loop := NewRalphLoop(10, "COMPLETE")
-result, err := loop.Run(context.Background(), prompt)
-```
-
-## Handling Failures
-
-```go
-ctx := context.Background()
-loop := NewRalphLoop(5, "COMPLETE")
-result, err := loop.Run(ctx, prompt)
-if err != nil {
-	log.Printf("Task failed: %v", err)
-	log.Printf("Last attempt: %s", loop.LastResponse)
-}
-```
-
-## When to Use RALPH-loop
+## When to Use a Ralph Loop
 
 **Good for:**
-- Code generation with automatic verification (tests, linters)
-- Tasks with clear success criteria
-- Iterative refinement where each attempt learns from previous failures
-- Unattended long-running improvements
+- Implementing features from specs with test-driven validation
+- Large refactors broken into many small tasks
+- Unattended, long-running development with clear requirements
+- Any work where backpressure (tests/builds) can verify correctness
 
 **Not good for:**
-- Tasks requiring human judgment or design input
-- One-shot operations
-- Tasks with vague success criteria
-- Real-time interactive debugging
+- Tasks requiring human judgment mid-loop
+- One-shot operations that don't benefit from iteration
+- Vague requirements without testable acceptance criteria
+- Exploratory prototyping where direction isn't clear

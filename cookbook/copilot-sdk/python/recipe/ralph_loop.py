@@ -1,127 +1,84 @@
 #!/usr/bin/env python3
 
+"""
+Ralph loop: autonomous AI task loop with fresh context per iteration.
+
+Two modes:
+  - "plan": reads PROMPT_plan.md, generates/updates IMPLEMENTATION_PLAN.md
+  - "build": reads PROMPT_build.md, implements tasks, runs tests, commits
+
+Each iteration creates a fresh session so the agent always operates in
+the "smart zone" of its context window. State is shared between
+iterations via files on disk (IMPLEMENTATION_PLAN.md, AGENTS.md, specs/*).
+
+Usage:
+  python ralph_loop.py              # build mode, 50 iterations
+  python ralph_loop.py plan         # planning mode
+  python ralph_loop.py 20           # build mode, 20 iterations
+  python ralph_loop.py plan 5       # planning mode, 5 iterations
+"""
+
 import asyncio
+import subprocess
+import sys
+from pathlib import Path
 
 from copilot import CopilotClient, MessageOptions, SessionConfig
 
 
-class RalphLoop:
-    """
-    RALPH-loop implementation: Iterative self-referential AI loops.
+async def ralph_loop(mode: str = "build", max_iterations: int = 50):
+    prompt_file = "PROMPT_plan.md" if mode == "plan" else "PROMPT_build.md"
 
-    The same prompt is sent repeatedly, with AI reading its own previous output.
-    Loop continues until completion promise is detected in the response.
-    """
+    client = CopilotClient()
+    await client.start()
 
-    def __init__(self, max_iterations=10, completion_promise="COMPLETE"):
-        """Initialize RALPH-loop with iteration limits and completion detection."""
-        self.client = CopilotClient()
-        self.iteration = 0
-        self.max_iterations = max_iterations
-        self.completion_promise = completion_promise
-        self.last_response = None
+    branch = subprocess.check_output(
+        ["git", "branch", "--show-current"], text=True
+    ).strip()
 
-    async def run(self, initial_prompt):
-        """
-        Run the RALPH-loop until completion promise is detected or max iterations reached.
-        """
-        session = None
-        await self.client.start()
-        try:
-            session = await self.client.create_session(
-                SessionConfig(model="gpt-5.1-codex-mini")
-            )
-
-            try:
-                while self.iteration < self.max_iterations:
-                    self.iteration += 1
-                    print(f"\n=== Iteration {self.iteration}/{self.max_iterations} ===")
-
-                    current_prompt = self._build_iteration_prompt(initial_prompt)
-                    print(f"Sending prompt (length: {len(current_prompt)})...")
-
-                    result = await session.send_and_wait(
-                        MessageOptions(prompt=current_prompt),
-                        timeout=300,
-                    )
-
-                    self.last_response = result.data.content if result else ""
-
-                    # Display response summary
-                    summary = (
-                        self.last_response[:200] + "..."
-                        if len(self.last_response) > 200
-                        else self.last_response
-                    )
-                    print(f"Response: {summary}")
-
-                    # Check for completion promise
-                    if self.completion_promise in self.last_response:
-                        print(
-                            f"\n✓ Success! Completion promise detected: '{self.completion_promise}'"
-                        )
-                        return self.last_response
-
-                    print(
-                        f"Iteration {self.iteration} complete. Checking for next iteration..."
-                    )
-
-                raise RuntimeError(
-                    f"Maximum iterations ({self.max_iterations}) reached without "
-                    f"detecting completion promise: '{self.completion_promise}'"
-                )
-
-            except Exception as e:
-                print(f"\nError during RALPH-loop: {e}")
-                raise
-            finally:
-                if session is not None:
-                    await session.destroy()
-        finally:
-            await self.client.stop()
-
-    def _build_iteration_prompt(self, initial_prompt):
-        """Build the prompt for the current iteration, including previous output as context."""
-        if self.iteration == 1:
-            return initial_prompt
-
-        return f"""{initial_prompt}
-
-=== CONTEXT FROM PREVIOUS ITERATION ===
-{self.last_response}
-=== END CONTEXT ===
-
-Continue working on this task. Review the previous attempt and improve upon it."""
-
-
-async def main():
-    """Example usage demonstrating RALPH-loop."""
-    prompt = """You are iteratively building a small library. Follow these phases IN ORDER.
-Do NOT skip ahead — only do the current phase, then stop and wait for the next iteration.
-
-Phase 1: Design a DataValidator class that validates records against a schema.
-  - Schema defines field names, types (str, int, float, bool), and whether required.
-  - Return a list of validation errors per record.
-  - Show the class code only. Do NOT output COMPLETE.
-
-Phase 2: Write at least 4 unit tests covering: missing required field, wrong type,
-  valid record, and empty input. Show test code only. Do NOT output COMPLETE.
-
-Phase 3: Review the code from phases 1 and 2. Fix any bugs, add docstrings, and add
-  an extra edge-case test. Show the final consolidated code with all fixes.
-  When this phase is fully done, output the exact text: COMPLETE"""
-
-    loop = RalphLoop(max_iterations=5, completion_promise="COMPLETE")
+    print("━" * 40)
+    print(f"Mode:   {mode}")
+    print(f"Prompt: {prompt_file}")
+    print(f"Branch: {branch}")
+    print(f"Max:    {max_iterations} iterations")
+    print("━" * 40)
 
     try:
-        result = await loop.run(prompt)
-        print("\n=== FINAL RESULT ===")
-        print(result)
-    except RuntimeError as e:
-        print(f"\nTask did not complete: {e}")
-        if loop.last_response:
-            print(f"\nLast attempt:\n{loop.last_response}")
+        prompt = Path(prompt_file).read_text()
+
+        for i in range(1, max_iterations + 1):
+            print(f"\n=== Iteration {i}/{max_iterations} ===")
+
+            # Fresh session — each task gets full context budget
+            session = await client.create_session(
+                SessionConfig(model="claude-sonnet-4.5")
+            )
+            try:
+                await session.send_and_wait(
+                    MessageOptions(prompt=prompt), timeout=600
+                )
+            finally:
+                await session.destroy()
+
+            # Push changes after each iteration
+            try:
+                subprocess.run(
+                    ["git", "push", "origin", branch], check=True
+                )
+            except subprocess.CalledProcessError:
+                subprocess.run(
+                    ["git", "push", "-u", "origin", branch], check=True
+                )
+
+            print(f"\nIteration {i} complete.")
+
+        print(f"\nReached max iterations: {max_iterations}")
+    finally:
+        await client.stop()
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    args = sys.argv[1:]
+    mode = "plan" if "plan" in args else "build"
+    max_iter = next((int(a) for a in args if a.isdigit()), 50)
+    asyncio.run(ralph_loop(mode, max_iter))
