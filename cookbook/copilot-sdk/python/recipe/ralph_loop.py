@@ -25,55 +25,59 @@ class RalphLoop:
         """
         Run the RALPH-loop until completion promise is detected or max iterations reached.
         """
+        session = None
         await self.client.start()
-        session = await self.client.create_session(
-            SessionConfig(model="gpt-5.1-codex-mini")
-        )
-
         try:
-            while self.iteration < self.max_iterations:
-                self.iteration += 1
-                print(f"\n=== Iteration {self.iteration}/{self.max_iterations} ===")
-
-                current_prompt = self._build_iteration_prompt(initial_prompt)
-                print(f"Sending prompt (length: {len(current_prompt)})...")
-
-                result = await session.send_and_wait(
-                    MessageOptions(prompt=current_prompt),
-                    timeout=300,
-                )
-
-                self.last_response = result.data.content if result else ""
-
-                # Display response summary
-                summary = (
-                    self.last_response[:200] + "..."
-                    if len(self.last_response) > 200
-                    else self.last_response
-                )
-                print(f"Response: {summary}")
-
-                # Check for completion promise
-                if self.completion_promise in self.last_response:
-                    print(
-                        f"\n✓ Success! Completion promise detected: '{self.completion_promise}'"
-                    )
-                    return self.last_response
-
-                print(
-                    f"Iteration {self.iteration} complete. Checking for next iteration..."
-                )
-
-            raise RuntimeError(
-                f"Maximum iterations ({self.max_iterations}) reached without "
-                f"detecting completion promise: '{self.completion_promise}'"
+            session = await self.client.create_session(
+                SessionConfig(model="gpt-5.1-codex-mini")
             )
 
-        except Exception as e:
-            print(f"\nError during RALPH-loop: {e}")
-            raise
+            try:
+                while self.iteration < self.max_iterations:
+                    self.iteration += 1
+                    print(f"\n=== Iteration {self.iteration}/{self.max_iterations} ===")
+
+                    current_prompt = self._build_iteration_prompt(initial_prompt)
+                    print(f"Sending prompt (length: {len(current_prompt)})...")
+
+                    result = await session.send_and_wait(
+                        MessageOptions(prompt=current_prompt),
+                        timeout=300,
+                    )
+
+                    self.last_response = result.data.content if result else ""
+
+                    # Display response summary
+                    summary = (
+                        self.last_response[:200] + "..."
+                        if len(self.last_response) > 200
+                        else self.last_response
+                    )
+                    print(f"Response: {summary}")
+
+                    # Check for completion promise
+                    if self.completion_promise in self.last_response:
+                        print(
+                            f"\n✓ Success! Completion promise detected: '{self.completion_promise}'"
+                        )
+                        return self.last_response
+
+                    print(
+                        f"Iteration {self.iteration} complete. Checking for next iteration..."
+                    )
+
+                raise RuntimeError(
+                    f"Maximum iterations ({self.max_iterations}) reached without "
+                    f"detecting completion promise: '{self.completion_promise}'"
+                )
+
+            except Exception as e:
+                print(f"\nError during RALPH-loop: {e}")
+                raise
+            finally:
+                if session is not None:
+                    await session.destroy()
         finally:
-            await session.destroy()
             await self.client.stop()
 
     def _build_iteration_prompt(self, initial_prompt):

@@ -5,11 +5,9 @@ Implement self-referential feedback loops where an AI agent iteratively improves
 > **Runnable example:** [recipe/ralph_loop.py](recipe/ralph_loop.py)
 >
 > ```bash
-> cd python/recipe
-> pip install -r requirements.txt
+> cd recipe && pip install -r requirements.txt
 > python ralph_loop.py
 > ```
-
 ## What is RALPH-loop?
 
 RALPH-loop is a development methodology for iterative AI-powered task completion. Named after the Ralph Wiggum technique, it embodies the philosophy of persistent iteration:
@@ -21,13 +19,13 @@ RALPH-loop is a development methodology for iterative AI-powered task completion
 
 ## Example Scenario
 
-You need to iteratively improve code until all tests pass. Instead of asking Claude to "write perfect code," you use RALPH-loop to:
+You need to iteratively improve code until all tests pass. Instead of asking Copilot to "write perfect code," you use RALPH-loop to:
 
 1. Send the initial prompt with clear success criteria
-2. Claude writes code and tests
-3. Claude runs tests and sees failures
+2. Copilot writes code and tests
+3. Copilot runs tests and sees failures
 4. Loop automatically re-sends the prompt
-5. Claude reads test output and previous code, fixes issues
+5. Copilot reads test output and previous code, fixes issues
 6. Repeat until all tests pass and completion promise is output
 
 ## Basic Implementation

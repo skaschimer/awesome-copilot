@@ -5,8 +5,8 @@ Implement self-referential feedback loops where an AI agent iteratively improves
 > **Runnable example:** [recipe/ralph-loop.cs](recipe/ralph-loop.cs)
 >
 > ```bash
-> cd dotnet/recipe
-> dotnet run ralph-loop.cs
+> cd dotnet
+> dotnet run recipe/ralph-loop.cs
 > ```
 
 ## What is RALPH-loop?

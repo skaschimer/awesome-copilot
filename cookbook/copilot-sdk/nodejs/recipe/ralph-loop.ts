@@ -22,47 +22,54 @@ class RalphLoop {
      * Run the RALPH-loop until completion promise is detected or max iterations reached.
      */
     async run(initialPrompt: string): Promise<string> {
+        let session: Awaited<ReturnType<CopilotClient["createSession"]>> | null = null;
+
         await this.client.start();
-        const session = await this.client.createSession({
-            model: "gpt-5.1-codex-mini"
-        });
-
         try {
-            while (this.iteration < this.maxIterations) {
-                this.iteration++;
-                console.log(`\n=== Iteration ${this.iteration}/${this.maxIterations} ===`);
+            session = await this.client.createSession({
+                model: "gpt-5.1-codex-mini"
+            });
 
-                // Build the prompt for this iteration
-                const currentPrompt = this.buildIterationPrompt(initialPrompt);
-                console.log(`Sending prompt (length: ${currentPrompt.length})...`);
+            try {
+                while (this.iteration < this.maxIterations) {
+                    this.iteration++;
+                    console.log(`\n=== Iteration ${this.iteration}/${this.maxIterations} ===`);
 
-                const response = await session.sendAndWait({ prompt: currentPrompt }, 300_000);
-                this.lastResponse = response?.data.content || "";
+                    // Build the prompt for this iteration
+                    const currentPrompt = this.buildIterationPrompt(initialPrompt);
+                    console.log(`Sending prompt (length: ${currentPrompt.length})...`);
 
-                // Display response summary
-                const summary = this.lastResponse.length > 200
-                    ? this.lastResponse.substring(0, 200) + "..."
-                    : this.lastResponse;
-                console.log(`Response: ${summary}`);
+                    const response = await session.sendAndWait({ prompt: currentPrompt }, 300_000);
+                    this.lastResponse = response?.data.content || "";
 
-                // Check for completion promise
-                if (this.lastResponse.includes(this.completionPromise)) {
-                    console.log(`\n✓ Success! Completion promise detected: '${this.completionPromise}'`);
-                    return this.lastResponse;
+                    // Display response summary
+                    const summary = this.lastResponse.length > 200
+                        ? this.lastResponse.substring(0, 200) + "..."
+                        : this.lastResponse;
+                    console.log(`Response: ${summary}`);
+
+                    // Check for completion promise
+                    if (this.lastResponse.includes(this.completionPromise)) {
+                        console.log(`\n✓ Success! Completion promise detected: '${this.completionPromise}'`);
+                        return this.lastResponse;
+                    }
+
+                    console.log(`Iteration ${this.iteration} complete. Checking for next iteration...`);
                 }
 
-                console.log(`Iteration ${this.iteration} complete. Checking for next iteration...`);
+                // Max iterations reached without completion
+                throw new Error(
+                    `Maximum iterations (${this.maxIterations}) reached without detecting completion promise: '${this.completionPromise}'`
+                );
+            } catch (error) {
+                console.error(`\nError during RALPH-loop: ${error instanceof Error ? error.message : String(error)}`);
+                throw error;
+            } finally {
+                if (session) {
+                    await session.destroy();
+                }
             }
-
-            // Max iterations reached without completion
-            throw new Error(
-                `Maximum iterations (${this.maxIterations}) reached without detecting completion promise: '${this.completionPromise}'`
-            );
-        } catch (error) {
-            console.error(`\nError during RALPH-loop: ${error instanceof Error ? error.message : String(error)}`);
-            throw error;
         } finally {
-            await session.destroy();
             await this.client.stop();
         }
     }
