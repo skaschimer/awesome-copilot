@@ -1,0 +1,189 @@
+---
+title: 'GitHub Copilot Terminology Glossary'
+description: 'A quick reference guide defining common GitHub Copilot and platform-specific terms.'
+authors:
+  - GitHub Copilot Learning Hub Team
+lastUpdated: '2025-12-15'
+estimatedReadingTime: '8 minutes'
+tags:
+  - glossary
+  - terminology
+  - reference
+relatedArticles:
+  - ./what-are-agents-prompts-instructions.md
+  - ./copilot-configuration-basics.md
+---
+
+# GitHub Copilot Terminology Glossary
+
+New to GitHub Copilot customization? This glossary defines common terms you'll encounter while exploring agents, prompts, instructions, and related concepts in the Awesome GitHub Copilot ecosystem.
+
+Use this page as a quick reference when reading articles in the Learning Hub or browsing the repository.
+
+---
+
+## Core Concepts
+
+### Agent
+
+A specialized configuration file (`*.agent.md`) that defines a GitHub Copilot persona or assistant with specific expertise, tools, and behavior patterns. Agents integrate with MCP servers to provide enhanced capabilities for particular workflows (e.g., "Terraform Expert" or "Security Auditor").
+
+**When to use**: For recurring workflows that benefit from deep tooling integrations and persistent conversational context.
+
+**Learn more**: [What are Agents, Prompts, and Instructions](/learning-hub/what-are-agents-prompts-instructions/)
+
+---
+
+### Built-in Tool
+
+A native capability provided by GitHub Copilot without requiring additional configuration or MCP servers. Examples include code search, file editing, terminal command execution, and web search. Built-in tools are always available and don't require installation.
+
+**Related terms**: [Tools](#tools), [MCP](#mcp-model-context-protocol)
+
+---
+
+### Chat Mode
+
+**Deprecated terminology** - This term is no longer used. Use [Agent](#agent) instead.
+
+Previously, "chat mode" was an alternative term for [Agent](#agent) that described how GitHub Copilot Chat could be transformed into domain-specific assistants. The ecosystem has standardized on "Agent" as the preferred terminology.
+
+**See**: [Agent](#agent)
+
+---
+
+### Collection
+
+**Note**: Collections are a concept specific to the Awesome GitHub Copilot repository and are not part of standard GitHub Copilot terminology.
+
+A curated grouping of related prompts, instructions, and agents organized around a specific theme or workflow. Collections are defined in YAML files (`*.collection.yml`) in the `collections/` directory and help users discover related customizations together.
+
+**Example**: The "Awesome Copilot" collection bundles meta-prompts for discovering and generating GitHub Copilot customizations.
+
+**Learn more**: [Collections README](../../docs/README.collections.md)
+
+---
+
+### Custom Agent
+
+See [Agent](#agent). The term "custom" emphasizes that these are user-defined configurations rather than GitHub Copilot's default behavior. Custom agents can be created by anyone and shared via repositories like Awesome GitHub Copilot.
+
+---
+
+### Custom Instruction
+
+See [Instruction](#instruction). The term "custom" emphasizes that these are user-defined rules rather than GitHub Copilot's built-in understanding. Custom instructions are particularly useful for codifying team-specific standards and architectural decisions.
+
+---
+
+## Configuration & Metadata
+
+### Front Matter
+
+YAML metadata placed at the beginning of Markdown files (between `---` delimiters) that provides structured information about the file and controls its behavior. In this repository, front matter typically includes fields like `name`, `description`, `mode`, `model`, `tools`, and `applyTo`.
+
+The front matter is what controls:
+- **Tool access**: Which built-in and MCP tools the customization can use
+- **Model selection**: Which AI model powers the customization
+- **Scope**: Where the customization applies (e.g., `applyTo` patterns for instructions)
+
+**Note**: Not all fields are common across all customization types. Refer to the specific documentation for agents, prompts, or instructions to see which fields apply to each type.
+
+**Example**:
+```yaml
+---
+name: 'React Component Generator'
+description: 'Generate modern React components with TypeScript'
+mode: 'agent'
+tools: ['codebase']
+---
+```
+
+**Used in**: Prompts, agents, instructions, and Learning Hub articles.
+
+---
+
+### AGENTS.md
+
+An emerging industry standard file format for defining portable AI coding instructions that work across different AI coding tools (GitHub Copilot, Claude, Codex, and others). The `AGENTS.md` file, typically placed in a repository root or `.github/` directory, contains instructions for how AI assistants should interact with your codebase.
+
+Unlike tool-specific customization files (`.agent.md`, `.prompt.md`, `.instructions.md`), `AGENTS.md` aims to provide a standardized, platform-agnostic way to define AI behavior that can be consumed by multiple tools.
+
+**Key characteristics**:
+- Platform-agnostic format for cross-tool compatibility
+- Typically contains project context, coding standards, and architectural guidelines
+- Located at repository root or in `.github/` directory
+
+**Learn more**: [AGENTS.md Specification](https://agents.md/)
+
+**Related terms**: [Instruction](#instruction), [Front Matter](#front-matter)
+
+---
+
+### Instruction
+
+A configuration file (`*.instructions.md`) that provides persistent background context and coding standards that GitHub Copilot reads whenever working on matching files. Instructions contain style guides, framework-specific hints, and repository rules that help Copilot align with your engineering practices automatically.
+
+**When to use**: For long-lived guidance that applies across many sessions, like coding standards or compliance requirements.
+
+**Learn more**: [What are Agents, Prompts, and Instructions](/learning-hub/what-are-agents-prompts-instructions/), [Defining Custom Instructions](/learning-hub/defining-custom-instructions/)
+
+---
+
+## Prompts & Interactions
+
+### Persona
+
+The identity, tone, and behavioral characteristics defined for an [Agent](#agent). A well-crafted persona helps GitHub Copilot respond consistently and appropriately for specific domains or expertise areas.
+
+**Example**: A "Database Performance Expert" persona might prioritize query optimization and explain concepts using database-specific terminology.
+
+**Related terms**: [Agent](#agent)
+
+---
+
+### Prompt
+
+A reusable chat template (`*.prompt.md`) that captures a specific task or workflow. Prompts define the message content Copilot should execute and can include mode hints, model preferences, and tool recommendations. They're invoked using the `/` command in GitHub Copilot Chat.
+
+**Example**: `/create-readme` might execute a prompt that generates comprehensive README documentation.
+
+**When to use**: For standardizing how Copilot responds to recurring tasks without needing long-lived conversational state.
+
+**Learn more**: [What are Agents, Prompts, and Instructions](/learning-hub/what-are-agents-prompts-instructions/), [Creating Effective Prompts](/learning-hub/creating-effective-prompts/)
+
+---
+
+## Platform & Integration
+
+### MCP (Model Context Protocol)
+
+A standardized protocol for connecting AI assistants like GitHub Copilot to external data sources, tools, and services. MCP servers act as bridges, allowing Copilot to interact with APIs, databases, file systems, and other resources beyond its built-in capabilities.
+
+**Example**: An MCP server might provide access to your company's internal documentation, AWS resources, or a specific database system.
+
+**Learn more**: [Model Context Protocol](https://modelcontextprotocol.io/) | [MCP Specification](https://spec.modelcontextprotocol.io/)
+
+**Related terms**: [Tools](#tools), [Built-in Tool](#built-in-tool)
+
+---
+
+### Tools
+
+Capabilities that GitHub Copilot can invoke to perform actions or retrieve information. Tools fall into two categories:
+
+1. **Built-in tools**: Native capabilities like `codebase` (code search), `terminalCommand` (running commands), and `web` (web search)
+2. **MCP tools**: External integrations provided by MCP servers (e.g., database queries, cloud resource management, or API calls)
+
+Agents and prompts can specify which tools they require or recommend in their front matter.
+
+**Example front matter**:
+```yaml
+tools: ['codebase', 'terminalCommand', 'github']
+```
+
+**Related terms**: [MCP](#mcp-model-context-protocol), [Built-in Tool](#built-in-tool), [Agent](#agent)
+
+---
+
+**Have a term you'd like to see added?** Contributions are welcome! See our [Contributing Guidelines](../../CONTRIBUTING.md) for how to suggest additions to this glossary.
