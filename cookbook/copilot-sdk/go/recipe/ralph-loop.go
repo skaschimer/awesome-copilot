@@ -71,8 +71,8 @@ func ralphLoop(ctx context.Context, mode string, maxIterations int) error {
 
 		// Log tool usage for visibility
 		session.On(func(event copilot.Event) {
-			if te, ok := event.(copilot.ToolExecutionStartEvent); ok {
-				fmt.Printf("  ⚙ %s\n", te.Data.ToolName)
+			if toolExecution, ok := event.(copilot.ToolExecutionStartEvent); ok {
+				fmt.Printf("  ⚙ %s\n", toolExecution.Data.ToolName)
 			}
 		})
 

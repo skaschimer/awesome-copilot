@@ -1,5 +1,4 @@
 #:package GitHub.Copilot.SDK@*
-#:property PublishAot=false
 
 using GitHub.Copilot.SDK;
 
