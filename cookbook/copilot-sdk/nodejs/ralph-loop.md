@@ -49,7 +49,7 @@ class RalphLoop {
 
     async run(initialPrompt: string): Promise<string> {
         await this.client.start();
-        const session = await this.client.createSession({ model: "gpt-5" });
+        const session = await this.client.createSession({ model: "gpt-5.1-codex-mini" });
 
         try {
             while (this.iteration < this.maxIterations) {
@@ -115,7 +115,7 @@ class PersistentRalphLoop {
     async run(initialPrompt: string): Promise<string> {
         await fs.mkdir(this.workDir, { recursive: true });
         await this.client.start();
-        const session = await this.client.createSession({ model: "gpt-5" });
+        const session = await this.client.createSession({ model: "gpt-5.1-codex-mini" });
 
         try {
             // Store initial prompt

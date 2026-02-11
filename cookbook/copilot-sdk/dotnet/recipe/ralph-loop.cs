@@ -62,54 +62,63 @@ public class RalphLoop
     public async Task<string> RunAsync(string initialPrompt)
     {
         await _client.StartAsync();
-        var session = await _client.CreateSessionAsync(new SessionConfig 
-        { 
-            Model = "gpt-5.1-codex-mini"
-        });
 
         try
         {
-            while (_iteration < _maxIterations)
-            {
-                _iteration++;
-                Console.WriteLine($"\n=== Iteration {_iteration}/{_maxIterations} ===");
+            var session = await _client.CreateSessionAsync(new SessionConfig 
+            { 
+                Model = "gpt-5.1-codex-mini"
+            });
 
+            try
+            {
                 var done = new TaskCompletionSource<string>();
                 session.On(evt =>
                 {
                     if (evt is AssistantMessageEvent msg)
                     {
                         _lastResponse = msg.Data.Content;
-                        done.SetResult(msg.Data.Content);
+                        done.TrySetResult(msg.Data.Content);
                     }
                 });
 
-                var currentPrompt = BuildIterationPrompt(initialPrompt);
-                Console.WriteLine($"Sending prompt (length: {currentPrompt.Length})...");
-
-                await session.SendAsync(new MessageOptions { Prompt = currentPrompt });
-                var response = await done.Task;
-
-                var summary = response.Length > 200 
-                    ? response.Substring(0, 200) + "..." 
-                    : response;
-                Console.WriteLine($"Response: {summary}");
-
-                if (response.Contains(_completionPromise))
+                while (_iteration < _maxIterations)
                 {
-                    Console.WriteLine($"\n✓ Completion promise detected: '{_completionPromise}'");
-                    return response;
+                    _iteration++;
+                    Console.WriteLine($"\n=== Iteration {_iteration}/{_maxIterations} ===");
+
+                    done = new TaskCompletionSource<string>();
+
+                    var currentPrompt = BuildIterationPrompt(initialPrompt);
+                    Console.WriteLine($"Sending prompt (length: {currentPrompt.Length})...");
+
+                    await session.SendAsync(new MessageOptions { Prompt = currentPrompt });
+                    var response = await done.Task;
+
+                    var summary = response.Length > 200 
+                        ? response.Substring(0, 200) + "..." 
+                        : response;
+                    Console.WriteLine($"Response: {summary}");
+
+                    if (response.Contains(_completionPromise))
+                    {
+                        Console.WriteLine($"\n✓ Completion promise detected: '{_completionPromise}'");
+                        return response;
+                    }
+
+                    Console.WriteLine($"Iteration {_iteration} complete. Continuing...");
                 }
 
-                Console.WriteLine($"Iteration {_iteration} complete. Continuing...");
+                throw new InvalidOperationException(
+                    $"Max iterations ({_maxIterations}) reached without completion promise: '{_completionPromise}'");
             }
-
-            throw new InvalidOperationException(
-                $"Max iterations ({_maxIterations}) reached without completion promise: '{_completionPromise}'");
+            finally
+            {
+                await session.DisposeAsync();
+            }
         }
         finally
         {
-            await session.DisposeAsync();
             await _client.StopAsync();
         }
     }
