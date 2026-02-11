@@ -4,10 +4,14 @@ Build autonomous coding loops where an AI agent picks tasks, implements them, va
 
 > **Runnable example:** [recipe/ralph_loop.py](recipe/ralph_loop.py)
 >
+> From the repository root, install dependencies and run:
+>
 > ```bash
-> cd recipe && pip install -r requirements.txt
-> python ralph_loop.py
+> pip install -r cookbook/copilot-sdk/python/recipe/requirements.txt
+> python cookbook/copilot-sdk/python/recipe/ralph_loop.py
 > ```
+>
+> Make sure `PROMPT_build.md` and `PROMPT_plan.md` exist in your current working directory before running the loop.
 
 ## What is a Ralph Loop?
 

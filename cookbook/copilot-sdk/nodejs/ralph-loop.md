@@ -5,8 +5,8 @@ Build autonomous coding loops where an AI agent picks tasks, implements them, va
 > **Runnable example:** [recipe/ralph-loop.ts](recipe/ralph-loop.ts)
 >
 > ```bash
-> cd recipe && npm install
-> npx tsx ralph-loop.ts
+> npm install
+> npx tsx recipe/ralph-loop.ts
 > ```
 
 ## What is a Ralph Loop?

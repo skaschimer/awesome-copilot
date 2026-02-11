@@ -39,7 +39,10 @@ func ralphLoop(ctx context.Context, mode string, maxIterations int) error {
 	}
 	defer client.Stop()
 
-	cwd, _ := os.Getwd()
+	cwd, err := os.Getwd()
+	if err != nil {
+		return fmt.Errorf("failed to get working directory: %w", err)
+	}
 
 	fmt.Println(strings.Repeat("━", 40))
 	fmt.Printf("Mode:   %s\n", mode)
@@ -76,7 +79,9 @@ func ralphLoop(ctx context.Context, mode string, maxIterations int) error {
 		_, err = session.SendAndWait(ctx, copilot.MessageOptions{
 			Prompt: string(prompt),
 		})
-		session.Destroy()
+		if destroyErr := session.Destroy(); destroyErr != nil {
+			log.Printf("failed to destroy session on iteration %d: %v", i, destroyErr)
+		}
 		if err != nil {
 			return fmt.Errorf("send failed on iteration %d: %w", i, err)
 		}

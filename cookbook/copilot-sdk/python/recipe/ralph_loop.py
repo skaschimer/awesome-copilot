@@ -55,11 +55,11 @@ async def ralph_loop(mode: str = "build", max_iterations: int = 50):
             ))
 
             # Log tool usage for visibility
-            session.on(lambda event:
-                print(f"  ⚙ {event.data.tool_name}")
-                if event.type.value == "tool.execution_start" else None
-            )
+            def log_tool_event(event):
+                if event.type.value == "tool.execution_start":
+                    print(f"  ⚙ {event.data.tool_name}")
 
+            session.on(log_tool_event)
             try:
                 await session.send_and_wait(
                     MessageOptions(prompt=prompt), timeout=600
