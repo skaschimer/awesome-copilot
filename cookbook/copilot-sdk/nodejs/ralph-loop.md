@@ -39,35 +39,35 @@ A [Ralph loop](https://ghuntley.com/ralph/) is an autonomous development workflo
 
 ## Simple Version
 
-The minimal Ralph loop — the SDK equivalent of `while :; do cat PROMPT.md | claude ; done`:
+The minimal Ralph loop — the SDK equivalent of `while :; do cat PROMPT.md | copilot ; done`:
 
 ```typescript
 import { readFile } from "fs/promises";
 import { CopilotClient } from "@github/copilot-sdk";
 
 async function ralphLoop(promptFile: string, maxIterations: number = 50) {
-    const client = new CopilotClient();
-    await client.start();
+  const client = new CopilotClient();
+  await client.start();
 
-    try {
-        const prompt = await readFile(promptFile, "utf-8");
+  try {
+    const prompt = await readFile(promptFile, "utf-8");
 
-        for (let i = 1; i <= maxIterations; i++) {
-            console.log(`\n=== Iteration ${i}/${maxIterations} ===`);
+    for (let i = 1; i <= maxIterations; i++) {
+      console.log(`\n=== Iteration ${i}/${maxIterations} ===`);
 
-            // Fresh session each iteration — context isolation is the point
-            const session = await client.createSession({ model: "gpt-5.1-codex-mini" });
-            try {
-                await session.sendAndWait({ prompt }, 600_000);
-            } finally {
-                await session.destroy();
-            }
+      // Fresh session each iteration — context isolation is the point
+      const session = await client.createSession({ model: "gpt-5.1-codex-mini" });
+      try {
+        await session.sendAndWait({ prompt }, 600_000);
+      } finally {
+        await session.destroy();
+      }
 
-            console.log(`Iteration ${i} complete.`);
-        }
-    } finally {
-        await client.stop();
+      console.log(`Iteration ${i} complete.`);
     }
+  } finally {
+    await client.stop();
+  }
 }
 
 // Usage: point at your PROMPT.md
@@ -87,50 +87,50 @@ import { CopilotClient } from "@github/copilot-sdk";
 type Mode = "plan" | "build";
 
 async function ralphLoop(mode: Mode, maxIterations: number = 50) {
-    const promptFile = mode === "plan" ? "PROMPT_plan.md" : "PROMPT_build.md";
-    const client = new CopilotClient();
-    await client.start();
+  const promptFile = mode === "plan" ? "PROMPT_plan.md" : "PROMPT_build.md";
+  const client = new CopilotClient();
+  await client.start();
 
-    console.log(`Mode: ${mode} | Prompt: ${promptFile}`);
+  console.log(`Mode: ${mode} | Prompt: ${promptFile}`);
 
-    try {
-        const prompt = await readFile(promptFile, "utf-8");
+  try {
+    const prompt = await readFile(promptFile, "utf-8");
 
-        for (let i = 1; i <= maxIterations; i++) {
-            console.log(`\n=== Iteration ${i}/${maxIterations} ===`);
+    for (let i = 1; i <= maxIterations; i++) {
+      console.log(`\n=== Iteration ${i}/${maxIterations} ===`);
 
-            const session = await client.createSession({
-                model: "gpt-5.1-codex-mini",
-                // Pin the agent to the project directory
-                workingDirectory: process.cwd(),
-                // Auto-approve tool calls for unattended operation
-                onPermissionRequest: async () => ({ allow: true }),
-            });
+      const session = await client.createSession({
+        model: "gpt-5.1-codex-mini",
+        // Pin the agent to the project directory
+        workingDirectory: process.cwd(),
+        // Auto-approve tool calls for unattended operation
+        onPermissionRequest: async () => ({ allow: true }),
+      });
 
-            // Log tool usage for visibility
-            session.on((event) => {
-                if (event.type === "tool.execution_start") {
-                    console.log(`  ⚙ ${event.data.toolName}`);
-                }
-            });
-
-            try {
-                await session.sendAndWait({ prompt }, 600_000);
-            } finally {
-                await session.destroy();
-            }
-
-            console.log(`Iteration ${i} complete.`);
+      // Log tool usage for visibility
+      session.on((event) => {
+        if (event.type === "tool.execution_start") {
+          console.log(`  ⚙ ${event.data.toolName}`);
         }
-    } finally {
-        await client.stop();
+      });
+
+      try {
+        await session.sendAndWait({ prompt }, 600_000);
+      } finally {
+        await session.destroy();
+      }
+
+      console.log(`Iteration ${i} complete.`);
     }
+  } finally {
+    await client.stop();
+  }
 }
 
 // Parse CLI args: npx tsx ralph-loop.ts [plan] [max_iterations]
 const args = process.argv.slice(2);
 const mode: Mode = args.includes("plan") ? "plan" : "build";
-const maxArg = args.find(a => /^\d+$/.test(a));
+const maxArg = args.find((a) => /^\d+$/.test(a));
 const maxIterations = maxArg ? parseInt(maxArg) : 50;
 
 ralphLoop(mode, maxIterations);
@@ -182,9 +182,9 @@ creating ad-hoc copies.
 4. When tests pass, update IMPLEMENTATION_PLAN.md, then `git add -A`
    then `git commit` with a descriptive message.
 
-99999. When authoring documentation, capture the why.
-999999. Implement completely. No placeholders or stubs.
-9999999. Keep IMPLEMENTATION_PLAN.md current — future iterations depend on it.
+5. When authoring documentation, capture the why.
+6. Implement completely. No placeholders or stubs.
+7. Keep IMPLEMENTATION_PLAN.md current — future iterations depend on it.
 ```
 
 ### Example `AGENTS.md`
@@ -219,12 +219,14 @@ npm run build
 ## When to Use a Ralph Loop
 
 **Good for:**
+
 - Implementing features from specs with test-driven validation
 - Large refactors broken into many small tasks
 - Unattended, long-running development with clear requirements
 - Any work where backpressure (tests/builds) can verify correctness
 
 **Not good for:**
+
 - Tasks requiring human judgment mid-loop
 - One-shot operations that don't benefit from iteration
 - Vague requirements without testable acceptance criteria

@@ -39,7 +39,7 @@ A [Ralph loop](https://ghuntley.com/ralph/) is an autonomous development workflo
 
 ## Simple Version
 
-The minimal Ralph loop — the SDK equivalent of `while :; do cat PROMPT.md | claude ; done`:
+The minimal Ralph loop — the SDK equivalent of `while :; do cat PROMPT.md | copilot ; done`:
 
 ```go
 package main
@@ -241,9 +241,9 @@ creating ad-hoc copies.
 4. When tests pass, update IMPLEMENTATION_PLAN.md, then `git add -A`
    then `git commit` with a descriptive message.
 
-99999. When authoring documentation, capture the why.
-999999. Implement completely. No placeholders or stubs.
-9999999. Keep IMPLEMENTATION_PLAN.md current — future iterations depend on it.
+5. When authoring documentation, capture the why.
+6. Implement completely. No placeholders or stubs.
+7. Keep IMPLEMENTATION_PLAN.md current — future iterations depend on it.
 ```
 
 ### Example `AGENTS.md`
@@ -277,12 +277,14 @@ go build ./...
 ## When to Use a Ralph Loop
 
 **Good for:**
+
 - Implementing features from specs with test-driven validation
 - Large refactors broken into many small tasks
 - Unattended, long-running development with clear requirements
 - Any work where backpressure (tests/builds) can verify correctness
 
 **Not good for:**
+
 - Tasks requiring human judgment mid-loop
 - One-shot operations that don't benefit from iteration
 - Vague requirements without testable acceptance criteria
