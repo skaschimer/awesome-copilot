@@ -87,4 +87,4 @@ go run <filename>.go
 
 ## Status
 
-Cookbook structure is complete with 6 recipes across all 4 supported languages. Each recipe includes both markdown documentation and runnable examples. The RALPH-loop recipe demonstrates iterative self-referential AI loops for autonomous task completion.
+Cookbook structure is complete with 6 recipes across all 4 supported languages. Each recipe includes both markdown documentation and runnable examples.
