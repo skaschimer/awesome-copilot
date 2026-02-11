@@ -98,6 +98,20 @@ const currentSlug = Astro.url.pathname.replace(/\/$/, '').split('/').pop();
                 ))}
               </ul>
             </div>
+            <div class="sidebar-section">
+              <h3>Hands-on</h3>
+              <ul class="sidebar-nav-list">
+                <li>
+                  <a
+                    href={`${base}learning-hub/cookbook/`}
+                    class={currentSlug === 'cookbook' ? 'active' : ''}
+                    aria-current={currentSlug === 'cookbook' ? 'page' : undefined}
+                  >
+                    Cookbook
+                  </a>
+                </li>
+              </ul>
+            </div>
           </nav>
           <article class="article-content">
             <slot />
