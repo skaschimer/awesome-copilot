@@ -56,7 +56,7 @@ async function ralphLoop(promptFile: string, maxIterations: number = 50) {
             console.log(`\n=== Iteration ${i}/${maxIterations} ===`);
 
             // Fresh session each iteration — context isolation is the point
-            const session = await client.createSession({ model: "claude-sonnet-4.5" });
+            const session = await client.createSession({ model: "gpt-5.1-codex-mini" });
             try {
                 await session.sendAndWait({ prompt }, 600_000);
             } finally {
@@ -100,7 +100,7 @@ async function ralphLoop(mode: Mode, maxIterations: number = 50) {
             console.log(`\n=== Iteration ${i}/${maxIterations} ===`);
 
             const session = await client.createSession({
-                model: "claude-sonnet-4.5",
+                model: "gpt-5.1-codex-mini",
                 // Pin the agent to the project directory
                 workingDirectory: process.cwd(),
                 // Auto-approve tool calls for unattended operation

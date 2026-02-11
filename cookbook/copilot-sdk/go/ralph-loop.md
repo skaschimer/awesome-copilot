@@ -70,7 +70,7 @@ func ralphLoop(ctx context.Context, promptFile string, maxIterations int) error 
 
 		// Fresh session each iteration — context isolation is the point
 		session, err := client.CreateSession(ctx, &copilot.SessionConfig{
-			Model: "claude-sonnet-4.5",
+			Model: "gpt-5.1-codex-mini",
 		})
 		if err != nil {
 			return err
@@ -145,7 +145,7 @@ func ralphLoop(ctx context.Context, mode string, maxIterations int) error {
 		fmt.Printf("\n=== Iteration %d/%d ===\n", i, maxIterations)
 
 		session, err := client.CreateSession(ctx, &copilot.SessionConfig{
-			Model:            "claude-sonnet-4.5",
+			Model:            "gpt-5.1-codex-mini",
 			WorkingDirectory: cwd,
 			OnPermissionRequest: func(_ copilot.PermissionRequest, _ map[string]string) copilot.PermissionRequestResult {
 				return copilot.PermissionRequestResult{Kind: "approved"}

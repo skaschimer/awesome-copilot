@@ -40,7 +40,7 @@ async function ralphLoop(mode: Mode, maxIterations: number) {
             console.log(`\n=== Iteration ${i}/${maxIterations} ===`);
 
             const session = await client.createSession({
-                model: "claude-sonnet-4.5",
+                model: "gpt-5.1-codex-mini",
                 // Pin the agent to the project directory
                 workingDirectory: process.cwd(),
                 // Auto-approve tool calls for unattended operation

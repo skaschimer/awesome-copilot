@@ -45,7 +45,7 @@ try
         var session = await client.CreateSessionAsync(
             new SessionConfig
             {
-                Model = "claude-sonnet-4.5",
+                Model = "gpt-5.1-codex-mini",
                 // Pin the agent to the project directory
                 WorkingDirectory = Environment.CurrentDirectory,
                 // Auto-approve tool calls for unattended operation
