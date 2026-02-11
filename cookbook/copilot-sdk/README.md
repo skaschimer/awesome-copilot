@@ -6,6 +6,7 @@ This cookbook collects small, focused recipes showing how to accomplish common t
 
 ### .NET (C#)
 
+- [RALPH-loop](dotnet/ralph-loop.md): Implement iterative self-referential AI loops for task completion with automatic retries.
 - [Error Handling](dotnet/error-handling.md): Handle errors gracefully including connection failures, timeouts, and cleanup.
 - [Multiple Sessions](dotnet/multiple-sessions.md): Manage multiple independent conversations simultaneously.
 - [Managing Local Files](dotnet/managing-local-files.md): Organize files by metadata using AI-powered grouping strategies.
@@ -14,6 +15,7 @@ This cookbook collects small, focused recipes showing how to accomplish common t
 
 ### Node.js / TypeScript
 
+- [RALPH-loop](nodejs/ralph-loop.md): Implement iterative self-referential AI loops for task completion with automatic retries.
 - [Error Handling](nodejs/error-handling.md): Handle errors gracefully including connection failures, timeouts, and cleanup.
 - [Multiple Sessions](nodejs/multiple-sessions.md): Manage multiple independent conversations simultaneously.
 - [Managing Local Files](nodejs/managing-local-files.md): Organize files by metadata using AI-powered grouping strategies.
@@ -22,6 +24,7 @@ This cookbook collects small, focused recipes showing how to accomplish common t
 
 ### Python
 
+- [RALPH-loop](python/ralph-loop.md): Implement iterative self-referential AI loops for task completion with automatic retries.
 - [Error Handling](python/error-handling.md): Handle errors gracefully including connection failures, timeouts, and cleanup.
 - [Multiple Sessions](python/multiple-sessions.md): Manage multiple independent conversations simultaneously.
 - [Managing Local Files](python/managing-local-files.md): Organize files by metadata using AI-powered grouping strategies.
@@ -30,6 +33,7 @@ This cookbook collects small, focused recipes showing how to accomplish common t
 
 ### Go
 
+- [RALPH-loop](go/ralph-loop.md): Implement iterative self-referential AI loops for task completion with automatic retries.
 - [Error Handling](go/error-handling.md): Handle errors gracefully including connection failures, timeouts, and cleanup.
 - [Multiple Sessions](go/multiple-sessions.md): Manage multiple independent conversations simultaneously.
 - [Managing Local Files](go/managing-local-files.md): Organize files by metadata using AI-powered grouping strategies.
@@ -83,4 +87,4 @@ go run <filename>.go
 
 ## Status
 
-Cookbook structure is complete with 4 recipes across all 4 supported languages. Each recipe includes both markdown documentation and runnable examples.
+Cookbook structure is complete with 5 recipes across all 4 supported languages. Each recipe includes both markdown documentation and runnable examples. The RALPH-loop recipe demonstrates iterative self-referential AI loops for autonomous task completion.
