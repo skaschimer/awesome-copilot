@@ -119,13 +119,24 @@ try
 
         // Fresh session — each task gets full context budget
         var session = await client.CreateSessionAsync(
-            new SessionConfig { Model = "claude-sonnet-4.5" });
+            new SessionConfig
+            {
+                Model = "claude-sonnet-4.5",
+                // Pin the agent to the project directory
+                WorkingDirectory = Environment.CurrentDirectory,
+                // Auto-approve tool calls for unattended operation
+                OnPermissionRequest = (_, _) => Task.FromResult(
+                    new PermissionRequestResult { Kind = "approved" }),
+            });
         try
         {
             var done = new TaskCompletionSource<string>();
             session.On(evt =>
             {
-                if (evt is AssistantMessageEvent msg)
+                // Log tool usage for visibility
+                if (evt is ToolExecutionStartEvent toolStart)
+                    Console.WriteLine($"  ⚙ {toolStart.Data.ToolName}");
+                else if (evt is AssistantMessageEvent msg)
                     done.TrySetResult(msg.Data.Content);
             });
 
@@ -224,6 +235,8 @@ dotnet build
 6. **The plan is disposable**: If the agent goes off track, delete `IMPLEMENTATION_PLAN.md` and re-plan
 7. **Keep `AGENTS.md` brief**: It's loaded every iteration — operational info only, no progress notes
 8. **Use a sandbox**: The agent runs autonomously with full tool access — isolate it
+9. **Set `WorkingDirectory`**: Pin the session to your project root so tool operations resolve paths correctly
+10. **Auto-approve permissions**: Use `OnPermissionRequest` to allow tool calls without interrupting the loop
 
 ## When to Use a Ralph Loop
 
@@ -238,3 +251,8 @@ dotnet build
 - One-shot operations that don't benefit from iteration
 - Vague requirements without testable acceptance criteria
 - Exploratory prototyping where direction isn't clear
+
+## See Also
+
+- [Error Handling](error-handling.md) — timeout patterns and graceful shutdown for long-running sessions
+- [Persisting Sessions](persisting-sessions.md) — save and resume sessions across restarts

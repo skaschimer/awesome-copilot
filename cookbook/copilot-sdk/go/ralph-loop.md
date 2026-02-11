@@ -111,6 +111,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
 
 	copilot "github.com/github/copilot-sdk/go"
 )
@@ -127,6 +128,8 @@ func ralphLoop(ctx context.Context, mode string, maxIterations int) error {
 	}
 	defer client.Stop()
 
+	cwd, _ := os.Getwd()
+
 	fmt.Println(strings.Repeat("━", 40))
 	fmt.Printf("Mode:   %s\n", mode)
 	fmt.Printf("Prompt: %s\n", promptFile)
@@ -141,13 +144,23 @@ func ralphLoop(ctx context.Context, mode string, maxIterations int) error {
 	for i := 1; i <= maxIterations; i++ {
 		fmt.Printf("\n=== Iteration %d/%d ===\n", i, maxIterations)
 
-		// Fresh session — each task gets full context budget
 		session, err := client.CreateSession(ctx, &copilot.SessionConfig{
-			Model: "claude-sonnet-4.5",
+			Model:            "claude-sonnet-4.5",
+			WorkingDirectory: cwd,
+			OnPermissionRequest: func(_ copilot.PermissionRequest, _ map[string]string) copilot.PermissionRequestResult {
+				return copilot.PermissionRequestResult{Kind: "approved"}
+			},
 		})
 		if err != nil {
 			return err
 		}
+
+		// Log tool usage for visibility
+		session.On(func(event copilot.Event) {
+			if te, ok := event.(copilot.ToolExecutionStartEvent); ok {
+				fmt.Printf("  ⚙ %s\n", te.Data.ToolName)
+			}
+		})
 
 		_, err = session.SendAndWait(ctx, copilot.MessageOptions{
 			Prompt: string(prompt),
@@ -258,6 +271,8 @@ go build ./...
 6. **The plan is disposable**: If the agent goes off track, delete `IMPLEMENTATION_PLAN.md` and re-plan
 7. **Keep `AGENTS.md` brief**: It's loaded every iteration — operational info only, no progress notes
 8. **Use a sandbox**: The agent runs autonomously with full tool access — isolate it
+9. **Set `WorkingDirectory`**: Pin the session to your project root so tool operations resolve paths correctly
+10. **Auto-approve permissions**: Use `OnPermissionRequest` to allow tool calls without interrupting the loop
 
 ## When to Use a Ralph Loop
 
@@ -272,3 +287,8 @@ go build ./...
 - One-shot operations that don't benefit from iteration
 - Vague requirements without testable acceptance criteria
 - Exploratory prototyping where direction isn't clear
+
+## See Also
+
+- [Error Handling](error-handling.md) — timeout patterns and graceful shutdown for long-running sessions
+- [Persisting Sessions](persisting-sessions.md) — save and resume sessions across restarts

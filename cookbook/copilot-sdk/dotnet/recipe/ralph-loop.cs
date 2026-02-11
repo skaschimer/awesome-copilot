@@ -43,14 +43,25 @@ try
 
         // Fresh session — each task gets full context budget
         var session = await client.CreateSessionAsync(
-            new SessionConfig { Model = "claude-sonnet-4.5" });
+            new SessionConfig
+            {
+                Model = "claude-sonnet-4.5",
+                // Pin the agent to the project directory
+                WorkingDirectory = Environment.CurrentDirectory,
+                // Auto-approve tool calls for unattended operation
+                OnPermissionRequest = (_, _) => Task.FromResult(
+                    new PermissionRequestResult { Kind = "approved" }),
+            });
 
         try
         {
             var done = new TaskCompletionSource<string>();
             session.On(evt =>
             {
-                if (evt is AssistantMessageEvent msg)
+                // Log tool usage for visibility
+                if (evt is ToolExecutionStartEvent toolStart)
+                    Console.WriteLine($"  ⚙ {toolStart.Data.ToolName}");
+                else if (evt is AssistantMessageEvent msg)
                     done.TrySetResult(msg.Data.Content);
             });
 

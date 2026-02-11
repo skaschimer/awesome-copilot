@@ -43,10 +43,23 @@ async def ralph_loop(mode: str = "build", max_iterations: int = 50):
         for i in range(1, max_iterations + 1):
             print(f"\n=== Iteration {i}/{max_iterations} ===")
 
-            # Fresh session — each task gets full context budget
-            session = await client.create_session(
-                SessionConfig(model="claude-sonnet-4.5")
+            session = await client.create_session(SessionConfig(
+                model="claude-sonnet-4.5",
+                # Pin the agent to the project directory
+                working_directory=str(Path.cwd()),
+                # Auto-approve tool calls for unattended operation
+                on_permission_request=lambda _req, _ctx: {
+                    "kind": "approved",
+                    "rules": [],
+                },
+            ))
+
+            # Log tool usage for visibility
+            session.on(lambda event:
+                print(f"  ⚙ {event.data.tool_name}")
+                if event.type.value == "tool.execution_start" else None
             )
+
             try:
                 await session.send_and_wait(
                     MessageOptions(prompt=prompt), timeout=600

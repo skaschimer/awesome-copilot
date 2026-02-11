@@ -99,8 +99,21 @@ async function ralphLoop(mode: Mode, maxIterations: number = 50) {
         for (let i = 1; i <= maxIterations; i++) {
             console.log(`\n=== Iteration ${i}/${maxIterations} ===`);
 
-            // Fresh session — each task gets full context budget
-            const session = await client.createSession({ model: "claude-sonnet-4.5" });
+            const session = await client.createSession({
+                model: "claude-sonnet-4.5",
+                // Pin the agent to the project directory
+                workingDirectory: process.cwd(),
+                // Auto-approve tool calls for unattended operation
+                onPermissionRequest: async () => ({ allow: true }),
+            });
+
+            // Log tool usage for visibility
+            session.on((event) => {
+                if (event.type === "tool.execution_start") {
+                    console.log(`  ⚙ ${event.data.toolName}`);
+                }
+            });
+
             try {
                 await session.sendAndWait({ prompt }, 600_000);
             } finally {
@@ -200,6 +213,8 @@ npm run build
 6. **The plan is disposable**: If the agent goes off track, delete `IMPLEMENTATION_PLAN.md` and re-plan
 7. **Keep `AGENTS.md` brief**: It's loaded every iteration — operational info only, no progress notes
 8. **Use a sandbox**: The agent runs autonomously with full tool access — isolate it
+9. **Set `workingDirectory`**: Pin the session to your project root so tool operations resolve paths correctly
+10. **Auto-approve permissions**: Use `onPermissionRequest` to allow tool calls without interrupting the loop
 
 ## When to Use a Ralph Loop
 
@@ -214,3 +229,8 @@ npm run build
 - One-shot operations that don't benefit from iteration
 - Vague requirements without testable acceptance criteria
 - Exploratory prototyping where direction isn't clear
+
+## See Also
+
+- [Error Handling](error-handling.md) — timeout patterns and graceful shutdown for long-running sessions
+- [Persisting Sessions](persisting-sessions.md) — save and resume sessions across restarts

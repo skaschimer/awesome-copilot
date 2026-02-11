@@ -108,10 +108,20 @@ async def ralph_loop(mode: str = "build", max_iterations: int = 50):
         for i in range(1, max_iterations + 1):
             print(f"\n=== Iteration {i}/{max_iterations} ===")
 
-            # Fresh session — each task gets full context budget
-            session = await client.create_session(
-                SessionConfig(model="claude-sonnet-4.5")
+            session = await client.create_session(SessionConfig(
+                model="claude-sonnet-4.5",
+                # Pin the agent to the project directory
+                working_directory=str(Path.cwd()),
+                # Auto-approve tool calls for unattended operation
+                on_permission_request=lambda _req, _ctx: {"kind": "approved", "rules": []},
+            ))
+
+            # Log tool usage for visibility
+            session.on(lambda event:
+                print(f"  ⚙ {event.data.tool_name}")
+                if event.type.value == "tool.execution_start" else None
             )
+
             try:
                 await session.send_and_wait(
                     MessageOptions(prompt=prompt), timeout=600
@@ -210,6 +220,8 @@ python -m pytest
 6. **The plan is disposable**: If the agent goes off track, delete `IMPLEMENTATION_PLAN.md` and re-plan
 7. **Keep `AGENTS.md` brief**: It's loaded every iteration — operational info only, no progress notes
 8. **Use a sandbox**: The agent runs autonomously with full tool access — isolate it
+9. **Set `working_directory`**: Pin the session to your project root so tool operations resolve paths correctly
+10. **Auto-approve permissions**: Use `on_permission_request` to allow tool calls without interrupting the loop
 
 ## When to Use a Ralph Loop
 
@@ -224,3 +236,8 @@ python -m pytest
 - One-shot operations that don't benefit from iteration
 - Vague requirements without testable acceptance criteria
 - Exploratory prototyping where direction isn't clear
+
+## See Also
+
+- [Error Handling](error-handling.md) — timeout patterns and graceful shutdown for long-running sessions
+- [Persisting Sessions](persisting-sessions.md) — save and resume sessions across restarts

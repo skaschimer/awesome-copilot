@@ -39,6 +39,8 @@ func ralphLoop(ctx context.Context, mode string, maxIterations int) error {
 	}
 	defer client.Stop()
 
+	cwd, _ := os.Getwd()
+
 	fmt.Println(strings.Repeat("━", 40))
 	fmt.Printf("Mode:   %s\n", mode)
 	fmt.Printf("Prompt: %s\n", promptFile)
@@ -53,13 +55,23 @@ func ralphLoop(ctx context.Context, mode string, maxIterations int) error {
 	for i := 1; i <= maxIterations; i++ {
 		fmt.Printf("\n=== Iteration %d/%d ===\n", i, maxIterations)
 
-		// Fresh session — each task gets full context budget
 		session, err := client.CreateSession(ctx, &copilot.SessionConfig{
-			Model: "claude-sonnet-4.5",
+			Model:            "claude-sonnet-4.5",
+			WorkingDirectory: cwd,
+			OnPermissionRequest: func(_ copilot.PermissionRequest, _ map[string]string) copilot.PermissionRequestResult {
+				return copilot.PermissionRequestResult{Kind: "approved"}
+			},
 		})
 		if err != nil {
 			return fmt.Errorf("failed to create session: %w", err)
 		}
+
+		// Log tool usage for visibility
+		session.On(func(event copilot.Event) {
+			if te, ok := event.(copilot.ToolExecutionStartEvent); ok {
+				fmt.Printf("  ⚙ %s\n", te.Data.ToolName)
+			}
+		})
 
 		_, err = session.SendAndWait(ctx, copilot.MessageOptions{
 			Prompt: string(prompt),

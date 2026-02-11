@@ -39,9 +39,19 @@ async function ralphLoop(mode: Mode, maxIterations: number) {
         for (let i = 1; i <= maxIterations; i++) {
             console.log(`\n=== Iteration ${i}/${maxIterations} ===`);
 
-            // Fresh session — each task gets full context budget
             const session = await client.createSession({
                 model: "claude-sonnet-4.5",
+                // Pin the agent to the project directory
+                workingDirectory: process.cwd(),
+                // Auto-approve tool calls for unattended operation
+                onPermissionRequest: async () => ({ allow: true }),
+            });
+
+            // Log tool usage for visibility
+            session.on((event) => {
+                if (event.type === "tool.execution_start") {
+                    console.log(`  ⚙ ${event.data.toolName}`);
+                }
             });
 
             try {
