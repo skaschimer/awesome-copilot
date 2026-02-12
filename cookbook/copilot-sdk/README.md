@@ -12,6 +12,7 @@ This cookbook collects small, focused recipes showing how to accomplish common t
 - [Managing Local Files](dotnet/managing-local-files.md): Organize files by metadata using AI-powered grouping strategies.
 - [PR Visualization](dotnet/pr-visualization.md): Generate interactive PR age charts using GitHub MCP Server.
 - [Persisting Sessions](dotnet/persisting-sessions.md): Save and resume sessions across restarts.
+- [Accessibility Report](dotnet/accessibility-report.md): Generate WCAG accessibility reports using the Playwright MCP server.
 
 ### Node.js / TypeScript
 
@@ -21,6 +22,7 @@ This cookbook collects small, focused recipes showing how to accomplish common t
 - [Managing Local Files](nodejs/managing-local-files.md): Organize files by metadata using AI-powered grouping strategies.
 - [PR Visualization](nodejs/pr-visualization.md): Generate interactive PR age charts using GitHub MCP Server.
 - [Persisting Sessions](nodejs/persisting-sessions.md): Save and resume sessions across restarts.
+- [Accessibility Report](nodejs/accessibility-report.md): Generate WCAG accessibility reports using the Playwright MCP server.
 
 ### Python
 
@@ -30,6 +32,7 @@ This cookbook collects small, focused recipes showing how to accomplish common t
 - [Managing Local Files](python/managing-local-files.md): Organize files by metadata using AI-powered grouping strategies.
 - [PR Visualization](python/pr-visualization.md): Generate interactive PR age charts using GitHub MCP Server.
 - [Persisting Sessions](python/persisting-sessions.md): Save and resume sessions across restarts.
+- [Accessibility Report](python/accessibility-report.md): Generate WCAG accessibility reports using the Playwright MCP server.
 
 ### Go
 
@@ -39,6 +42,7 @@ This cookbook collects small, focused recipes showing how to accomplish common t
 - [Managing Local Files](go/managing-local-files.md): Organize files by metadata using AI-powered grouping strategies.
 - [PR Visualization](go/pr-visualization.md): Generate interactive PR age charts using GitHub MCP Server.
 - [Persisting Sessions](go/persisting-sessions.md): Save and resume sessions across restarts.
+- [Accessibility Report](go/accessibility-report.md): Generate WCAG accessibility reports using the Playwright MCP server.
 
 ## How to Use
 
@@ -87,4 +91,4 @@ go run <filename>.go
 
 ## Status
 
-Cookbook structure is complete with 6 recipes across all 4 supported languages. Each recipe includes both markdown documentation and runnable examples.
+Cookbook structure is complete with 7 recipes across all 4 supported languages. Each recipe includes both markdown documentation and runnable examples.
