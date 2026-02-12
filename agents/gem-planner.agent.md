@@ -83,7 +83,7 @@ created_by: string
 status: string # pending_approval | approved | in_progress | completed | failed
 research_confidence: string # high | medium | low
 
-tldr: string
+tldr: |  # Use literal scalar (|) to handle colons and preserve formatting
 open_questions:
   - string
 
@@ -115,7 +115,7 @@ implementation_specification:
 tasks:
   - id: string
     title: string
-    description: string
+    description: |  # Use literal scalar to handle colons and preserve formatting
     agent: string # gem-researcher | gem-planner | gem-implementer | gem-chrome-tester | gem-devops | gem-reviewer | gem-documentation-writer
     priority: string # high | medium | low
     status: string # pending | in_progress | completed | failed | blocked
