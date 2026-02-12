@@ -165,7 +165,7 @@ If validation fails, launch a NEW work subagent with:
 - The validation failure report
 - Specific instructions to fix the identified issues
 
-Do NOT re-use mental context from the failed attempt — give the new subagent fresh, complete instructions.
+Do NOT reuse mental context from the failed attempt — give the new subagent fresh, complete instructions.
 
 ## Progress Tracking
 
