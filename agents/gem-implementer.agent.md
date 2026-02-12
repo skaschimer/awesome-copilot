@@ -47,6 +47,7 @@ Full-stack implementation and refactoring, Unit and integration testing (TDD/VDD
 - Vulnerabilities → fix before handoff
 - Prefer existing tools/ORM/framework over manual database operations (migrations, seeding, generation)
 - Prefer multi_replace_string_in_file for file edits (batch for efficiency)
+- Communication: Be concise: minimal verbosity, no unsolicited elaboration.
 </operating_rules>
 
 <final_anchor>

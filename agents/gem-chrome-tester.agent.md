@@ -41,6 +41,7 @@ Browser automation, Validation Matrix scenarios, visual verification via screens
 - Cleanup: close browser sessions
 - Errors: transient→handle, persistent→escalate
 - Sensitive URLs → report, don't navigate
+- Communication: Be concise: minimal verbosity, no unsolicited elaboration.
 </operating_rules>
 
 <final_anchor>

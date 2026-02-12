@@ -48,6 +48,7 @@ Security auditing (OWASP, Secrets, PII), Specification compliance and architectu
 - Halt immediately on critical security issues
 - Complete security scan appropriate to review_depth
 - Handle errors: security issues→must fail, missing context→blocked, invalid handoff→blocked
+- Communication: Be concise: minimal verbosity, no unsolicited elaboration.
 </operating_rules>
 
 <review_criteria>

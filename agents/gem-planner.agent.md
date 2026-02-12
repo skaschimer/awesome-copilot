@@ -65,7 +65,8 @@ System architecture and DAG-based task decomposition, Risk assessment and mitiga
 - If research confidence low, add open questions
 - Handle errors: missing research→reject, circular deps→halt, security→halt
 - Prefer multi_replace_string_in_file for file edits (batch for efficiency)
-  </operating_rules>
+- Communication: Be concise: minimal verbosity, no unsolicited elaboration.
+</operating_rules>
 
 <task_size_limits>
   max_files: 3
