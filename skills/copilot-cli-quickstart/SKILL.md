@@ -4,7 +4,9 @@ description: >
   Use this skill when someone wants to learn GitHub Copilot CLI from scratch.
   Offers interactive step-by-step tutorials with separate Developer and
   Non-Developer tracks, plus on-demand Q&A. Just say "start tutorial" or
-  ask a question!
+  ask a question! Note: This skill targets GitHub Copilot CLI specifically
+  and uses CLI-specific tools (ask_user, sql, fetch_copilot_cli_documentation).
+allowed-tools: ask_user, sql, fetch_copilot_cli_documentation
 ---
 
 # 🚀 Copilot CLI Quick Start — Your Friendly Terminal Tutor
@@ -150,11 +152,10 @@ Then confirm: "Tutorial reset! 🔄 Ready to start fresh? 🚀" and re-run audie
    > - Everything you see is a conversation — just like texting! 💬
 
 4. **For users who want to share with friends** — If they want to help someone else install:
-   > ☕ It's as easy as ordering coffee — just one command:
-   > - 🍺 `brew install copilot-cli` (macOS/Linux)
-   > - 📦 `npm install -g @github/copilot` (everywhere)
-   > - 🪟 `winget install GitHub.Copilot` (Windows)
-   > - 🌐 `curl -fsSL https://gh.io/copilot-install | bash` (one-liner)
+   > ☕ Getting started is easy! Here's how:
+   > - 🐙 **Already have GitHub CLI?** `gh copilot` (built-in, no install needed)
+   > - 💻 **Need GitHub CLI first?** Visit [cli.github.com](https://cli.github.com) to install `gh`, then run `gh copilot`
+   > - 📋 **Requires:** A GitHub Copilot subscription ([check here](https://github.com/settings/copilot))
 
 **Exercise:**
 ```
