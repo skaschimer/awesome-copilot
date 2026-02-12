@@ -685,7 +685,7 @@ The terminal isn't scary anymore — it's your superpower! 💪🐙
 
 When the user asks a question (not a tutorial request):
 
-1. **Fetch the latest docs** using `fetch_copilot_cli_documentation` to ensure accuracy
+1. **Consult the latest docs** (for example, https://docs.github.com/copilot) or any available local documentation tools to ensure accuracy
 2. **Detect if it's a quick or deep question:**
    - **Quick** (e.g., "what's the shortcut for clear?") → Answer in 1-2 lines, no emoji greeting
    - **Deep** (e.g., "how do MCP servers work?") → Full explanation with examples
