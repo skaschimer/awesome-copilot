@@ -215,6 +215,12 @@
       "version": "1.0.0"
     },
     {
+      "name": "rug-agentic-workflow",
+      "source": "./plugins/rug-agentic-workflow",
+      "description": "Three-agent workflow for orchestrated software delivery with an orchestrator plus implementation and QA subagents.",
+      "version": "1.0.0"
+    },
+    {
       "name": "rust-mcp-development",
       "source": "./plugins/rust-mcp-development",
       "description": "Build high-performance Model Context Protocol servers in Rust using the official rmcp SDK with async/await, procedural macros, and type-safe implementations.",
