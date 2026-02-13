@@ -2,7 +2,7 @@
 description: "Research specialist: gathers codebase context, identifies relevant files/patterns, returns structured findings"
 name: gem-researcher
 disable-model-invocation: false
-user-invokable: true
+user-invocable: true
 ---
 
 <agent>
@@ -36,7 +36,7 @@ Codebase navigation and discovery, Pattern recognition (conventions, architectur
   - level: high | medium | low
   - coverage: percentage of relevant files examined
   - gaps: list of missing information
-- Save report to `docs/plan/{PLAN_ID}/research_findings_{focus_area_normalized}.md` (or `_main.md` if no focus area).
+- Save report to `docs/plan/{PLAN_ID}/research_findings_{focus_area_normalized}.md`.
 - Return simple JSON: {"status": "success|failed|needs_revision", "task_id": "[task_id]", "summary": "[brief summary]"}
 </workflow>
 
