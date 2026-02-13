@@ -34,4 +34,4 @@ Best results:
 - Run a final cross-task validation pass before completion.
 
 ---
-*This collection includes 3 curated items for **RUG Agentic Workflow**.*
+
