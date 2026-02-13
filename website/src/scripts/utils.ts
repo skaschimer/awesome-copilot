@@ -233,7 +233,9 @@ export function getResourceType(filePath: string): string {
     return "skill";
   if (/(^|\/)hooks\//.test(filePath) && filePath.endsWith("README.md"))
     return "hook";
-  if (filePath.endsWith(".collection.yml")) return "plugin";
+  // Check for plugin directories (e.g., plugins/<id>) or plugin.json files
+  if (/(^|\/)plugins\/[^/]+\/?$/.test(filePath) || filePath.endsWith("/.github/plugin/plugin.json"))
+    return "plugin";
   return "unknown";
 }
 
