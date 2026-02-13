@@ -32,11 +32,14 @@ The Awesome GitHub Copilot repository is a community-driven collection of custom
 # Install dependencies
 npm ci
 
-# Build the project (generates README.md)
+# Build the project (generates README.md and marketplace.json)
 npm run build
 
 # Validate plugin manifests
 npm run plugin:validate
+
+# Generate marketplace.json only
+npm run plugin:generate-marketplace
 
 # Create a new plugin
 npm run plugin:create -- --name <plugin-name>
@@ -93,6 +96,15 @@ All agent files (`*.agent.md`), prompt files (`*.prompt.md`), and instruction fi
 - Follow the [GitHub Copilot hooks specification](https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent/use-hooks)
 - Optionally includes `tags` field for categorization
 
+#### Plugin Folders (plugins/*)
+- Each plugin is a folder containing a `.github/plugin/plugin.json` file with metadata
+- plugin.json must have `name` field (matching the folder name)
+- plugin.json must have `description` field (describing the plugin's purpose)
+- plugin.json must have `version` field (semantic version, e.g., "1.0.0")
+- Plugin folders can contain any combination of agents, prompts, instructions, skills, and hooks
+- The `marketplace.json` file is automatically generated from all plugins during build
+- Plugins are discoverable and installable via GitHub Copilot CLI
+
 ### Adding New Resources
 
 When adding a new agent, prompt, instruction, skill, hook, or plugin:
@@ -123,11 +135,11 @@ When adding a new agent, prompt, instruction, skill, hook, or plugin:
 
 **For Plugins:**
 1. Run `npm run plugin:create -- --name <plugin-name>` to scaffold a new plugin
-2. Add symlinks to agents, prompts, and skills in the plugin folder
+2. Add agents, prompts, skills, or hooks to the plugin folder
 3. Edit the generated `plugin.json` with your metadata
 4. Run `npm run plugin:validate` to validate the plugin structure
-5. Update the README.md by running: `npm run build`
-6. Verify the plugin appears in the generated README
+5. Run `npm run build` to update README.md and marketplace.json
+6. Verify the plugin appears in `.github/plugin/marketplace.json`
 
 ### Testing Instructions
 
@@ -230,13 +242,15 @@ For hook folders (hooks/*/):
 For plugins (plugins/*/):
 - [ ] Directory contains a `.github/plugin/plugin.json` file
 - [ ] Directory contains a `README.md` file
-- [ ] `plugin.json` has `name` field matching the directory name
+- [ ] `plugin.json` has `name` field matching the directory name (lowercase with hyphens)
 - [ ] `plugin.json` has non-empty `description` field
+- [ ] `plugin.json` has `version` field (semantic version, e.g., "1.0.0")
 - [ ] Directory name is lower case with hyphens
 - [ ] If `tags` is present, it is an array of lowercase hyphenated strings
 - [ ] If `items` is present, each item has `path` and `kind` fields
 - [ ] The `kind` field value is one of: `prompt`, `agent`, `instruction`, `skill`, or `hook`
 - [ ] The plugin does not reference non-existent files
+- [ ] Run `npm run build` to verify marketplace.json is updated correctly
 
 ## Contributing
 
