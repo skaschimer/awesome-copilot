@@ -16,7 +16,7 @@ Curated collections of related prompts, instructions, and agents organized aroun
 
 | Name | Description | Items | Tags |
 | ---- | ----------- | ----- | ---- |
-| [⭐ Awesome Copilot](../collections/awesome-copilot.md) | Meta prompts that help you discover and generate curated GitHub Copilot agents, collections, instructions, prompts, and skills. | 5 items | github-copilot, discovery, meta, prompt-engineering, agents |
+| [⭐ Awesome Copilot](../collections/awesome-copilot.md) | Meta prompts that help you discover and generate curated GitHub Copilot agents, collections, instructions, prompts, and skills. | 6 items | github-copilot, discovery, meta, prompt-engineering, agents |
 | [⭐ Copilot SDK](../collections/copilot-sdk.md) | Build applications with the GitHub Copilot SDK across multiple programming languages. Includes comprehensive instructions for C#, Go, Node.js/TypeScript, and Python to help you create AI-powered applications. | 5 items | copilot-sdk, sdk, csharp, go, nodejs, typescript, python, ai, github-copilot |
 | [⭐ Partners](../collections/partners.md) | Custom agents that have been created by GitHub partners | 20 items | devops, security, database, cloud, infrastructure, observability, feature-flags, cicd, migration, performance |
 | [Azure & Cloud Development](../collections/azure-cloud-development.md) | Comprehensive Azure cloud development tools including Infrastructure as Code, serverless functions, architecture patterns, and cost optimization for building scalable cloud applications. | 18 items | azure, cloud, infrastructure, bicep, terraform, serverless, architecture, devops |
