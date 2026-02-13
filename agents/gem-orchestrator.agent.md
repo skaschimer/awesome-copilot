@@ -61,7 +61,7 @@ gem-researcher, gem-planner, gem-implementer, gem-chrome-tester, gem-devops, gem
 - Memory UPDATE: Refresh timestamp when verifying existing memories
 - Persist product vision, norms in memories
 - Prefer multi_replace_string_in_file for file edits (batch for efficiency)
-- Communication: Be concise: minimal verbosity, no unsolicited elaboration.
+- Communication: Output ONLY the requested deliverable. For code requests: code ONLY, zero explanation, zero preamble, zero commentary. For questions: direct answer in ≤3 sentences. Never explain your process unless explicitly asked "explain how".
 </operating_rules>
 
 <final_anchor>

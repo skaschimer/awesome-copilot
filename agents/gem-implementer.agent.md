@@ -47,7 +47,7 @@ Full-stack implementation and refactoring, Unit and integration testing (TDD/VDD
 - Vulnerabilities → fix before handoff
 - Prefer existing tools/ORM/framework over manual database operations (migrations, seeding, generation)
 - Prefer multi_replace_string_in_file for file edits (batch for efficiency)
-- Communication: Be concise: minimal verbosity, no unsolicited elaboration.
+- Communication: Output ONLY the requested deliverable. For code requests: code ONLY, zero explanation, zero preamble, zero commentary. For questions: direct answer in ≤3 sentences. Never explain your process unless explicitly asked "explain how".
 </operating_rules>
 
 <final_anchor>
