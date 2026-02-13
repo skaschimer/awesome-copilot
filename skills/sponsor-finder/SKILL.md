@@ -1,11 +1,11 @@
 ---
 name: sponsor-finder
-description: Find which of a GitHub repository's dependencies are sponsorable via GitHub Sponsors. Fetches package.json, resolves each dependency to its source GitHub repo via the npm registry, checks for .github/FUNDING.yml, and produces a report of sponsorable dependencies grouped by maintainer with direct sponsor links. Use when evaluating which open source projects to sponsor, building an OSPO sponsorship strategy, or auditing dependency funding. Invoke by providing a GitHub owner/repo (e.g. "find sponsorable dependencies in expressjs/express").
+description: Find which of a GitHub repository's dependencies are sponsorable via GitHub Sponsors. Resolves dependencies to source GitHub repos, checks npm funding metadata, FUNDING.yml files, and web search. Verifies every link before presenting. Supports npm, Python, Rust, Go, and Ruby. Use when evaluating which open source projects to sponsor, building an OSPO sponsorship strategy, or auditing dependency funding. Invoke by providing a GitHub owner/repo (e.g. "find sponsorable dependencies in expressjs/express").
 ---
 
 # Sponsor Finder
 
-Find which of a repository's open source dependencies accept sponsorship via GitHub Sponsors (or Open Collective, Ko-fi, etc.). Accepts a GitHub `owner/repo`, inspects its dependencies using the GitHub MCP tools and npm registry, and produces a sponsorship report.
+Find which of a repository's open source dependencies accept sponsorship via GitHub Sponsors (or Open Collective, Ko-fi, etc.). Accepts a GitHub `owner/repo`, inspects its dependencies using the GitHub MCP tools, npm/PyPI registries, and web search, and produces a verified sponsorship report.
 
 ## Your Workflow
 
@@ -14,10 +14,10 @@ When the user provides a repository in `owner/repo` format:
 1. **Parse the input** — Extract the `owner` and `repo` from the user's message.
 2. **Fetch the dependency manifest** from the repo.
 3. **Extract dependency names** from the manifest.
-4. **Resolve each dependency** to its source GitHub repo via the npm registry.
-5. **Check each source repo** for a `.github/FUNDING.yml` file.
-6. **Parse funding links** and group by maintainer.
-7. **Output the sponsorship report** in the format specified below.
+4. **Resolve each dependency** to its source GitHub repo via registry APIs.
+5. **Check funding sources** — registry `funding` field, `.github/FUNDING.yml`, and web search fallback.
+6. **Verify every link** — fetch each funding URL to confirm it's live.
+7. **Group by maintainer** and produce the report.
 
 Always complete all steps before producing the report.
 
@@ -25,78 +25,167 @@ Always complete all steps before producing the report.
 
 ## Step 1: Fetch the Dependency Manifest
 
-Use `get_file_contents` to fetch `package.json` from the target repo.
+Use `get_file_contents` to look for dependency files in this order (stop at first match):
 
-- If `package.json` is not found, check for `requirements.txt` (Python) or `go.mod` (Go). If none exist, inform the user that no supported manifest was found.
-- For this skill, **npm/Node.js is the primary ecosystem**. Python and Go support is best-effort.
+| Ecosystem | File | Priority |
+|-----------|------|----------|
+| Node.js/npm | `package.json` | 1st |
+| Python | `requirements.txt`, `pyproject.toml` | 2nd |
+| Rust | `Cargo.toml` | 3rd |
+| Go | `go.mod` | 4th |
+| Ruby | `Gemfile` | 5th |
+
+If none exist, inform the user that no supported manifest was found.
 
 ---
 
 ## Step 2: Extract Dependency Names
 
-From `package.json`, extract all package names from:
-- `dependencies` (production deps — these are the most important)
-- `devDependencies` (optional — include if user asks or if there are fewer than 30 production deps)
+### Node.js (`package.json`)
+Extract package names from `dependencies` (production — most important) and optionally `devDependencies` (include if user asks or fewer than 30 production deps).
 
-Collect the full list of dependency names.
+### Python (`requirements.txt`)
+Extract package names before version specifiers (`==`, `>=`, `~=`). Ignore comments (`#`), blank lines, and `-r` includes.
+
+### Python (`pyproject.toml`)
+Extract from `[project.dependencies]` or `[tool.poetry.dependencies]`.
+
+### Rust (`Cargo.toml`)
+Extract package names from `[dependencies]` section.
+
+### Go (`go.mod`)
+Extract module paths from `require` statements. The GitHub repo is usually the module path itself (e.g., `github.com/gin-gonic/gin`).
+
+### Ruby (`Gemfile`)
+Extract gem names from `gem` statements.
 
 ---
 
 ## Step 3: Resolve Dependencies to GitHub Repos AND Collect Funding Info
 
-For each dependency, query the npm registry to find the source GitHub repository **and** any funding metadata.
+For each dependency, query the appropriate registry to find the source GitHub repository **and** any funding metadata.
 
-Use `web_fetch` on `https://registry.npmjs.org/{package-name}/latest` for each dependency.
+### Node.js (npm)
+Use `web_fetch` on `https://registry.npmjs.org/{package-name}/latest`.
 
-From the JSON response, extract **two things**:
+From the JSON response, extract:
+- **`repository.url`** → parse to `owner/repo` (handle `git+https://`, `git://`, `git+ssh://` formats)
+- **`funding` field** → primary funding source (string URL, object with `url`, or array)
 
-### 3a: Source GitHub repo
-Extract `repository.url` — typically in the format `git+https://github.com/{owner}/{repo}.git` or `https://github.com/{owner}/{repo}`
+### Python (PyPI)
+Use `web_fetch` on `https://pypi.org/pypi/{package}/json`.
 
-Parse the URL to extract the GitHub `owner/repo`. Handle these common formats:
+From the response, extract:
+- **`info.project_urls`** → look for `Source`, `Repository`, `Homepage`, or `GitHub` keys pointing to github.com
+- **`info.project_urls.Funding`** → if present, use as funding URL directly
+
+### Rust (crates.io)
+Use `web_fetch` on `https://crates.io/api/v1/crates/{package}`.
+
+From the response, extract:
+- **`crate.repository`** → parse GitHub URL to `owner/repo`
+
+### Go
+Module paths starting with `github.com/` already contain the `owner/repo`. No registry lookup needed.
+
+### Ruby (RubyGems)
+Use `web_fetch` on `https://rubygems.org/api/v1/gems/{gem}.json`.
+
+From the response, extract:
+- **`source_code_uri`** or **`homepage_uri`** → parse GitHub URL to `owner/repo`
+
+### URL parsing
+Handle these common repository URL formats:
 - `git+https://github.com/{owner}/{repo}.git` → `{owner}/{repo}`
 - `https://github.com/{owner}/{repo}.git` → `{owner}/{repo}`
 - `https://github.com/{owner}/{repo}` → `{owner}/{repo}`
 - `git://github.com/{owner}/{repo}.git` → `{owner}/{repo}`
 - `git+ssh://git@github.com/{owner}/{repo}.git` → `{owner}/{repo}`
 
-### 3b: npm `funding` field (IMPORTANT — primary funding source)
-Many packages declare funding directly in their package.json. The registry response may include a `funding` field in these formats:
-- **String:** `"funding": "https://github.com/sponsors/sindresorhus"` → use as sponsor URL
-- **Object:** `"funding": {"type": "opencollective", "url": "https://opencollective.com/express"}` → use the `url`
-- **Array:** `"funding": [{"type": "...", "url": "..."}, ...]` → collect all URLs
-
-**Record funding info from the registry immediately.** This is often the richest source — many projects have npm `funding` but no FUNDING.yml.
-
 ### Efficiency rules
-- Process dependencies in batches of **10 at a time** to stay efficient.
-- If a dependency has no `repository.url` or it doesn't point to GitHub, skip it and count it as "unresolvable".
-- If there are more than **60 production dependencies**, sample the first 60 and note in the output that results are a sample.
-- **Deduplicate** GitHub repos — multiple npm packages may come from the same repo.
+- Process dependencies in batches of **10 at a time**.
+- If a dependency has no repository URL or it doesn't point to GitHub, skip it and count it as "unresolvable".
+- If there are more than **60 production dependencies**, sample the first 60 and note in the output.
+- **Deduplicate** GitHub repos — multiple packages may come from the same repo.
 
 ---
 
-## Step 4: Check for FUNDING.yml (supplementary)
+## Step 4: Check for FUNDING.yml
 
-For dependencies that did NOT have a `funding` field in the npm registry, check their GitHub repo for a FUNDING.yml.
+For dependencies that did NOT have a `funding` field from the registry, check their GitHub repo for a FUNDING.yml.
 
-For each such repo, use `get_file_contents` to fetch `{owner}/{repo}` path `.github/FUNDING.yml`.
+Use `get_file_contents` to fetch `{owner}/{repo}` path `.github/FUNDING.yml`.
 
 Also check the org-level `.github` repo: `{org}/.github` path `.github/FUNDING.yml`.
 
-If the file exists, it contains sponsorship information. If it returns 404, the project has no funding file.
+FUNDING.yml is a YAML file with these possible fields:
+
+```yaml
+github: [username]           # GitHub Sponsors
+open_collective: slug        # Open Collective
+ko_fi: username              # Ko-fi
+tidelift: platform/package   # Tidelift
+liberapay: username          # Liberapay
+patreon: username            # Patreon
+custom: [url1, url2]         # Custom URLs
+```
+
+Generate sponsor links:
+- `github: ljharb` → `https://github.com/sponsors/ljharb`
+- `open_collective: express` → `https://opencollective.com/express`
+- `ko_fi: username` → `https://ko-fi.com/username`
+- `custom: ["https://..."]` → use as-is
 
 ### Efficiency rules
-- **Skip repos that already have funding info from Step 3b** — no need to double-check.
+- **Skip repos that already have funding info from Step 3.**
 - Process remaining repos in batches of **10 at a time**.
-- Keep a running list of repos already checked to avoid duplicate lookups.
 
 ---
 
-## Step 5: Parse Funding Information
+## Step 5: Web Search Fallback
 
-### From npm `funding` field (Step 3b)
-Parse the URL to determine the platform:
+For dependencies that still have NO funding info after Steps 3 and 4, use `web_search` as a fallback:
+
+```
+"{package name}" github sponsors OR open collective OR funding
+```
+
+Look for:
+- Links to `github.com/sponsors/{user}`
+- Links to `opencollective.com/{project}`
+- Funding sections on official project websites
+
+Only use results from authoritative sources (GitHub, Open Collective, official project sites).
+
+### Efficiency rules
+- Only search for the **top 10 most important unfunded dependencies** (by download count or centrality).
+- Skip packages known to be corporate-maintained (e.g., `react` by Meta, `typescript` by Microsoft, `@types/*` by DefinitelyTyped).
+
+---
+
+## Step 6: Verify Every Link (CRITICAL)
+
+**Before including ANY funding link in the report, verify it exists by fetching the URL.**
+
+Use `web_fetch` on each funding URL:
+- **Valid page** (returns content about sponsoring/donating) → ✅ Include it
+- **404, "not found", "not enrolled"** → ❌ Do NOT include it
+- **Redirect to a valid page** → ✅ Include the final URL
+
+This is critical because:
+- GitHub Sponsors pages only exist if the user enrolled
+- Open Collective pages only exist if the project created one
+- Funding URLs in FUNDING.yml or npm metadata may be stale
+
+### Efficiency rules
+- Verify in batches of **5 at a time**.
+- If verification fails, exclude the link silently — don't show broken links.
+
+---
+
+## Step 7: Parse and Group Results
+
+After verifying all links, determine the platform for each:
 - Contains `github.com/sponsors/` → GitHub Sponsors (💜)
 - Contains `opencollective.com/` → Open Collective (🟠)
 - Contains `ko-fi.com/` → Ko-fi (☕)
@@ -104,39 +193,9 @@ Parse the URL to determine the platform:
 - Contains `patreon.com/` → Patreon (🔗)
 - Other URLs → Custom (🔗)
 
-### From FUNDING.yml (Step 4)
-FUNDING.yml is a YAML file with these possible fields:
+Group sponsorable dependencies by their funding destination. For GitHub Sponsors, group by username. For Open Collective, group by project.
 
-```yaml
-github: [username]           # GitHub Sponsors — can be a string or list
-open_collective: slug        # Open Collective
-ko_fi: username              # Ko-fi
-tidelift: platform/package   # Tidelift
-liberapay: username          # Liberapay
-custom: [url1, url2]         # Custom URLs
-```
-
-For each field present, generate the appropriate sponsor link:
-- `github: ljharb` → `https://github.com/sponsors/ljharb`
-- `github: [ljharb, other]` → links for each
-- `open_collective: express` → `https://opencollective.com/express`
-- `ko_fi: username` → `https://ko-fi.com/username`
-- `custom: ["https://..."]` → use as-is
-
-**Prioritize GitHub Sponsors** — this is the most actionable for GitHub users.
-
----
-
-## Step 6: Group by Maintainer
-
-After checking all repos, group sponsorable dependencies by their GitHub Sponsors username (from the `github` field in FUNDING.yml).
-
-For each maintainer, track:
-- Their GitHub Sponsors URL
-- How many dependencies they maintain (from this repo's dependency tree)
-- The names of those dependencies
-
-Sort maintainers by **number of dependencies** (most impact first).
+Sort by **number of dependencies** (most impact first).
 
 ---
 
@@ -154,20 +213,22 @@ Always produce the report in this exact format:
 
 ### Summary
 
-- **{total_deps}** dependencies found in package.json
+- **{total_deps}** dependencies found
 - **{resolved}** resolved to GitHub repos ({unresolved} could not be resolved)
-- **💜 {sponsorable}** of {resolved} dependencies have funding info ({percentage}%)
-- **{maintainer_count}** unique funding destinations
+- **💜 {sponsorable}** have verified funding links ({percentage}%)
+- **{destination_count}** unique funding destinations
+- All links verified ✅
 
 ---
 
-### Sponsorable Dependencies
+### Verified Funding Links
 
-| Dependency | GitHub Repo | Funding |
-|------------|-------------|---------|
-| {dep_name} | [{owner}/{repo}](https://github.com/{owner}/{repo}) | 💜 [GitHub Sponsors](https://github.com/sponsors/{username}) |
-| {dep_name} | [{owner}/{repo}](https://github.com/{owner}/{repo}) | 🟠 [Open Collective](https://opencollective.com/{slug}) |
-| ... | ... | ... |
+| Dependency | GitHub Repo | Funding | How Verified |
+|------------|-------------|---------|--------------|
+| {dep_name} | [{owner}/{repo}](https://github.com/{owner}/{repo}) | 💜 [GitHub Sponsors](https://github.com/sponsors/{username}) | FUNDING.yml |
+| {dep_name} | [{owner}/{repo}](https://github.com/{owner}/{repo}) | 🟠 [Open Collective](https://opencollective.com/{slug}) | npm funding field |
+| {dep_name} | [{owner}/{repo}](https://github.com/{owner}/{repo}) | 💜 [GitHub Sponsors](https://github.com/sponsors/{username}) | Web search |
+| ... | ... | ... | ... |
 
 ---
 
@@ -175,50 +236,52 @@ Always produce the report in this exact format:
 
 | Destination | Dependencies | Link |
 |-------------|-------------|------|
-| Open Collective: {name} | {count} deps ({dep1}, {dep2}, ...) | [opencollective.com/{name}](https://opencollective.com/{name}) |
-| @{username} | {count} deps ({dep1}, ...) | [github.com/sponsors/{username}](https://github.com/sponsors/{username}) |
+| 🟠 Open Collective: {name} | {count} deps ({dep1}, {dep2}, ...) | [opencollective.com/{name}](https://opencollective.com/{name}) |
+| 💜 @{username} | {count} deps ({dep1}, ...) | [github.com/sponsors/{username}](https://github.com/sponsors/{username}) |
 | ... | ... | ... |
 
 ---
 
-### 💜 {percentage}% funding coverage · {destination_count} funding destinations · {sponsorable} dependencies
-```
+### No Verified Funding Found
 
-### Format notes
-- In the **Funding** column, use 💜 for GitHub Sponsors, 🟠 for Open Collective, ☕ for Ko-fi, and 🔗 for other/custom platforms.
-- If a dependency has multiple funding sources, show the GitHub Sponsors link preferentially.
-- Only include sponsorable dependencies in the table (skip non-sponsorable ones).
-- If zero dependencies are sponsorable, say so clearly and skip the tables.
+These dependencies don't have discoverable funding pages:
+- {package} (corporate-maintained by {company})
+- {package} (no FUNDING.yml or funding metadata)
+- ...
 
 ---
 
-## For Python Repositories (Best-Effort)
+### 💜 {percentage}% verified funding coverage · {destination_count} destinations · {sponsorable} dependencies
+```
 
-If the repo has `requirements.txt` but no `package.json`:
-
-1. Parse `requirements.txt` for package names (ignore version specifiers, comments, `-r` includes).
-2. For each package, use `web_fetch` on `https://pypi.org/pypi/{package}/json`.
-3. From the response, check `info.project_urls` for a `Source`, `Repository`, or `Homepage` URL pointing to GitHub.
-4. Proceed with FUNDING.yml check as normal.
+### Format notes
+- The **How Verified** column shows the data source: `FUNDING.yml`, `npm funding field`, `PyPI metadata`, `Web search`.
+- Use 💜 for GitHub Sponsors, 🟠 for Open Collective, ☕ for Ko-fi, 🔗 for other platforms.
+- If a dependency has multiple funding sources, show the GitHub Sponsors link preferentially.
+- Only include dependencies with **verified** funding links in the main table.
+- List unfunded deps separately with a note on why (corporate, no metadata, etc.).
 
 ---
 
 ## Error Handling
 
 - If `get_file_contents` returns 404 for the repo itself → inform user the repo may not exist or is private.
-- If `package.json` has no dependencies → report "No dependencies found."
-- If npm registry is unreachable for a dep → skip it, note in output.
-- If FUNDING.yml exists but can't be parsed → count as sponsorable but note "unparseable FUNDING.yml".
+- If the manifest has no dependencies → report "No dependencies found."
+- If a registry is unreachable for a dep → skip it, note in output.
+- If FUNDING.yml exists but can't be parsed → attempt to extract any URLs, note "unparseable".
 - If rate-limited → report what was completed and note that results are partial.
+- If link verification fails → exclude the link, do NOT present unverified URLs.
 - Always produce a report even if partial — never fail silently.
 
 ---
 
-## Important Rules
+## Critical Rules
 
-1. **Always use the GitHub MCP tools** (`get_file_contents`) and `web_fetch` — never try to clone or shell out.
-2. **Be efficient** — batch registry lookups, deduplicate GitHub repos, and respect the sampling limits above.
-3. **Focus on GitHub Sponsors** — this is the most actionable platform. Show others but prioritize `github` field.
-4. **Be accurate** — only mark a dependency as sponsorable if you actually found and confirmed a FUNDING.yml file.
-5. **Stay in scope** — report on funding availability, not on whether the user should sponsor. Don't make value judgments about which projects "deserve" sponsorship.
-6. **Deduplicate** — Many npm packages share maintainers. Group by maintainer to show actual impact of sponsoring one person.
+1. **NEVER present unverified links.** Every funding URL must be fetched and confirmed live before showing it. 5 verified links are better than 20 guessed links.
+2. **NEVER guess from training knowledge.** Don't assume `opencollective.com/{package}` or `github.com/sponsors/{user}` exists — always check.
+3. **Be transparent about verification.** Show the "How Verified" column so users know the data source.
+4. **Always use the GitHub MCP tools** (`get_file_contents`), `web_fetch`, and `web_search` — never try to clone or shell out.
+5. **Be efficient** — batch lookups, deduplicate GitHub repos, respect sampling limits.
+6. **Focus on GitHub Sponsors** — most actionable platform. Show others but prioritize `github` field.
+7. **Deduplicate** — group by maintainer to show actual impact of sponsoring one person.
+8. **Stay in scope** — report on funding availability, not on whether projects "deserve" sponsorship.
