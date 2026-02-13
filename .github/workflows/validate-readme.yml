@@ -8,6 +8,7 @@ on:
       - "prompts/**"
       - "agents/**"
       - "collections/**"
+      - "plugins/**"
       - "*.js"
       - "README.md"
       - "docs/**"

@@ -32,8 +32,11 @@ The Awesome GitHub Copilot repository is a community-driven collection of custom
 # Install dependencies
 npm ci
 
-# Build the project (generates README.md)
+# Build the project (generates README.md and marketplace.json)
 npm run build
+
+# Generate marketplace.json only
+npm run plugin:generate-marketplace
 
 # Validate collection manifests
 npm run collection:validate
@@ -93,9 +96,18 @@ All agent files (`*.agent.md`), prompt files (`*.prompt.md`), and instruction fi
 - Follow the [GitHub Copilot hooks specification](https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent/use-hooks)
 - Optionally includes `tags` field for categorization
 
+#### Plugin Folders (plugins/*)
+- Each plugin is a folder containing a `.github/plugin/plugin.json` file with metadata
+- plugin.json must have `name` field (matching the folder name)
+- plugin.json must have `description` field (describing the plugin's purpose)
+- plugin.json must have `version` field (semantic version, e.g., "1.0.0")
+- Plugin folders can contain any combination of agents, prompts, instructions, skills, and hooks
+- The `marketplace.json` file is automatically generated from all plugins during build
+- Plugins are discoverable and installable via GitHub Copilot CLI
+
 ### Adding New Resources
 
-When adding a new agent, prompt, instruction, skill, or hook:
+When adding a new agent, prompt, instruction, skill, hook, or plugin:
 
 **For Agents, Prompts, and Instructions:**
 1. Create the file with proper front matter
@@ -120,6 +132,14 @@ When adding a new agent, prompt, instruction, skill, or hook:
 4. Run `npm run skill:validate` to validate the skill structure
 5. Update the README.md by running: `npm run build`
 6. Verify the skill appears in the generated README
+
+**For Plugins:**
+1. Create a new folder in `plugins/` with a descriptive name (lowercase with hyphens)
+2. Create `.github/plugin/plugin.json` with metadata (name, description, version)
+3. Add agents, prompts, instructions, skills, or hooks to the plugin folder
+4. Run `npm run build` to update README.md and marketplace.json
+5. Verify the plugin appears in `.github/plugin/marketplace.json`
+6. Test plugin installation: `copilot plugin install <plugin-name>@awesome-copilot`
 
 ### Testing Instructions
 
@@ -218,6 +238,15 @@ For hook folders (hooks/*/):
 - [ ] Any bundled scripts are executable and referenced in README.md
 - [ ] Follows [GitHub Copilot hooks specification](https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent/use-hooks)
 - [ ] Optionally includes `tags` array field for categorization
+
+For plugin folders (plugins/*/):
+- [ ] Folder contains a `.github/plugin/plugin.json` file with metadata
+- [ ] plugin.json has `name` field matching folder name (lowercase with hyphens)
+- [ ] plugin.json has non-empty `description` field
+- [ ] plugin.json has `version` field (semantic version, e.g., "1.0.0")
+- [ ] Folder name is lower case with hyphens
+- [ ] Plugin resources (agents, prompts, etc.) follow their respective guidelines
+- [ ] Run `npm run build` to verify marketplace.json is updated correctly
 
 ## Contributing
 
