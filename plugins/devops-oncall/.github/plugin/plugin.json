@@ -6,5 +6,37 @@
     "name": "Awesome Copilot Community"
   },
   "repository": "https://github.com/github/awesome-copilot",
-  "license": "MIT"
+  "license": "MIT",
+  "tags": [
+    "devops",
+    "incident-response",
+    "oncall",
+    "azure"
+  ],
+  "display": {
+    "ordering": "manual",
+    "show_badge": true
+  },
+  "items": [
+    {
+      "path": "prompts/azure-resource-health-diagnose.prompt.md",
+      "kind": "prompt"
+    },
+    {
+      "path": "instructions/devops-core-principles.instructions.md",
+      "kind": "instruction"
+    },
+    {
+      "path": "instructions/containerization-docker-best-practices.instructions.md",
+      "kind": "instruction"
+    },
+    {
+      "path": "agents/azure-principal-architect.agent.md",
+      "kind": "agent"
+    },
+    {
+      "path": "prompts/multi-stage-dockerfile.prompt.md",
+      "kind": "prompt"
+    }
+  ]
 }

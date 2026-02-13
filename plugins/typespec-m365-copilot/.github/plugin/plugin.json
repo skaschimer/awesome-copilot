@@ -6,5 +6,35 @@
     "name": "Awesome Copilot Community"
   },
   "repository": "https://github.com/github/awesome-copilot",
-  "license": "MIT"
+  "license": "MIT",
+  "tags": [
+    "typespec",
+    "m365-copilot",
+    "declarative-agents",
+    "api-plugins",
+    "agent-development",
+    "microsoft-365"
+  ],
+  "display": {
+    "ordering": "manual",
+    "show_badge": true
+  },
+  "items": [
+    {
+      "path": "prompts/typespec-create-agent.prompt.md",
+      "kind": "prompt"
+    },
+    {
+      "path": "prompts/typespec-create-api-plugin.prompt.md",
+      "kind": "prompt"
+    },
+    {
+      "path": "prompts/typespec-api-operations.prompt.md",
+      "kind": "prompt"
+    },
+    {
+      "path": "instructions/typespec-m365-copilot.instructions.md",
+      "kind": "instruction"
+    }
+  ]
 }

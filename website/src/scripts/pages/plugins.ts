@@ -1,12 +1,12 @@
 /**
- * Collections page functionality
+ * Plugins page functionality
  */
 import { createChoices, getChoicesValues, type Choices } from '../choices';
 import { FuzzySearch, SearchItem } from '../search';
 import { fetchData, debounce, escapeHtml, getGitHubUrl } from '../utils';
 import { setupModal, openFileModal } from '../modal';
 
-interface Collection extends SearchItem {
+interface Plugin extends SearchItem {
   id: string;
   name: string;
   path: string;
@@ -15,16 +15,16 @@ interface Collection extends SearchItem {
   itemCount: number;
 }
 
-interface CollectionsData {
-  items: Collection[];
+interface PluginsData {
+  items: Plugin[];
   filters: {
     tags: string[];
   };
 }
 
-const resourceType = 'collection';
-let allItems: Collection[] = [];
-let search = new FuzzySearch<Collection>();
+const resourceType = 'plugin';
+let allItems: Plugin[] = [];
+let search = new FuzzySearch<Plugin>();
 let tagSelect: Choices;
 let currentFilters = {
   tags: [] as string[],
@@ -49,19 +49,19 @@ function applyFiltersAndRender(): void {
   const activeFilters: string[] = [];
   if (currentFilters.tags.length > 0) activeFilters.push(`${currentFilters.tags.length} tag${currentFilters.tags.length > 1 ? 's' : ''}`);
   if (currentFilters.featured) activeFilters.push('featured');
-  let countText = `${results.length} of ${allItems.length} collections`;
+  let countText = `${results.length} of ${allItems.length} plugins`;
   if (activeFilters.length > 0) {
     countText += ` (filtered by ${activeFilters.join(', ')})`;
   }
   if (countEl) countEl.textContent = countText;
 }
 
-function renderItems(items: Collection[], query = ''): void {
+function renderItems(items: Plugin[], query = ''): void {
   const list = document.getElementById('resource-list');
   if (!list) return;
 
   if (items.length === 0) {
-    list.innerHTML = '<div class="empty-state"><h3>No collections found</h3><p>Try a different search term or adjust filters</p></div>';
+    list.innerHTML = '<div class="empty-state"><h3>No plugins found</h3><p>Try a different search term or adjust filters</p></div>';
     return;
   }
 
@@ -91,13 +91,13 @@ function renderItems(items: Collection[], query = ''): void {
   });
 }
 
-export async function initCollectionsPage(): Promise<void> {
+export async function initPluginsPage(): Promise<void> {
   const list = document.getElementById('resource-list');
   const searchInput = document.getElementById('search-input') as HTMLInputElement;
   const featuredCheckbox = document.getElementById('filter-featured') as HTMLInputElement;
   const clearFiltersBtn = document.getElementById('clear-filters');
 
-  const data = await fetchData<CollectionsData>('collections.json');
+  const data = await fetchData<PluginsData>('plugins.json');
   if (!data || !data.items) {
     if (list) list.innerHTML = '<div class="empty-state"><h3>Failed to load data</h3></div>';
     return;
@@ -105,7 +105,7 @@ export async function initCollectionsPage(): Promise<void> {
 
   allItems = data.items;
 
-  // Map collection items to search items
+  // Map plugin items to search items
   const searchItems = allItems.map(item => ({
     ...item,
     title: item.name,
@@ -140,4 +140,4 @@ export async function initCollectionsPage(): Promise<void> {
 }
 
 // Auto-initialize when DOM is ready
-document.addEventListener('DOMContentLoaded', initCollectionsPage);
+document.addEventListener('DOMContentLoaded', initPluginsPage);

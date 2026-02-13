@@ -9,7 +9,7 @@ The Awesome GitHub Copilot repository is a community-driven collection of custom
 - **Instructions** - Coding standards and best practices applied to specific file patterns
 - **Skills** - Self-contained folders with instructions and bundled resources for specialized tasks
 - **Hooks** - Automated workflows triggered by specific events during development
-- **Collections** - Curated collections organized around specific themes and workflows
+- **Plugins** - Installable packages that group related agents, prompts, and skills around specific themes
 
 ## Repository Structure
 
@@ -20,7 +20,7 @@ The Awesome GitHub Copilot repository is a community-driven collection of custom
 ├── instructions/     # Coding standards and guidelines (.instructions.md files)
 ├── skills/           # Agent Skills folders (each with SKILL.md and optional bundled assets)
 ├── hooks/            # Automated workflow hooks (folders with README.md + hooks.json)
-├── collections/      # Curated collections of resources (.md files)
+├── plugins/          # Installable plugin packages (folders with plugin.json)
 ├── docs/             # Documentation for different resource types
 ├── eng/              # Build and automation scripts
 └── scripts/          # Utility scripts
@@ -35,11 +35,11 @@ npm ci
 # Build the project (generates README.md)
 npm run build
 
-# Validate collection manifests
-npm run collection:validate
+# Validate plugin manifests
+npm run plugin:validate
 
-# Create a new collection
-npm run collection:create -- --id <collection-id> --tags <tags>
+# Create a new plugin
+npm run plugin:create -- --name <plugin-name>
 
 # Validate agent skills
 npm run skill:validate
@@ -95,7 +95,7 @@ All agent files (`*.agent.md`), prompt files (`*.prompt.md`), and instruction fi
 
 ### Adding New Resources
 
-When adding a new agent, prompt, instruction, skill, or hook:
+When adding a new agent, prompt, instruction, skill, hook, or plugin:
 
 **For Agents, Prompts, and Instructions:**
 1. Create the file with proper front matter
@@ -121,11 +121,19 @@ When adding a new agent, prompt, instruction, skill, or hook:
 5. Update the README.md by running: `npm run build`
 6. Verify the skill appears in the generated README
 
+**For Plugins:**
+1. Run `npm run plugin:create -- --name <plugin-name>` to scaffold a new plugin
+2. Add symlinks to agents, prompts, and skills in the plugin folder
+3. Edit the generated `plugin.json` with your metadata
+4. Run `npm run plugin:validate` to validate the plugin structure
+5. Update the README.md by running: `npm run build`
+6. Verify the plugin appears in the generated README
+
 ### Testing Instructions
 
 ```bash
 # Run all validation checks
-npm run collection:validate
+npm run plugin:validate
 npm run skill:validate
 
 # Build and verify README generation
@@ -165,7 +173,7 @@ When creating a pull request:
 4. **Build check**: Run `npm run build` before committing to verify README generation
 5. **Line endings**: **Always run `bash scripts/fix-line-endings.sh`** to normalize line endings to LF (Unix-style)
 6. **Description**: Provide a clear description of what your agent/prompt/instruction does
-7. **Testing**: If adding a collection, run `npm run collection:validate` to ensure validity
+7. **Testing**: If adding a plugin, run `npm run plugin:validate` to ensure validity
 
 ### Pre-commit Checklist
 
@@ -218,6 +226,17 @@ For hook folders (hooks/*/):
 - [ ] Any bundled scripts are executable and referenced in README.md
 - [ ] Follows [GitHub Copilot hooks specification](https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent/use-hooks)
 - [ ] Optionally includes `tags` array field for categorization
+
+For plugins (plugins/*/):
+- [ ] Directory contains a `.github/plugin/plugin.json` file
+- [ ] Directory contains a `README.md` file
+- [ ] `plugin.json` has `name` field matching the directory name
+- [ ] `plugin.json` has non-empty `description` field
+- [ ] Directory name is lower case with hyphens
+- [ ] If `tags` is present, it is an array of lowercase hyphenated strings
+- [ ] If `items` is present, each item has `path` and `kind` fields
+- [ ] The `kind` field value is one of: `prompt`, `agent`, `instruction`, `skill`, or `hook`
+- [ ] The plugin does not reference non-existent files
 
 ## Contributing
 

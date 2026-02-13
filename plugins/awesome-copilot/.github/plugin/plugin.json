@@ -6,5 +6,39 @@
     "name": "Awesome Copilot Community"
   },
   "repository": "https://github.com/github/awesome-copilot",
-  "license": "MIT"
+  "license": "MIT",
+  "tags": [
+    "github-copilot",
+    "discovery",
+    "meta",
+    "prompt-engineering",
+    "agents"
+  ],
+  "featured": true,
+  "display": {
+    "ordering": "alpha",
+    "show_badge": true
+  },
+  "items": [
+    {
+      "path": "prompts/suggest-awesome-github-copilot-collections.prompt.md",
+      "kind": "prompt"
+    },
+    {
+      "path": "prompts/suggest-awesome-github-copilot-instructions.prompt.md",
+      "kind": "prompt"
+    },
+    {
+      "path": "prompts/suggest-awesome-github-copilot-prompts.prompt.md",
+      "kind": "prompt"
+    },
+    {
+      "path": "prompts/suggest-awesome-github-copilot-agents.prompt.md",
+      "kind": "prompt"
+    },
+    {
+      "path": "agents/meta-agentic-project-scaffold.agent.md",
+      "kind": "agent"
+    }
+  ]
 }
