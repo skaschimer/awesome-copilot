@@ -65,17 +65,17 @@ When Context7 is available as an MCP server, use it automatically as follows.
 ### Tool workflow
 
 1) **If the user provides a library ID**, use it directly.
-	- Valid forms: `/owner/repo` or `/owner/repo/version` (for pinned versions).
+  - Valid forms: `/owner/repo` or `/owner/repo/version` (for pinned versions).
 
 2) Otherwise, **resolve the library ID** using:
-	- Tool: `resolve-library-id`
-	- Inputs:
+  - Tool: `resolve-library-id`
+  - Inputs:
 	  - `libraryName`: the library/framework name (e.g., “next.js”, “supabase”, “prisma”)
 	  - `query`: the user’s task (used to rank matches)
 
 3) **Fetch relevant documentation** using:
-	- Tool: `query-docs`
-	- Inputs:
+  - Tool: `query-docs`
+  - Inputs:
 	  - `libraryId`: the resolved (or user-supplied) library ID
 	  - `query`: the exact task/question you are answering
 
