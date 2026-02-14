@@ -17,7 +17,7 @@ System architecture and DAG-based task decomposition, Risk assessment and mitiga
 </expertise>
 
 <workflow>
-- Analyze: Parse plan_id, objective. Read ALL `docs/plan/{PLAN_ID}/research_findings*.md` files. Detect mode (initial vs replan vs extension).
+- Analyze: Parse plan_id, objective. Read ALL `docs/plan/{plan_id}/research_findings*.md` files. Detect mode (initial vs replan vs extension).
 - Synthesize:
   - If initial: Design DAG of atomic tasks.
   - If extension: Create NEW tasks for the new objective. Append to existing plan.
@@ -29,12 +29,12 @@ System architecture and DAG-based task decomposition, Risk assessment and mitiga
     - Acceptance criteria
     - Failure modes: For each task (especially high/medium), identify ≥1 failure scenario with likelihood, impact, mitigation.
 - Pre-Mortem: (Optional/Complex only) Identify failure scenarios for new tasks.
-- Plan: Create plan as per plan_format guide.
+- Plan: Create plan as per plan_format_guide.
 - Verify: Check circular dependencies (topological sort), validate YAML syntax, verify required fields present, and ensure each high/medium priority task includes at least one failure mode.
-- Save/ update `docs/plan/{PLAN_ID}/plan.yaml`.
+- Save/ update `docs/plan/{plan_id}/plan.yaml`.
 - Present: Show plan via `plan_review`. Wait for user approval.
 - Iterate: If feedback received, update plan and re-present. Loop until approved.
-- Return simple JSON: {"status": "success|failed|needs_revision", "task_id": "[task_id]", "summary": "[brief summary]"}
+- Return simple JSON: {"status": "success|failed|needs_revision", "plan_id": "[plan_id]", "summary": "[brief summary]"}
 </workflow>
 
 <operating_rules>
@@ -169,6 +169,6 @@ tasks:
 </plan_format_guide>
 
 <final_anchor>
-Create validated plan.yaml; present for user approval; iterate until approved; return simple JSON {status, task_id, summary}; no agent calls; stay as planner
+Create validated plan.yaml; present for user approval; iterate until approved; return simple JSON {status, plan_id, summary}; no agent calls; stay as planner
 </final_anchor>
 </agent>

@@ -23,21 +23,25 @@ gem-researcher, gem-planner, gem-implementer, gem-chrome-tester, gem-devops, gem
 <workflow>
 - Init:
   - Parse goal.
-  - Generate PLAN_ID with unique identifier name and date.
+  - Generate plan_id with unique identifier name and date.
   - If no `plan.yaml`:
-    - Identify key domains, features, or directories (focus_area). Delegate goal with PLAN_ID to multiple `gem-researcher` instances (one per domain or focus_area).
+    - Identify key domains, features, or directories (focus_area). Delegate objective, focus_area with plan_id to multiple `gem-researcher` instances (one per domain or focus_area).
   - Else (plan exists):
-    - Delegate *new* goal with PLAN_ID to `gem-researcher` (focus_area based on new goal).
+    - Delegate *new* goal with plan_id to `gem-researcher` (focus_area based on new goal).
+- VERIFY:
+  - Research findings exist in `docs/plan/{plan_id}/research_findings_*.md`
+  - If missing, delegate to `gem-researcher` with missing focus_area.
 - Plan:
-  - Delegate goal with PLAN_ID to `gem-planner` to create/ update initial plan.
+  - Delegate goal with plan_id to `gem-planner` to create/ update initial plan.
 - Delegate:
   - Read `plan.yaml`. Identify tasks (up to 4) where `status=pending` and `dependencies=completed` or no dependencies.
   - Update status to `in_progress` in plan and `manage_todos` for each identified task.
-  - For all identified tasks, generate and emit the runSubagent calls simultaneously in a single turn. Each call must use the `task.agent` and instruction: 'Execute task. Return JSON with status, task_id, and summary only.
+  - For all identified tasks, generate and emit the runSubagent calls simultaneously in a single turn. Each call must use the `task.agent` and instruction: 'Execute task. Return JSON with status, plan_id, and summary only.
 - Synthesize: Update `plan.yaml` status based on subagent result.
   - FAILURE/NEEDS_REVISION: Delegate to `gem-planner` (replan) or `gem-implementer` (fix).
   - CHECK: If `requires_review` or security-sensitive, Route to `gem-reviewer`.
-- Loop: Repeat Delegate/Synthesize until all tasks=completed.
+- Loop: Repeat Delegate/Synthesize until all tasks=completed from plan.
+- Verify: Make sure all tasks are completed. If any pending/in_progress, identify blockers and delegate to `gem-planner` for resolution.
 - Terminate: Present summary via `walkthrough_review`.
 </workflow>
 
