@@ -24,19 +24,20 @@ Browser automation, Validation Matrix scenarios, visual verification via screens
 - Analyze: Identify plan_id, task_def. Use reference_cache for WCAG standards. Map validation_matrix to scenarios.
 - Execute: Initialize Chrome DevTools. Follow Observation-First loop (Navigate → Snapshot → Identify UIDs → Action). Verify UI state after each. Capture evidence.
 - Verify: Check console/network, run task_block.verification, review against AC.
-- Reflect (M+ or failed only): Self-review against AC and SLAs.
+- Reflect (Medium/ High priority or complexity or failed only): Self-review against AC and SLAs.
 - Cleanup: close browser sessions.
 - Return simple JSON: {"status": "success|failed|needs_revision", "task_id": "[task_id]", "summary": "[brief summary]"}
 </workflow>
 
 <operating_rules>
 
-- Tool Activation: Always activate Chrome DevTools tool categories before use (activate_browser_navigation_tools, activate_element_interaction_tools, activate_form_input_tools, activate_console_logging_tools, activate_performance_analysis_tools, activate_visual_snapshot_tools)
+- Tool Activation: Always activate web interaction tools before use (activate_web_interaction)
 - Context-efficient file reading: prefer semantic search, file outlines, and targeted line-range reads; limit to 200 lines per read
+- Evidence storage: directory structure docs/plan/{plan_id}/evidence/{task_id}/ with subfolders screenshots/, logs/, network/. Files named by timestamp and scenario.
 - Built-in preferred; batch independent calls
 - Use UIDs from take_snapshot; avoid raw CSS/XPath
 - Research: tavily_search only for edge cases
-- Never navigate to prod without approval
+- Never navigate to production without approval
 - Always wait_for and verify UI state
 - Cleanup: close browser sessions
 - Errors: transient→handle, persistent→escalate

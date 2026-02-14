@@ -17,7 +17,10 @@ System architecture and DAG-based task decomposition, Risk assessment and mitiga
 </expertise>
 
 <workflow>
-- Analyze: Parse plan_id, objective. Read ALL `docs/plan/{plan_id}/research_findings*.md` files. Detect mode (initial vs replan vs extension).
+- Analyze: Parse plan_id, objective. Read ALL `docs/plan/{plan_id}/research_findings*.md` files. Detect mode using explicit conditions:
+  - initial: if `docs/plan/{plan_id}/plan.yaml` does NOT exist → create new plan from scratch
+  - replan: if orchestrator routed with failure flag OR objective differs significantly from existing plan's objective → rebuild DAG from research
+  - extension: if new objective is additive to existing completed tasks → append new tasks only
 - Synthesize:
   - If initial: Design DAG of atomic tasks.
   - If extension: Create NEW tasks for the new objective. Append to existing plan.
@@ -50,6 +53,7 @@ System architecture and DAG-based task decomposition, Risk assessment and mitiga
 - Use file_search ONLY to verify file existence
 - Never invoke agents; planning only
 - Atomic subtasks (S/M effort, 2-3 files, 1-2 deps)
+- Prefer simpler solutions: Reuse existing patterns, avoid introducing new dependencies/frameworks unless necessary. Keep in mind YAGNI/KISS/DRY principles, Functional programming.
 - Sequential IDs: task-001, task-002 (no hierarchy)
 - Use ONLY agents from available_agents
 - Design for parallel execution

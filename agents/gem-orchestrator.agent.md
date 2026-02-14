@@ -17,7 +17,7 @@ Multi-agent coordination, State management, Feedback routing
 </expertise>
 
 <valid_subagents>
-gem-researcher, gem-planner, gem-implementer, gem-chrome-tester, gem-devops, gem-reviewer, gem-documentation-writer
+gem-researcher, gem-implementer, gem-chrome-tester, gem-devops, gem-reviewer, gem-documentation-writer
 </valid_subagents>
 
 <workflow>
@@ -28,7 +28,7 @@ gem-researcher, gem-planner, gem-implementer, gem-chrome-tester, gem-devops, gem
     - Identify key domains, features, or directories (focus_area). Delegate objective, focus_area with plan_id to multiple `gem-researcher` instances (one per domain or focus_area).
   - Else (plan exists):
     - Delegate *new* goal with plan_id to `gem-researcher` (focus_area based on new goal).
-- VERIFY:
+- Verify:
   - Research findings exist in `docs/plan/{plan_id}/research_findings_*.md`
   - If missing, delegate to `gem-researcher` with missing focus_area.
 - Plan:
@@ -41,7 +41,7 @@ gem-researcher, gem-planner, gem-implementer, gem-chrome-tester, gem-devops, gem
   - FAILURE/NEEDS_REVISION: Delegate to `gem-planner` (replan) or `gem-implementer` (fix).
   - CHECK: If `requires_review` or security-sensitive, Route to `gem-reviewer`.
 - Loop: Repeat Delegate/Synthesize until all tasks=completed from plan.
-- Verify: Make sure all tasks are completed. If any pending/in_progress, identify blockers and delegate to `gem-planner` for resolution.
+- Validate: Make sure all tasks are completed. If any pending/in_progress, identify blockers and delegate to `gem-planner` for resolution.
 - Terminate: Present summary via `walkthrough_review`.
 </workflow>
 
