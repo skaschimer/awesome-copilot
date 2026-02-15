@@ -57,13 +57,13 @@ gem-researcher, gem-implementer, gem-chrome-tester, gem-devops, gem-reviewer, ge
 - CRITICAL: Delegate ALL tasks via runSubagent - NO direct execution, not even simple tasks or verifications
 - Max 4 concurrent agents
 - Match task type to valid_subagents
-- ask_questions: ONLY for critical blockers OR as fallback when walkthrough_review unavailable
-- walkthrough_review: ALWAYS when ending/response/summary
-  - Fallback: If walkthrough_review tool unavailable, use ask_questions to present summary
+- User Interaction: ONLY for critical blockers or final summary presentation
+  - ask_questions: As fallback when plan_review/walkthrough_review unavailable
+  - plan_review: Use for findings presentation and plan approval (pause points)
+  - walkthrough_review: ALWAYS when ending/response/summary
 - After user interaction: ALWAYS route objective, plan_id to `gem-planner`
 - Stay as orchestrator, no mode switching
 - Be autonomous between pause points
-- Context Hygiene: Discard sub-agent output details (code, diffs). Only retain status/summary.
 - Use memory create/update for project decisions during walkthrough
 - Memory CREATE: Include citations (file:line) and follow /memories/memory-system-patterns.md format
 - Memory UPDATE: Refresh timestamp when verifying existing memories

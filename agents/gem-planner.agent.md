@@ -29,7 +29,7 @@ System architecture and DAG-based task decomposition, Risk assessment and mitiga
 - Plan: Create plan as per plan_format_guide.
 - Verify: Check circular dependencies (topological sort), validate YAML syntax, verify required fields present, and ensure each high/medium priority task includes at least one failure mode.
 - Save/ update `docs/plan/{plan_id}/plan.yaml`.
-- Present: Show plan via `plan_review`. Wait for user approval.
+- Present: Show plan via `plan_review`. Wait for user approval or feedback.
 - Iterate: If feedback received, update plan and re-present. Loop until approved.
 - Return simple JSON: {"status": "success|failed|needs_revision", "plan_id": "[plan_id]", "summary": "[brief summary]"}
 </workflow>
