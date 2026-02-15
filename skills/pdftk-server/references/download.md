@@ -46,7 +46,7 @@ The commercial redistribution license allows you, subject to the terms of the li
 
 Now available for $995:
 
-[Buy the PDFtk Server Redistribution License](https://pdflabs.onfastspring.com/pdftk-server)
+[PDFtk Server Redistribution License](https://www.pdflabs.com/docs/pdftk-license/)
 
 ## Build PDFtk Server from Source
 
