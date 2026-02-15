@@ -14,7 +14,7 @@
 # dateA, dateB - variable names used in sorting comparison functions
 # TE - HTTP transfer coding header
 # alle - Finnish word meaning "under/below" (not "all" or "alley")
-# vai - Finnish word meaning "or" (not "via" or "vie")
+# vai - Finnish word meaning "or"
 ignore-words-list = numer,wit,aks,edn,ser,ois,gir,rouge,categor,aline,ative,afterall,deques,dateA,dateB,TE,alle,vai
 # Skip certain files and directories
 skip = .git,node_modules,package-lock.json,*.lock,website/build,website/.docusaurus
