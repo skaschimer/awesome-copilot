@@ -36,27 +36,6 @@ Ready-to-use prompt templates for specific development scenarios and tasks, defi
 - Run the \`Chat: Run Prompt\` command from the Command Palette
 - Hit the run button while you have a prompt file open in VS Code`,
 
-  collectionsSection: `## 📦 Collections
-
-Curated collections of related prompts, instructions, and agents organized around specific themes, workflows, or use cases.`,
-
-  collectionsUsage: `### How to Use Collections
-
-**Browse Collections:**
-- ⭐ Featured collections are highlighted and appear at the top of the list
-- Explore themed collections that group related customizations
-- Each collection includes prompts, instructions, and agents for specific workflows
-- Collections make it easy to adopt comprehensive toolkits for particular scenarios
-
-**Install Items:**
-- Click install buttons for individual items within collections
-- Or browse to the individual files to copy content manually
-- Collections help you discover related customizations you might have missed`,
-
-  featuredCollectionsSection: `## 🌟 Featured Collections
-
-Discover our curated collections of prompts, instructions, and agents organized around specific themes and workflows.`,
-
   pluginsSection: `## 🔌 Plugins
 
 Curated plugins of related prompts, agents, and skills organized around specific themes, workflows, or use cases. Plugins can be installed directly via GitHub Copilot CLI.`,
