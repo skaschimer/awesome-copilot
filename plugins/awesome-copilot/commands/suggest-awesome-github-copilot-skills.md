@@ -1,0 +1,1 @@
+../../../prompts/suggest-awesome-github-copilot-skills.prompt.md

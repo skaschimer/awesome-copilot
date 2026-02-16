@@ -1,0 +1,1 @@
+../../../agents/swe-subagent.agent.md
