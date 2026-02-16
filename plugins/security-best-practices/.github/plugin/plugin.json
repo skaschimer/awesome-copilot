@@ -6,5 +6,45 @@
     "name": "Awesome Copilot Community"
   },
   "repository": "https://github.com/github/awesome-copilot",
-  "license": "MIT"
+  "license": "MIT",
+  "tags": [
+    "security",
+    "accessibility",
+    "performance",
+    "code-quality",
+    "owasp",
+    "a11y",
+    "optimization",
+    "best-practices"
+  ],
+  "display": {
+    "ordering": "alpha",
+    "show_badge": true
+  },
+  "items": [
+    {
+      "path": "instructions/security-and-owasp.instructions.md",
+      "kind": "instruction"
+    },
+    {
+      "path": "instructions/a11y.instructions.md",
+      "kind": "instruction"
+    },
+    {
+      "path": "instructions/performance-optimization.instructions.md",
+      "kind": "instruction"
+    },
+    {
+      "path": "instructions/object-calisthenics.instructions.md",
+      "kind": "instruction"
+    },
+    {
+      "path": "instructions/self-explanatory-code-commenting.instructions.md",
+      "kind": "instruction"
+    },
+    {
+      "path": "prompts/ai-prompt-engineering-safety-review.prompt.md",
+      "kind": "prompt"
+    }
+  ]
 }

@@ -3,20 +3,20 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Modal from '../components/Modal.astro';
 ---
 
-<BaseLayout title="Collections" description="Curated collections of prompts, instructions, and agents for specific workflows" activeNav="collections">
+<BaseLayout title="Plugins" description="Curated plugins of prompts, agents, and skills for specific workflows" activeNav="plugins">
   <main id="main-content">
     <div class="page-header">
       <div class="container">
-        <h1>📦 Collections</h1>
-        <p>Curated collections of prompts, instructions, and agents for specific workflows</p>
+        <h1>🔌 Plugins</h1>
+        <p>Curated plugins of prompts, agents, and skills for specific workflows</p>
       </div>
     </div>
 
     <div class="page-content">
       <div class="container">
         <div class="search-bar">
-          <label for="search-input" class="sr-only">Search collections</label>
-          <input type="text" id="search-input" placeholder="Search collections..." autocomplete="off">
+          <label for="search-input" class="sr-only">Search plugins</label>
+          <input type="text" id="search-input" placeholder="Search plugins..." autocomplete="off">
         </div>
         
         <div class="filters-bar" id="filters-bar">
@@ -35,7 +35,7 @@ import Modal from '../components/Modal.astro';
         
         <div class="results-count" id="results-count" aria-live="polite"></div>
         <div class="resource-list" id="resource-list" role="list">
-          <div class="loading" aria-live="polite">Loading collections...</div>
+          <div class="loading" aria-live="polite">Loading plugins...</div>
         </div>
       </div>
     </div>
@@ -44,6 +44,6 @@ import Modal from '../components/Modal.astro';
   <Modal />
 
   <script>
-    import '../scripts/pages/collections';
+    import '../scripts/pages/plugins';
   </script>
 </BaseLayout>

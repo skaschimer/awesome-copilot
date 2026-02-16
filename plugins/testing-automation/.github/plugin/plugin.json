@@ -6,5 +6,65 @@
     "name": "Awesome Copilot Community"
   },
   "repository": "https://github.com/github/awesome-copilot",
-  "license": "MIT"
+  "license": "MIT",
+  "tags": [
+    "testing",
+    "tdd",
+    "automation",
+    "unit-tests",
+    "integration",
+    "playwright",
+    "jest",
+    "nunit"
+  ],
+  "display": {
+    "ordering": "alpha",
+    "show_badge": true
+  },
+  "items": [
+    {
+      "path": "agents/tdd-red.agent.md",
+      "kind": "agent"
+    },
+    {
+      "path": "agents/tdd-green.agent.md",
+      "kind": "agent"
+    },
+    {
+      "path": "agents/tdd-refactor.agent.md",
+      "kind": "agent"
+    },
+    {
+      "path": "agents/playwright-tester.agent.md",
+      "kind": "agent"
+    },
+    {
+      "path": "instructions/playwright-typescript.instructions.md",
+      "kind": "instruction"
+    },
+    {
+      "path": "instructions/playwright-python.instructions.md",
+      "kind": "instruction"
+    },
+    {
+      "path": "prompts/playwright-explore-website.prompt.md",
+      "kind": "prompt"
+    },
+    {
+      "path": "prompts/playwright-generate-test.prompt.md",
+      "kind": "prompt"
+    },
+    {
+      "path": "prompts/csharp-nunit.prompt.md",
+      "kind": "prompt"
+    },
+    {
+      "path": "prompts/java-junit.prompt.md",
+      "kind": "prompt"
+    },
+    {
+      "path": "prompts/ai-prompt-engineering-safety-review.prompt.md",
+      "kind": "prompt"
+    }
+  ]
 }

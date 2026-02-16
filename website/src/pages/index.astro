@@ -65,13 +65,13 @@ const base = import.meta.env.BASE_URL;
             </div>
             <div class="card-count" data-count="hooks" aria-label="Hook count">-</div>
           </a>
-          <a href={`${base}collections/`} class="card card-with-count" id="card-collections">
-            <div class="card-icon" aria-hidden="true">📦</div>
+          <a href={`${base}plugins/`} class="card card-with-count" id="card-plugins">
+            <div class="card-icon" aria-hidden="true">🔌</div>
             <div class="card-content">
-              <h3>Collections</h3>
-              <p>Curated collections organized by themes</p>
+              <h3>Plugins</h3>
+              <p>Curated plugins organized by themes</p>
             </div>
-            <div class="card-count" data-count="collections" aria-label="Collection count">-</div>
+            <div class="card-count" data-count="plugins" aria-label="Plugin count">-</div>
           </a>
           <a href={`${base}tools/`} class="card card-with-count" id="card-tools">
             <div class="card-icon" aria-hidden="true">🔧</div>
@@ -85,11 +85,11 @@ const base = import.meta.env.BASE_URL;
       </div>
     </section>
 
-    <!-- Featured Collections -->
+    <!-- Featured Plugins -->
     <section class="featured" aria-labelledby="featured-heading">
       <div class="container">
-        <h2 id="featured-heading">Featured Collections</h2>
-        <div id="featured-collections" class="cards-grid" aria-live="polite">
+        <h2 id="featured-heading">Featured Plugins</h2>
+        <div id="featured-plugins" class="cards-grid" aria-live="polite">
           <!-- Populated by JS -->
         </div>
       </div>
