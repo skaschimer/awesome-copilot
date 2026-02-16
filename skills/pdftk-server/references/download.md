@@ -7,7 +7,7 @@ PDFtk provides an installer for Windows. Many Linux distributions provide a PDFt
 Download the PDFtk Server installer for Windows 10 and 11 using the following command:
 
 ```bash
-curl -LO https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/pdftk_server-2.02-win-setup.exe
+winget install --id PDFLabs.PDFtk.Server
 ```
 
 Then run the installer:

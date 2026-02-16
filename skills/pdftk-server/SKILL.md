@@ -25,7 +25,7 @@ PDFtk Server is a command-line tool for working with PDF documents. It can merge
 ## Prerequisites
 
 - PDFtk Server must be installed on the system
-  - **Windows**: Download and run the installer (see `references/download.md`)
+  - **Windows**: `winget install --id PDFLabs.PDFtk.Server`
   - **macOS**: `brew install pdftk-java`
   - **Linux (Debian/Ubuntu)**: `sudo apt-get install pdftk`
   - **Linux (Red Hat/Fedora)**: `sudo dnf install pdftk`

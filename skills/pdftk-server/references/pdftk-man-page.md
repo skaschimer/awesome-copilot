@@ -1,5 +1,9 @@
 # PDFtk Server Manual Reference
 
+- **`pdftk` version 2.02**
+- Check [version history](https://www.pdflabs.com/docs/pdftk-version-history/) for changes
+- See [server manual](https://www.pdflabs.com/docs/pdftk-man-page/) for the latest documentation
+
 ## Overview
 
 PDFtk is a command-line utility for manipulating PDF documents. It enables operations including merging, splitting, rotating, encrypting, decrypting, watermarking, form-filling, and metadata extraction of PDF files.
