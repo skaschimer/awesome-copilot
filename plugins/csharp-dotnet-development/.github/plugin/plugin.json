@@ -43,6 +43,18 @@
       "kind": "prompt"
     },
     {
+      "path": "prompts/csharp-nunit.prompt.md",
+      "kind": "prompt"
+    },
+    {
+      "path": "prompts/csharp-mstest.prompt.md",
+      "kind": "prompt"
+    },
+    {
+      "path": "prompts/csharp-tunit.prompt.md",
+      "kind": "prompt"
+    },
+    {
       "path": "prompts/dotnet-best-practices.prompt.md",
       "kind": "prompt"
     },
