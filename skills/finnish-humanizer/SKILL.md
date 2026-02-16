@@ -1,10 +1,9 @@
 ---
-agent: 'agent'
-description: 'Detect and remove AI-generated markers from Finnish text, making it sound like a native Finnish speaker wrote it. Identifies 26 patterns across Finnish-specific and universal categories.'
-tools: ['edit/editFiles']
+name: finnish-humanizer
+description: 'Detect and remove AI-generated markers from Finnish text, making it sound like a native Finnish speaker wrote it. Use when asked to "humanize", "naturalize", or "remove AI feel" from Finnish text, or when editing .md/.txt files containing Finnish content. Identifies 26 patterns (12 Finnish-specific + 14 universal) and 4 style markers.'
 ---
 
-# Finnish AI Text Humanizer
+# Finnish Humanizer
 
 <role>
 Olet kirjoituseditori, joka tunnistaa ja poistaa suomenkielisen AI-tekstin tunnusmerkit. Et ole kieliopin tarkistaja, kääntäjä tai yksinkertaistaja. Tehtäväsi on tehdä tekstistä sellaista, jonka suomalainen ihminen olisi voinut kirjoittaa.
@@ -67,7 +66,7 @@ Käsittele suoraan. Palauta luonnollistettu teksti + muutosyhteenveto.
 <examples>
 ## Esimerkkipatternit
 
-26 AI-patternia on jaettu kahteen ryhmään: suomenkieliset (suomelle ominaiset rakenteet) ja universaalit (kaikissa kielissä esiintyvät, tunnistetaan ja korjataan suomeksi). Alla 7 kanonista esimerkkiä. Täysi 26 kategorian patternilista: https://github.com/Hakku/finnish-humanizer/blob/main/finnish-humanizer/references/patterns.md
+26 AI-patternia on jaettu kahteen ryhmään: suomenkieliset (suomelle ominaiset rakenteet) ja universaalit (kaikissa kielissä esiintyvät, tunnistetaan ja korjataan suomeksi). Alla 7 kanonista esimerkkiä. Täysi 26 kategorian patternilista: ks. references/patterns.md
 
 ### Suomenkieliset patternit
 
@@ -90,7 +89,7 @@ Ennen: Tämän lisäksi, on tärkeää huomioida se tosiasia, että markkinat ov
 Jälkeen: Markkinatkin ovat muuttuneet.
 
 **#6 Genetiiviketjut**
-Peräkkäiset genetiivimuodot kasautuvat kun AI yrittää ilmaista monimutkaisia suhteita yhdessä rakenteessa.
+Peräkkäiset genetiivimuodot kasautuvat kun AI yrittää ilmaista monimutkaisia suhteita yhdessä rakenteella.
 
 Ennen: Tuotteen laadun parantamisen mahdollisuuksien arvioinnin tulokset osoittavat kehityspotentiaalia.
 Jälkeen: Arvioimme miten tuotteen laatua voisi parantaa. Kehityspotentiaalia löytyi.
@@ -139,3 +138,8 @@ Jos käyttäjä pyytää vain tekstiä ilman selityksiä, jätä muutosyhteenvet
 - **Koodiesimerkkit ja tekninen sanasto.** Säilytä englanninkieliset koodiesimerkkit, tekniset termit ja lainaukset sellaisinaan.
 - **Sekateksti (fi/en).** Käsittele vain suomenkieliset osat. Jätä englanninkieliset osiot koskematta.
 </constraints>
+
+## References
+
+- Full 26-pattern list with examples: [references/patterns.md](references/patterns.md)
+- Source repository: [Hakku/finnish-humanizer](https://github.com/Hakku/finnish-humanizer) (MIT)
