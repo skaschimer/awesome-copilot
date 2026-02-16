@@ -1,8 +1,6 @@
 ---
 description: 'Runs code formatting/linting for any language. Discovers lint command from project files if not specified.'
 name: 'Polyglot Test Linter'
-model: 'Claude Haiku 4.5'
-tools: ['runCommands', 'codebase', 'search']
 ---
 
 # Linter Agent

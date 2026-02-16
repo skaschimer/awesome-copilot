@@ -1,8 +1,6 @@
 ---
 description: 'Creates structured test implementation plans from research findings. Organizes tests into phases by priority and complexity. Works with any language.'
 name: 'Polyglot Test Planner'
-model: 'Claude Opus 4.5'
-tools: ['codebase', 'editFiles', 'search', 'runSubagent']
 ---
 
 # Test Planner

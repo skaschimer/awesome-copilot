@@ -1,7 +1,5 @@
 ---
-agent: 'agent'
 description: 'Best practices and guidelines for generating comprehensive, parameterized unit tests with 80% code coverage across any programming language'
-model: 'Claude Sonnet 4.5'
 ---
 
 # Unit Test Generation Prompt

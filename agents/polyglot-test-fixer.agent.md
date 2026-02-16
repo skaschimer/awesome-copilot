@@ -1,8 +1,6 @@
 ---
 description: 'Fixes compilation errors in source or test files. Analyzes error messages and applies corrections.'
 name: 'Polyglot Test Fixer'
-model: 'Claude Sonnet 4.5'
-tools: ['runCommands', 'codebase', 'editFiles', 'search']
 ---
 
 # Fixer Agent

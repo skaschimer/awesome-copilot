@@ -1,8 +1,6 @@
 ---
 description: 'Orchestrates comprehensive test generation using Research-Plan-Implement pipeline. Use when asked to generate tests, write unit tests, improve test coverage, or add tests.'
 name: 'Polyglot Test Generator'
-model: 'Claude Opus 4.5'
-tools: ['runCommands', 'codebase', 'editFiles', 'search', 'runSubagent']
 ---
 
 # Test Generator Agent

@@ -1,8 +1,6 @@
 ---
 description: 'Runs build/compile commands for any language and reports results. Discovers build command from project files if not specified.'
 name: 'Polyglot Test Builder'
-model: 'Claude Sonnet 4.5'
-tools: ['runCommands', 'codebase', 'search']
 ---
 
 # Builder Agent

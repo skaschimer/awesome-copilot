@@ -1,8 +1,6 @@
 ---
 description: 'Runs test commands for any language and reports results. Discovers test command from project files if not specified.'
 name: 'Polyglot Test Tester'
-model: 'Claude Sonnet 4.5'
-tools: ['runCommands', 'codebase', 'search']
 ---
 
 # Tester Agent

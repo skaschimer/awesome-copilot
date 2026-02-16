@@ -1,8 +1,6 @@
 ---
 description: 'Implements a single phase from the test plan. Writes test files and verifies they compile and pass. Calls builder, tester, and fixer agents as needed.'
 name: 'Polyglot Test Implementer'
-model: 'Claude Sonnet 4.5'
-tools: ['runCommands', 'codebase', 'editFiles', 'search', 'runSubagent']
 ---
 
 # Test Implementer
