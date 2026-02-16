@@ -1,0 +1,68 @@
+{
+  "name": "polyglot-test-agent",
+  "description": "Multi-agent pipeline for generating comprehensive unit tests across any programming language. Orchestrates research, planning, and implementation phases using specialized agents to produce tests that compile, pass, and follow project conventions.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Awesome Copilot Community"
+  },
+  "repository": "https://github.com/github/awesome-copilot",
+  "license": "MIT",
+  "tags": [
+    "testing",
+    "unit-tests",
+    "polyglot",
+    "test-generation",
+    "multi-agent",
+    "tdd",
+    "csharp",
+    "typescript",
+    "python",
+    "go"
+  ],
+  "display": {
+    "ordering": "alpha",
+    "show_badge": true
+  },
+  "items": [
+    {
+      "path": "agents/polyglot-test-generator.agent.md",
+      "kind": "agent"
+    },
+    {
+      "path": "agents/polyglot-test-researcher.agent.md",
+      "kind": "agent"
+    },
+    {
+      "path": "agents/polyglot-test-planner.agent.md",
+      "kind": "agent"
+    },
+    {
+      "path": "agents/polyglot-test-implementer.agent.md",
+      "kind": "agent"
+    },
+    {
+      "path": "agents/polyglot-test-builder.agent.md",
+      "kind": "agent"
+    },
+    {
+      "path": "agents/polyglot-test-tester.agent.md",
+      "kind": "agent"
+    },
+    {
+      "path": "agents/polyglot-test-fixer.agent.md",
+      "kind": "agent"
+    },
+    {
+      "path": "agents/polyglot-test-linter.agent.md",
+      "kind": "agent"
+    },
+    {
+      "path": "skills/polyglot-test-agent/unit-test-generation.prompt.md",
+      "kind": "prompt"
+    },
+    {
+      "path": "skills/polyglot-test-agent/SKILL.md",
+      "kind": "skill"
+    }
+  ]
+}
