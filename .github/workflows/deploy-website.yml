@@ -13,7 +13,7 @@ on:
       - "prompts/**"
       - "instructions/**"
       - "skills/**"
-      - "collections/**"
+      - "plugins/**"
       - "cookbook/**"
       - "eng/generate-website-data.mjs"
       - ".github/workflows/deploy-website.yml"

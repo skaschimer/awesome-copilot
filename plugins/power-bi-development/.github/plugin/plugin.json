@@ -6,5 +6,77 @@
     "name": "Awesome Copilot Community"
   },
   "repository": "https://github.com/github/awesome-copilot",
-  "license": "MIT"
+  "license": "MIT",
+  "tags": [
+    "power-bi",
+    "dax",
+    "data-modeling",
+    "performance",
+    "visualization",
+    "security",
+    "devops",
+    "business-intelligence"
+  ],
+  "display": {
+    "ordering": "manual",
+    "show_badge": true
+  },
+  "items": [
+    {
+      "path": "agents/power-bi-data-modeling-expert.agent.md",
+      "kind": "agent"
+    },
+    {
+      "path": "agents/power-bi-dax-expert.agent.md",
+      "kind": "agent"
+    },
+    {
+      "path": "agents/power-bi-performance-expert.agent.md",
+      "kind": "agent"
+    },
+    {
+      "path": "agents/power-bi-visualization-expert.agent.md",
+      "kind": "agent"
+    },
+    {
+      "path": "instructions/power-bi-custom-visuals-development.instructions.md",
+      "kind": "instruction"
+    },
+    {
+      "path": "instructions/power-bi-data-modeling-best-practices.instructions.md",
+      "kind": "instruction"
+    },
+    {
+      "path": "instructions/power-bi-dax-best-practices.instructions.md",
+      "kind": "instruction"
+    },
+    {
+      "path": "instructions/power-bi-devops-alm-best-practices.instructions.md",
+      "kind": "instruction"
+    },
+    {
+      "path": "instructions/power-bi-report-design-best-practices.instructions.md",
+      "kind": "instruction"
+    },
+    {
+      "path": "instructions/power-bi-security-rls-best-practices.instructions.md",
+      "kind": "instruction"
+    },
+    {
+      "path": "prompts/power-bi-dax-optimization.prompt.md",
+      "kind": "prompt"
+    },
+    {
+      "path": "prompts/power-bi-model-design-review.prompt.md",
+      "kind": "prompt"
+    },
+    {
+      "path": "prompts/power-bi-performance-troubleshooting.prompt.md",
+      "kind": "prompt"
+    },
+    {
+      "path": "prompts/power-bi-report-design-consultation.prompt.md",
+      "kind": "prompt"
+    }
+  ]
 }
