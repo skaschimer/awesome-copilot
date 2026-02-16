@@ -13,7 +13,7 @@
     {
       "name": "awesome-copilot",
       "source": "./plugins/awesome-copilot",
-      "description": "Meta prompts that help you discover and generate curated GitHub Copilot agents, collections, instructions, prompts, and skills.",
+      "description": "Meta prompts that help you discover and generate curated GitHub Copilot agents, instructions, prompts, and skills.",
       "version": "1.0.0"
     },
     {
@@ -212,6 +212,12 @@
       "name": "ruby-mcp-development",
       "source": "./plugins/ruby-mcp-development",
       "description": "Complete toolkit for building Model Context Protocol servers in Ruby using the official MCP Ruby SDK gem with Rails integration support.",
+      "version": "1.0.0"
+    },
+    {
+      "name": "rug-agentic-workflow",
+      "source": "./plugins/rug-agentic-workflow",
+      "description": "Three-agent workflow for orchestrated software delivery with an orchestrator plus implementation and QA subagents.",
       "version": "1.0.0"
     },
     {

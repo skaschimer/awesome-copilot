@@ -2,7 +2,7 @@
 
 /**
  * Generate JSON metadata files for the GitHub Pages website.
- * This script extracts metadata from agents, prompts, instructions, skills, and collections
+ * This script extracts metadata from agents, prompts, instructions, skills, and plugins
  * and writes them to website/data/ for client-side search and display.
  */
 
@@ -11,17 +11,16 @@ import path from "path";
 import { fileURLToPath } from "url";
 import {
     AGENTS_DIR,
-    COLLECTIONS_DIR,
     COOKBOOK_DIR,
     HOOKS_DIR,
     INSTRUCTIONS_DIR,
+    PLUGINS_DIR,
     PROMPTS_DIR,
     ROOT_FOLDER,
     SKILLS_DIR
 } from "./constants.mjs";
 import { getGitFileDates } from "./utils/git-dates.mjs";
 import {
-    parseCollectionYaml,
     parseFrontmatter,
     parseSkillMetadata,
     parseHookMetadata,
@@ -483,66 +482,58 @@ function getSkillFiles(skillPath, relativePath) {
 }
 
 /**
- * Generate collections metadata
+ * Generate plugins metadata
  */
-function generateCollectionsData(gitDates) {
-  const collections = [];
+function generatePluginsData(gitDates) {
+  const plugins = [];
 
-  if (!fs.existsSync(COLLECTIONS_DIR)) {
-    return collections;
+  if (!fs.existsSync(PLUGINS_DIR)) {
+    return plugins;
   }
 
-  const files = fs
-    .readdirSync(COLLECTIONS_DIR)
-    .filter((f) => f.endsWith(".collection.yml"));
+  const pluginDirs = fs.readdirSync(PLUGINS_DIR, { withFileTypes: true })
+    .filter(d => d.isDirectory());
 
-  // Track all unique tags
-  const allTags = new Set();
+  for (const dir of pluginDirs) {
+    const pluginDir = path.join(PLUGINS_DIR, dir.name);
+    const jsonPath = path.join(pluginDir, ".github", "plugin", "plugin.json");
 
-  for (const file of files) {
-    const filePath = path.join(COLLECTIONS_DIR, file);
-    const data = parseCollectionYaml(filePath);
-    const relativePath = path
-      .relative(ROOT_FOLDER, filePath)
-      .replace(/\\/g, "/");
+    if (!fs.existsSync(jsonPath)) continue;
 
-    if (data) {
-      const tags = data.tags || [];
-      tags.forEach((t) => allTags.add(t));
+    try {
+      const data = JSON.parse(fs.readFileSync(jsonPath, "utf-8"));
+      const relPath = `plugins/${dir.name}`;
+      const dates = gitDates[relPath] || gitDates[`${relPath}/`] || {};
 
-      // featured can be at top level or nested under display
-      const featured = data.featured || data.display?.featured || false;
-
-      collections.push({
-        id: file.replace(".collection.yml", ""),
-        name: data.name || file.replace(".collection.yml", ""),
+      plugins.push({
+        id: dir.name,
+        name: data.name || dir.name,
         description: data.description || "",
-        tags: tags,
-        featured: featured,
-        items: (data.items || []).map((item) => ({
-          path: item.path,
-          kind: item.kind,
-          usage: item.usage || null,
-        })),
-        path: relativePath,
-        filename: file,
-        lastUpdated: gitDates.get(relativePath) || null,
+        path: relPath,
+        tags: data.tags || [],
+        featured: data.featured || false,
+        itemCount: data.items ? data.items.length : 0,
+        items: data.items || [],
+        lastUpdated: dates.lastModified || null,
+        searchText: `${data.name || dir.name} ${data.description || ""} ${(data.tags || []).join(" ")}`.toLowerCase(),
       });
+    } catch (e) {
+      console.warn(`Failed to parse plugin: ${dir.name}`, e.message);
     }
   }
 
-  // Sort with featured first, then alphabetically
-  const sortedCollections = collections.sort((a, b) => {
+  // Collect all unique tags
+  const allTags = [...new Set(plugins.flatMap(p => p.tags))].sort();
+
+  const sortedPlugins = plugins.sort((a, b) => {
     if (a.featured && !b.featured) return -1;
     if (!a.featured && b.featured) return 1;
     return a.name.localeCompare(b.name);
   });
 
   return {
-    items: sortedCollections,
-    filters: {
-      tags: Array.from(allTags).sort(),
-    },
+    items: sortedPlugins,
+    filters: { tags: allTags }
   };
 }
 
@@ -612,7 +603,7 @@ function generateSearchIndex(
   instructions,
   hooks,
   skills,
-  collections
+  plugins
 ) {
   const index = [];
 
@@ -682,18 +673,16 @@ function generateSearchIndex(
     });
   }
 
-  for (const collection of collections) {
+  for (const plugin of plugins) {
     index.push({
-      type: "collection",
-      id: collection.id,
-      title: collection.name,
-      description: collection.description,
-      path: collection.path,
-      tags: collection.tags,
-      lastUpdated: collection.lastUpdated,
-      searchText: `${collection.name} ${
-        collection.description
-      } ${collection.tags.join(" ")}`.toLowerCase(),
+      type: "plugin",
+      id: plugin.id,
+      title: plugin.name,
+      description: plugin.description,
+      path: plugin.path,
+      tags: plugin.tags,
+      lastUpdated: plugin.lastUpdated,
+      searchText: plugin.searchText,
     });
   }
 
@@ -806,7 +795,7 @@ async function main() {
   // Load git dates for all resource files (single efficient git command)
   console.log("Loading git history for last updated dates...");
   const gitDates = getGitFileDates(
-    ["agents/", "prompts/", "instructions/", "hooks/", "skills/", "collections/"],
+    ["agents/", "prompts/", "instructions/", "hooks/", "skills/", "plugins/"],
     ROOT_FOLDER
   );
   console.log(`✓ Loaded dates for ${gitDates.size} files\n`);
@@ -842,10 +831,10 @@ async function main() {
     `✓ Generated ${skills.length} skills (${skillsData.filters.categories.length} categories)`
   );
 
-  const collectionsData = generateCollectionsData(gitDates);
-  const collections = collectionsData.items;
+  const pluginsData = generatePluginsData(gitDates);
+  const plugins = pluginsData.items;
   console.log(
-    `✓ Generated ${collections.length} collections (${collectionsData.filters.tags.length} tags)`
+    `✓ Generated ${plugins.length} plugins (${pluginsData.filters.tags.length} tags)`
   );
 
   const toolsData = generateToolsData();
@@ -865,7 +854,7 @@ async function main() {
     instructions,
     hooks,
     skills,
-    collections
+    plugins
   );
   console.log(`✓ Generated search index with ${searchIndex.length} items`);
 
@@ -896,8 +885,8 @@ async function main() {
   );
 
   fs.writeFileSync(
-    path.join(WEBSITE_DATA_DIR, "collections.json"),
-    JSON.stringify(collectionsData, null, 2)
+    path.join(WEBSITE_DATA_DIR, "plugins.json"),
+    JSON.stringify(pluginsData, null, 2)
   );
 
   fs.writeFileSync(
@@ -924,7 +913,7 @@ async function main() {
       instructions: instructions.length,
       skills: skills.length,
       hooks: hooks.length,
-      collections: collections.length,
+      plugins: plugins.length,
       tools: tools.length,
       samples: samplesData.totalRecipes,
       total: searchIndex.length,

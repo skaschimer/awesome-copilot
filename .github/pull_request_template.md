@@ -20,9 +20,9 @@
 - [ ] New instruction file.
 - [ ] New prompt file.
 - [ ] New agent file.
-- [ ] New collection file.
+- [ ] New plugin.
 - [ ] New skill file.
-- [ ] Update to existing instruction, prompt, agent, collection or skill.
+- [ ] Update to existing instruction, prompt, agent, plugin, or skill.
 - [ ] Other (please specify):
 
 ---

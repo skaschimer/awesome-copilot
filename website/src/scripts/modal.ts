@@ -21,27 +21,27 @@ let currentFileContent: string | null = null;
 let currentFileType: string | null = null;
 let triggerElement: HTMLElement | null = null;
 
-// Collection data cache
-interface CollectionItem {
+// Plugin data cache
+interface PluginItem {
   path: string;
   kind: string;
   usage?: string | null;
 }
 
-interface Collection {
+interface Plugin {
   id: string;
   name: string;
   description?: string;
   path: string;
-  items: CollectionItem[];
+  items: PluginItem[];
   tags?: string[];
 }
 
-interface CollectionsData {
-  items: Collection[];
+interface PluginsData {
+  items: Plugin[];
 }
 
-let collectionsCache: CollectionsData | null = null;
+let pluginsCache: PluginsData | null = null;
 
 /**
  * Get all focusable elements within a container
@@ -299,7 +299,7 @@ export async function openFileModal(
 ): Promise<void> {
   const modal = document.getElementById("file-modal");
   const title = document.getElementById("modal-title");
-  const modalContent = document.getElementById("modal-content");
+  let modalContent = document.getElementById("modal-content");
   const contentEl = modalContent?.querySelector("code");
   const installDropdown = document.getElementById("install-dropdown");
   const installBtnMain = document.getElementById(
@@ -337,9 +337,9 @@ export async function openFileModal(
     closeBtn?.focus();
   }, 0);
 
-  // Handle collections differently - show as item list
-  if (type === "collection") {
-    await openCollectionModal(
+  // Handle plugins differently - show as item list
+  if (type === "plugin") {
+    await openPluginModal(
       filePath,
       title,
       modalContent,
@@ -359,9 +359,16 @@ export async function openFileModal(
   if (copyBtn) copyBtn.style.display = "inline-flex";
   if (downloadBtn) downloadBtn.style.display = "inline-flex";
 
-  // Restore pre/code structure if it was replaced by collection view
-  if (!modalContent.querySelector("pre")) {
-    modalContent.innerHTML = '<pre id="modal-content"><code></code></pre>';
+  // Restore pre/code structure if it was replaced by plugin view
+  if (modalContent.tagName !== 'PRE') {
+    const modalBody = modalContent.parentElement;
+    if (modalBody) {
+      const pre = document.createElement("pre");
+      pre.id = "modal-content";
+      pre.innerHTML = "<code></code>";
+      modalBody.replaceChild(pre, modalContent);
+      modalContent = pre;
+    }
   }
   const codeEl = modalContent.querySelector("code");
 
@@ -392,9 +399,9 @@ export async function openFileModal(
 }
 
 /**
- * Open collection modal with item list
+ * Open plugin modal with item list
  */
-async function openCollectionModal(
+async function openPluginModal(
   filePath: string,
   title: HTMLElement,
   modalContent: HTMLElement,
@@ -402,48 +409,56 @@ async function openCollectionModal(
   copyBtn: HTMLElement | null,
   downloadBtn: HTMLElement | null
 ): Promise<void> {
-  // Hide install dropdown and copy/download for collections
+  // Hide install dropdown and copy/download for plugins
   if (installDropdown) installDropdown.style.display = "none";
   if (copyBtn) copyBtn.style.display = "none";
   if (downloadBtn) downloadBtn.style.display = "none";
 
-  // Show loading
-  modalContent.innerHTML =
-    '<div class="collection-loading">Loading collection...</div>';
-
-  // Load collections data if not cached
-  if (!collectionsCache) {
-    collectionsCache = await fetchData<CollectionsData>("collections.json");
+  // Replace <pre> with a <div> so plugin content isn't styled as preformatted text
+  const modalBody = modalContent.parentElement;
+  if (modalBody) {
+    const div = document.createElement("div");
+    div.id = "modal-content";
+    div.innerHTML = '<div class="collection-loading">Loading plugin...</div>';
+    modalBody.replaceChild(div, modalContent);
+    modalContent = div;
+  } else {
+    modalContent.innerHTML = '<div class="collection-loading">Loading plugin...</div>';
   }
 
-  if (!collectionsCache) {
+  // Load plugins data if not cached
+  if (!pluginsCache) {
+    pluginsCache = await fetchData<PluginsData>("plugins.json");
+  }
+
+  if (!pluginsCache) {
     modalContent.innerHTML =
-      '<div class="collection-error">Failed to load collection data.</div>';
+      '<div class="collection-error">Failed to load plugin data.</div>';
     return;
   }
 
-  // Find the collection
-  const collection = collectionsCache.items.find((c) => c.path === filePath);
-  if (!collection) {
+  // Find the plugin
+  const plugin = pluginsCache.items.find((c) => c.path === filePath);
+  if (!plugin) {
     modalContent.innerHTML =
-      '<div class="collection-error">Collection not found.</div>';
+      '<div class="collection-error">Plugin not found.</div>';
     return;
   }
 
   // Update title
-  title.textContent = collection.name;
+  title.textContent = plugin.name;
 
-  // Render collection view
+  // Render plugin view
   modalContent.innerHTML = `
     <div class="collection-view">
       <div class="collection-description">${escapeHtml(
-        collection.description || ""
+        plugin.description || ""
       )}</div>
       ${
-        collection.tags && collection.tags.length > 0
+        plugin.tags && plugin.tags.length > 0
           ? `
         <div class="collection-tags">
-          ${collection.tags
+          ${plugin.tags
             .map((t) => `<span class="resource-tag">${escapeHtml(t)}</span>`)
             .join("")}
         </div>
@@ -451,10 +466,10 @@ async function openCollectionModal(
           : ""
       }
       <div class="collection-items-header">
-        <strong>${collection.items.length} items in this collection</strong>
+        <strong>${plugin.items.length} items in this plugin</strong>
       </div>
       <div class="collection-items-list">
-        ${collection.items
+        ${plugin.items
           .map(
             (item) => `
           <div class="collection-item" data-path="${escapeHtml(
@@ -484,7 +499,7 @@ async function openCollectionModal(
     </div>
   `;
 
-  // Add click handlers to collection items
+  // Add click handlers to plugin items
   modalContent.querySelectorAll(".collection-item").forEach((el) => {
     el.addEventListener("click", () => {
       const path = (el as HTMLElement).dataset.path;

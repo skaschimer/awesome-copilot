@@ -6,5 +6,53 @@
     "name": "Awesome Copilot Community"
   },
   "repository": "https://github.com/github/awesome-copilot",
-  "license": "MIT"
+  "license": "MIT",
+  "tags": [
+    "database",
+    "sql",
+    "postgresql",
+    "sql-server",
+    "dba",
+    "optimization",
+    "queries",
+    "data-management"
+  ],
+  "display": {
+    "ordering": "alpha",
+    "show_badge": true
+  },
+  "items": [
+    {
+      "path": "agents/postgresql-dba.agent.md",
+      "kind": "agent"
+    },
+    {
+      "path": "agents/ms-sql-dba.agent.md",
+      "kind": "agent"
+    },
+    {
+      "path": "instructions/ms-sql-dba.instructions.md",
+      "kind": "instruction"
+    },
+    {
+      "path": "instructions/sql-sp-generation.instructions.md",
+      "kind": "instruction"
+    },
+    {
+      "path": "prompts/sql-optimization.prompt.md",
+      "kind": "prompt"
+    },
+    {
+      "path": "prompts/sql-code-review.prompt.md",
+      "kind": "prompt"
+    },
+    {
+      "path": "prompts/postgresql-optimization.prompt.md",
+      "kind": "prompt"
+    },
+    {
+      "path": "prompts/postgresql-code-review.prompt.md",
+      "kind": "prompt"
+    }
+  ]
 }

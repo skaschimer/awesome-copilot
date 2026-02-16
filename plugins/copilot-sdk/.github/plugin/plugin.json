@@ -6,5 +6,43 @@
     "name": "Awesome Copilot Community"
   },
   "repository": "https://github.com/github/awesome-copilot",
-  "license": "MIT"
+  "license": "MIT",
+  "tags": [
+    "copilot-sdk",
+    "sdk",
+    "csharp",
+    "go",
+    "nodejs",
+    "typescript",
+    "python",
+    "ai",
+    "github-copilot"
+  ],
+  "featured": true,
+  "display": {
+    "ordering": "manual",
+    "show_badge": true
+  },
+  "items": [
+    {
+      "path": "instructions/copilot-sdk-csharp.instructions.md",
+      "kind": "instruction"
+    },
+    {
+      "path": "instructions/copilot-sdk-go.instructions.md",
+      "kind": "instruction"
+    },
+    {
+      "path": "instructions/copilot-sdk-nodejs.instructions.md",
+      "kind": "instruction"
+    },
+    {
+      "path": "instructions/copilot-sdk-python.instructions.md",
+      "kind": "instruction"
+    },
+    {
+      "path": "skills/copilot-sdk/SKILL.md",
+      "kind": "skill"
+    }
+  ]
 }

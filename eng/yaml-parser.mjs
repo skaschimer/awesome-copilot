@@ -1,4 +1,4 @@
-// YAML parser for collection files and frontmatter parsing using vfile-matter
+// YAML parser for frontmatter parsing using vfile-matter
 import fs from "fs";
 import yaml from "js-yaml";
 import path from "path";
@@ -12,25 +12,6 @@ function safeFileOperation(operation, filePath, defaultValue = null) {
     console.error(`Error processing file ${filePath}: ${error.message}`);
     return defaultValue;
   }
-}
-
-/**
- * Parse a collection YAML file (.collection.yml)
- * Collections are pure YAML files without frontmatter delimiters
- * @param {string} filePath - Path to the collection file
- * @returns {object|null} Parsed collection object or null on error
- */
-function parseCollectionYaml(filePath) {
-  return safeFileOperation(
-    () => {
-      const content = fs.readFileSync(filePath, "utf8");
-
-      // Collections are pure YAML files, parse directly with js-yaml
-      return yaml.load(content, { schema: yaml.JSON_SCHEMA });
-    },
-    filePath,
-    null
-  );
 }
 
 /**
@@ -292,7 +273,6 @@ export {
   extractAgentMetadata,
   extractMcpServerConfigs,
   extractMcpServers,
-  parseCollectionYaml,
   parseFrontmatter,
   parseSkillMetadata,
   parseHookMetadata,
