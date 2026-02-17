@@ -131,6 +131,8 @@ VACUUM silver_transactions
 -- Vacuum with custom retention
 VACUUM silver_transactions RETAIN 168 HOURS
 
+```
+
 ### Incremental Load Pattern
 
 ```python
