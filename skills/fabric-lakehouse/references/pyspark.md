@@ -22,7 +22,7 @@ df = spark.read.format("json").load("Files/bronze/data.json")
 df = spark.read.format("parquet").load("Files/bronze/data.parquet")
 
 # Read Delta table
-df = spark.read.format("delta").table("my_delta_table")
+df = spark.read.table("my_delta_table")
 
 # Read from SQL endpoint
 df = spark.sql("SELECT * FROM lakehouse.my_table")
