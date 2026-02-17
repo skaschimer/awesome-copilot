@@ -86,7 +86,7 @@ Shortcuts create virtual links to data without copying:
 
 ### V-Order Optimization
 
-For faster data read with semantic model enable V-Order optimization on Delta tables.This presorts data in a way that improves query performance for common access patterns.
+For faster data read with semantic model enable V-Order optimization on Delta tables. This presorts data in a way that improves query performance for common access patterns.
 
 ### Table Optimization
 
