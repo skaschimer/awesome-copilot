@@ -20,7 +20,7 @@ Use this skill when you need to:
 
 ### What is a Lakehouse?
 
-Lakehouse in Microsoft Fabric is an item that gives users a place to store their tabular, like tables, and non-tabular, like files, data. It combines the flexibility of a data lake with the management capabilities of a data warehouse. It provides:
+Lakehouse in Microsoft Fabric is an item that gives users a place to store their tabular data (like tables) and non-tabular data (like files). It combines the flexibility of a data lake with the management capabilities of a data warehouse. It provides:
 
 - **Unified storage** in OneLake for structured and unstructured data
 - **Delta Lake format** for ACID transactions, versioning, and time travel
