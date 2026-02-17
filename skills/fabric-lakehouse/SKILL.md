@@ -9,7 +9,7 @@ metadata:
 # When to Use This Skill
 
 Use this skill when you need to:
-- Generate document or explanation that includes definition and context about Fabric Lakehouse and its capabilities.
+- Generate a document or explanation that includes definition and context about Fabric Lakehouse and its capabilities.
 - Design, build, and optimize Lakehouse solutions using best practices.
 - Understand the core concepts and components of a Lakehouse in Microsoft Fabric.
 - Learn how to manage tabular and non-tabular data within a Lakehouse.
