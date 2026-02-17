@@ -45,7 +45,7 @@ Tables can be internal, when data is stored under "Tables" folder or external, w
 
 ### Schemas for tables in a Lakehouse
 
-When creating a lakehouse user can choose to enable schemas. Schemas are used to organize Lakehouse tables. Schemas are implemented as folders under "Tables" folder and store tables inside of those folders. Default schema is "dbo" and it can't be deleted or renamed. All other schemas are optional and can be created, renamed, or deleted. User can reference schema located in other lakehouse using Schema Shortcut that way referencing all tables with one shortcut that are at the destination schema.
+When creating a lakehouse, users can choose to enable schemas. Schemas are used to organize Lakehouse tables. Schemas are implemented as folders under the "Tables" folder and store tables inside of those folders. The default schema is "dbo" and it can't be deleted or renamed. All other schemas are optional and can be created, renamed, or deleted. Users can reference a schema located in another lakehouse using a Schema Shortcut, thereby referencing all tables in the destination schema with a single shortcut.
 
 ### Files in a Lakehouse
 
