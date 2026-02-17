@@ -41,7 +41,7 @@ Lakehouse in Microsoft Fabric is an item that gives users a place to store their
 ### Tabular data in a Lakehouse
 
 Tabular data in a form of tables are stored under "Tables" folder. Main format for tables in Lakehouse is Delta. Lakehouse can store tabular data in other formats like CSV or Parquet, these formats only available for Spark querying.
-Tables can be internal, when data is stored under "Tables" folder or external, when only reference to a table is stored under "Tables" folder but the data itself is stored in a referenced location. Referencing tables are done through Shortcuts, which can be internal, pointing to other location in Fabric, or external pointing to data stored outside of Fabric.
+Tables can be internal, when data is stored under "Tables" folder, or external, when only reference to a table is stored under "Tables" folder but the data itself is stored in a referenced location. Tables are referenced through Shortcuts, which can be internal (pointing to another location in Fabric) or external (pointing to data stored outside of Fabric).
 
 ### Schemas for tables in a Lakehouse
 
