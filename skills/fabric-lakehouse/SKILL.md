@@ -53,7 +53,7 @@ Files are stored under "Files" folder. Users can create folders and subfolders t
 
 ### Fabric Materialized Views
 
-Set of pre-computed tables that are automatically updated based on schedule. They provide fast query performance for complex aggregations and joins. Materialized views are defined using PySpark or Spark SQL stored in associated Notebook.
+Set of pre-computed tables that are automatically updated based on schedule. They provide fast query performance for complex aggregations and joins. Materialized views are defined using PySpark or Spark SQL and stored in an associated Notebook.
 
 ### Spark Views
 
