@@ -63,7 +63,7 @@ Logical tables defined by a SQL query. They do not store data but provide a virt
 
 ### Item access or control plane security
 
-User can have workspace roles (Admin, Member, Contributor, Viewer) that provide different levels of access to Lakehouse and its contents. User can also get access permission using sharing capabilities of Lakehouse.
+Users can have workspace roles (Admin, Member, Contributor, Viewer) that provide different levels of access to Lakehouse and its contents. Users can also get access permission using sharing capabilities of Lakehouse.
 
 ### Data access or OneLake Security
 
