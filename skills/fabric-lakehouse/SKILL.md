@@ -90,7 +90,7 @@ For faster data read with semantic model enable V-Order optimization on Delta ta
 
 ### Table Optimization
 
-Tables can also be optimized using OPTIMIZE command, which compacts small files into larger ones and can also apply Z-ordering to improve query performance on specific columns. Regular optimization helps maintain performance as data is ingested and updated over time. Vacuum command can be used to clean up old files and free up storage space, especially after updates and deletes.
+Tables can also be optimized using the OPTIMIZE command, which compacts small files into larger ones and can also apply Z-ordering to improve query performance on specific columns. Regular optimization helps maintain performance as data is ingested and updated over time. The Vacuum command can be used to clean up old files and free up storage space, especially after updates and deletes.
 
 ## Lineage
 
