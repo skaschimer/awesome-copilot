@@ -55,7 +55,7 @@ df.write.format("delta") \
 spark.sql("""
     UPDATE silver_customers
     SET status = 'active'
-    WHERE last_login > '2024-01-01'
+    WHERE last_login > '2024-01-01' -- Example date, adjust as needed
 """)
 
 # DELETE
