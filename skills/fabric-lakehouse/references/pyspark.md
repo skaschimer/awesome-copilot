@@ -136,7 +136,7 @@ VACUUM silver_transactions RETAIN 168 HOURS
 ### Incremental Load Pattern
 
 ```python
-from pyspark.sql.functions import col, max as spark_max
+from pyspark.sql.functions import col
 
 # Get last processed watermark
 last_watermark = spark.sql("""
