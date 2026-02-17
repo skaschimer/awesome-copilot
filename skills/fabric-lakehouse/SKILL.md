@@ -94,7 +94,7 @@ Tables can also be optimized using the OPTIMIZE command, which compacts small fi
 
 ## Lineage
 
-Lakehouse item supports lineage, which allows users to track the origin and transformations of data. Lineage information is automatically captured for tables and files in Lakehouse, showing how data flows from source to destination. This helps with debugging, auditing, and understanding data dependencies.
+The Lakehouse item supports lineage, which allows users to track the origin and transformations of data. Lineage information is automatically captured for tables and files in Lakehouse, showing how data flows from source to destination. This helps with debugging, auditing, and understanding data dependencies.
 
 ## PySpark Code Examples
 
