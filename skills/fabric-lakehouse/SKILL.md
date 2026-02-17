@@ -77,7 +77,7 @@ Shortcuts create virtual links to data without copying:
 ### Types of Shortcuts
 
 - **Internal**: Link to other Fabric Lakehouses/tables, cross-workspace data sharing 
-- **ADLS Gen2**: Azure Data Lake Storage Gen2 external Azure storage
+- **ADLS Gen2**: Link to ADLS Gen2 containers in Azure
 - **Amazon S3**: AWS S3 buckets, cross-cloud data access
 - **Dataverse**: Microsoft Dataverse, business application data
 - **Google Cloud Storage**: GCS buckets, cross-cloud data access
