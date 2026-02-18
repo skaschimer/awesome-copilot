@@ -6,5 +6,32 @@
     "name": "Awesome Copilot Community"
   },
   "repository": "https://github.com/github/awesome-copilot",
-  "license": "MIT"
+  "license": "MIT",
+  "tags": [
+    "power-apps",
+    "power-platform",
+    "typescript",
+    "react",
+    "code-apps",
+    "dataverse",
+    "connectors"
+  ],
+  "display": {
+    "ordering": "manual",
+    "show_badge": true
+  },
+  "items": [
+    {
+      "path": "prompts/power-apps-code-app-scaffold.prompt.md",
+      "kind": "prompt"
+    },
+    {
+      "path": "instructions/power-apps-code-apps.instructions.md",
+      "kind": "instruction"
+    },
+    {
+      "path": "agents/power-platform-expert.agent.md",
+      "kind": "agent"
+    }
+  ]
 }

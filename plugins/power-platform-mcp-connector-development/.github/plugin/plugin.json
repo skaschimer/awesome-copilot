@@ -6,5 +6,34 @@
     "name": "Awesome Copilot Community"
   },
   "repository": "https://github.com/github/awesome-copilot",
-  "license": "MIT"
+  "license": "MIT",
+  "tags": [
+    "power-platform",
+    "mcp",
+    "copilot-studio",
+    "custom-connector",
+    "json-rpc"
+  ],
+  "display": {
+    "ordering": "manual",
+    "show_badge": true
+  },
+  "items": [
+    {
+      "path": "instructions/power-platform-mcp-development.instructions.md",
+      "kind": "instruction"
+    },
+    {
+      "path": "prompts/power-platform-mcp-connector-suite.prompt.md",
+      "kind": "prompt"
+    },
+    {
+      "path": "prompts/mcp-copilot-studio-server-generator.prompt.md",
+      "kind": "prompt"
+    },
+    {
+      "path": "agents/power-platform-mcp-integration-expert.agent.md",
+      "kind": "agent"
+    }
+  ]
 }

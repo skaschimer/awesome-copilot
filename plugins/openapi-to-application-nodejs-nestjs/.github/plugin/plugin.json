@@ -6,5 +6,31 @@
     "name": "Awesome Copilot Community"
   },
   "repository": "https://github.com/github/awesome-copilot",
-  "license": "MIT"
+  "license": "MIT",
+  "tags": [
+    "openapi",
+    "code-generation",
+    "api",
+    "nodejs",
+    "typescript",
+    "nestjs"
+  ],
+  "display": {
+    "ordering": "manual",
+    "show_badge": false
+  },
+  "items": [
+    {
+      "path": "agents/openapi-to-application.agent.md",
+      "kind": "agent"
+    },
+    {
+      "path": "instructions/nestjs.instructions.md",
+      "kind": "instruction"
+    },
+    {
+      "path": "prompts/openapi-to-application-code.prompt.md",
+      "kind": "prompt"
+    }
+  ]
 }

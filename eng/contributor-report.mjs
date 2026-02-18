@@ -19,8 +19,6 @@ setupGracefulShutdown('contributor-report');
 export const AUTO_GENERATED_PATTERNS = [
   'README.md',
   'README.*.md',
-  'collections/*.md',
-  'collections/*.collection.md',
   'docs/README.*.md',
   'docs/*.generated.md'
 ];
@@ -42,8 +40,8 @@ export const TYPE_PATTERNS = {
   skills: [
     'skills/'
   ],
-  collections: [
-    'collections/*.collection.yml'
+  plugins: [
+    'plugins/**/plugin.json'
   ],
   doc: [
     'docs/**/*.md',

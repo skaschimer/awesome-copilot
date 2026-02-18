@@ -6,5 +6,30 @@
     "name": "Awesome Copilot Community"
   },
   "repository": "https://github.com/github/awesome-copilot",
-  "license": "MIT"
+  "license": "MIT",
+  "tags": [
+    "openapi",
+    "code-generation",
+    "api",
+    "java",
+    "spring-boot"
+  ],
+  "display": {
+    "ordering": "manual",
+    "show_badge": false
+  },
+  "items": [
+    {
+      "path": "agents/openapi-to-application.agent.md",
+      "kind": "agent"
+    },
+    {
+      "path": "instructions/springboot.instructions.md",
+      "kind": "instruction"
+    },
+    {
+      "path": "prompts/openapi-to-application-code.prompt.md",
+      "kind": "prompt"
+    }
+  ]
 }

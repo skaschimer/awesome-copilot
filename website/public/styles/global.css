@@ -361,10 +361,7 @@ a:hover {
   font-size: 56px;
   font-weight: 800;
   letter-spacing: -0.02em;
-  background: var(--gradient-primary);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--color-primary);
   margin-bottom: 20px;
   position: relative;
 }
@@ -535,10 +532,7 @@ a:hover {
   flex-shrink: 0;
   font-size: 28px;
   font-weight: 700;
-  background: var(--gradient-primary);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--color-primary);
   line-height: 1;
   min-width: 40px;
   text-align: right;
