@@ -499,7 +499,12 @@ policy = GovernancePolicy(
 @govern(policy)
 async def read_file(path: str) -> str:
     """Read file contents — governed."""
-    return open(path).read()
+    import os
+    safe_path = os.path.realpath(path)
+    if not safe_path.startswith(os.path.realpath(".")):
+        raise ValueError("Path traversal blocked by governance")
+    with open(safe_path) as f:
+        return f.read()
 ```
 
 ---
