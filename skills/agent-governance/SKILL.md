@@ -53,8 +53,8 @@ class PolicyAction(Enum):
 class GovernancePolicy:
     """Declarative policy controlling agent behavior."""
     name: str
-    allowed_tools: list[str] = field(default_factory=list)       # whitelist
-    blocked_tools: list[str] = field(default_factory=list)       # blacklist
+    allowed_tools: list[str] = field(default_factory=list)       # allowlist
+    blocked_tools: list[str] = field(default_factory=list)       # blocklist
     blocked_patterns: list[str] = field(default_factory=list)    # content filters
     max_calls_per_request: int = 100                             # rate limit
     require_human_approval: list[str] = field(default_factory=list)  # tools needing approval
