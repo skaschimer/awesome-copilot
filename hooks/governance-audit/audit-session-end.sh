@@ -15,12 +15,21 @@ mkdir -p logs/copilot/governance
 TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 LOG_FILE="logs/copilot/governance/audit.log"
 
-# Count events from this session
+# Count events from this session (filter by session start timestamp)
 TOTAL=0
 THREATS=0
+SESSION_START=""
 if [[ -f "$LOG_FILE" ]]; then
-  TOTAL=$(wc -l < "$LOG_FILE" 2>/dev/null || echo 0)
-  THREATS=$(grep -c '"threat_detected"' "$LOG_FILE" 2>/dev/null || echo 0)
+  # Find the last session_start event to scope stats to current session
+  SESSION_START=$(grep '"session_start"' "$LOG_FILE" 2>/dev/null | tail -1 | jq -r '.timestamp' 2>/dev/null || echo "")
+  if [[ -n "$SESSION_START" ]]; then
+    # Count events after session start
+    TOTAL=$(awk -v start="$SESSION_START" -F'"timestamp":"' '{split($2,a,"\""); if(a[1]>=start) count++} END{print count+0}' "$LOG_FILE" 2>/dev/null || echo 0)
+    THREATS=$(awk -v start="$SESSION_START" -F'"timestamp":"' '{split($2,a,"\""); if(a[1]>=start && /threat_detected/) count++} END{print count+0}' "$LOG_FILE" 2>/dev/null || echo 0)
+  else
+    TOTAL=$(wc -l < "$LOG_FILE" 2>/dev/null || echo 0)
+    THREATS=$(grep -c '"threat_detected"' "$LOG_FILE" 2>/dev/null || echo 0)
+  fi
 fi
 
 jq -Rn \

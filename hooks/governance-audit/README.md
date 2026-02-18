@@ -93,7 +93,7 @@ Events are written to `logs/copilot/governance/audit.log` in JSON Lines format:
 
 ## Privacy & Security
 
-- Prompts are **never** logged — only threat signals and metadata are recorded
+- Full prompts are **never** logged — only matched threat patterns (minimal evidence snippets) and metadata are recorded
 - Add `logs/` to `.gitignore` to keep audit data local
 - Set `SKIP_GOVERNANCE_AUDIT=true` to disable entirely
 - All data stays local — no external network calls

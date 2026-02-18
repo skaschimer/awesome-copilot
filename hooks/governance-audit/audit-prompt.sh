@@ -44,13 +44,15 @@ check_pattern() {
   if echo "$PROMPT" | grep -qiE "$pattern"; then
     local evidence
     evidence=$(echo "$PROMPT" | grep -oiE "$pattern" | head -1)
-    THREATS_FOUND+=("$category:$severity:$description:$evidence")
+    local evidence_encoded
+    evidence_encoded=$(printf '%s' "$evidence" | base64 | tr -d '\n')
+    THREATS_FOUND+=("$category	$severity	$description	$evidence_encoded")
   fi
 }
 
 # Data exfiltration signals
 check_pattern "send\s+(all|every|entire)\s+\w+\s+to\s+" "data_exfiltration" "0.8" "Bulk data transfer"
-check_pattern "export\s+.*\s+to\s+(external|outside|third.?party)" "data_exfiltration" "0.9" "External export"
+check_pattern "export\s+.*\s+to\s+(external|outside|third[_-]?party)" "data_exfiltration" "0.9" "External export"
 check_pattern "curl\s+.*\s+-d\s+" "data_exfiltration" "0.7" "HTTP POST with data"
 check_pattern "upload\s+.*\s+(credentials|secrets|keys)" "data_exfiltration" "0.95" "Credential upload"
 
@@ -61,16 +63,16 @@ check_pattern "add\s+.*\s+(sudoers|administrators)" "privilege_escalation" "0.95
 
 # System destruction signals
 check_pattern "(rm\s+-rf\s+/|del\s+/[sq]|format\s+c:)" "system_destruction" "0.95" "Destructive command"
-check_pattern "(drop\s+database|truncate\s+table|delete\s+from\s+\w+\s*$)" "system_destruction" "0.9" "Database destruction"
+check_pattern "(drop\s+database|truncate\s+table|delete\s+from\s+\w+\s*(;|\s*$))" "system_destruction" "0.9" "Database destruction"
 check_pattern "wipe\s+(all|entire|every)" "system_destruction" "0.9" "Mass deletion"
 
 # Prompt injection signals
 check_pattern "ignore\s+(previous|above|all)\s+(instructions?|rules?|prompts?)" "prompt_injection" "0.9" "Instruction override"
-check_pattern "you\s+are\s+now\s+(a|an)\s+" "prompt_injection" "0.7" "Role reassignment"
-check_pattern "system\s*:\s*" "prompt_injection" "0.6" "System prompt injection"
+check_pattern "you\s+are\s+now\s+(a|an)\s+(assistant|ai|bot|system|expert|language\s+model)\b" "prompt_injection" "0.7" "Role reassignment"
+check_pattern "(^|\n)\s*system\s*:\s*you\s+are" "prompt_injection" "0.6" "System prompt injection"
 
 # Credential exposure signals
-check_pattern "(api[_-]?key|secret[_-]?key|password|token)\s*[:=]\s*['\"]?\w{8,}" "credential_exposure" "0.9" "Hardcoded credential"
+check_pattern "(api[_-]?key|secret[_-]?key|password|token)\s*[:=]\s*['\"]?\w{8,}" "credential_exposure" "0.9" "Possible hardcoded credential"
 check_pattern "(aws_access_key|AKIA[0-9A-Z]{16})" "credential_exposure" "0.95" "AWS key exposure"
 
 # Log the prompt event
@@ -80,7 +82,9 @@ if [[ ${#THREATS_FOUND[@]} -gt 0 ]]; then
   FIRST=true
   MAX_SEVERITY="0.0"
   for threat in "${THREATS_FOUND[@]}"; do
-    IFS=':' read -r category severity description evidence <<< "$threat"
+    IFS=$'\t' read -r category severity description evidence_encoded <<< "$threat"
+    local evidence
+    evidence=$(printf '%s' "$evidence_encoded" | base64 -d 2>/dev/null || echo "[redacted]")
 
     if [[ "$FIRST" != "true" ]]; then
       THREATS_JSON+=","
@@ -104,14 +108,15 @@ if [[ ${#THREATS_FOUND[@]} -gt 0 ]]; then
   jq -Rn \
     --arg timestamp "$TIMESTAMP" \
     --arg level "$LEVEL" \
+    --arg max_severity "$MAX_SEVERITY" \
     --argjson threats "$THREATS_JSON" \
     --argjson count "${#THREATS_FOUND[@]}" \
-    '{"timestamp":$timestamp,"event":"threat_detected","governance_level":$level,"threat_count":$count,"threats":$threats}' \
+    '{"timestamp":$timestamp,"event":"threat_detected","governance_level":$level,"threat_count":$count,"max_severity":($max_severity|tonumber),"threats":$threats}' \
     >> "$LOG_FILE"
 
-  echo "⚠️ Governance: ${#THREATS_FOUND[@]} threat signal(s) detected"
+  echo "⚠️ Governance: ${#THREATS_FOUND[@]} threat signal(s) detected (max severity: $MAX_SEVERITY)"
   for threat in "${THREATS_FOUND[@]}"; do
-    IFS=':' read -r category severity description evidence <<< "$threat"
+    IFS=$'\t' read -r category severity description _evidence_encoded <<< "$threat"
     echo "  🔴 [$category] $description (severity: $severity)"
   done
 
