@@ -1,7 +1,7 @@
 {
   "name": "gem-team",
   "description": "A modular multi-agent team for complex project execution with DAG-based planning, parallel execution, TDD verification, and automated testing.",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": {
     "name": "Awesome Copilot Community"
   },
@@ -43,9 +43,9 @@
       "usage": "recommended\n\nThe Implementer executes TDD code changes, ensures verification, and maintains quality. It follows strict TDD discipline with verification commands.\n\nThis agent is ideal for:\n- Implementing features with TDD discipline\n- Writing tests first, then code\n- Ensuring verification commands pass\n- Maintaining code quality\n\nTo get the best results, consider:\n- Always provide verification commands\n- Follow TDD: red, green, refactor\n- Check get_errors after every edit\n- Keep changes minimal and focused"
     },
     {
-      "path": "agents/gem-chrome-tester.agent.md",
+      "path": "agents/gem-browser-tester.agent.md",
       "kind": "agent",
-      "usage": "optional\n\nThe Chrome Tester automates browser testing and UI/UX validation via Chrome DevTools. It requires Chrome DevTools MCP server.\n\nThis agent is ideal for:\n- Automated browser testing\n- UI/UX validation\n- Capturing screenshots and snapshots\n- Testing web applications\n\nTo get the best results, consider:\n- Have Chrome DevTools MCP server installed\n- Provide clear test scenarios\n- Use snapshots for debugging\n- Test on different viewports"
+      "usage": "optional\n\nThe Browser Tester automates browser testing, UI/UX validation using browser automation tools and visual verification techniques.\n\nThis agent is ideal for:\n- Automated browser testing\n- UI/UX validation\n- Capturing screenshots and snapshots\n- Testing web applications\n\nTo get the best results, consider:\n- Have browser automation tools installed\n- Provide clear test scenarios\n- Use snapshots for debugging\n- Test on different viewports"
     },
     {
       "path": "agents/gem-devops.agent.md",
