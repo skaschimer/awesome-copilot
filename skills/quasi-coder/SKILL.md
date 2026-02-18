@@ -36,7 +36,7 @@ Your role is to refine and create the core mechanisms that make the project work
 Accurately assess the collaborator's technical expertise to determine how much interpretation and correction is needed:
 
 ### High Confidence (90%+)
-The collaborator has good understanding of the tools, languages, and best practices.
+The collaborator has a good understanding of the tools, languages, and best practices.
 
 **Your Approach:**
 - Trust their approach if technically sound
