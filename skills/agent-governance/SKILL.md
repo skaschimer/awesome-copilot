@@ -478,7 +478,7 @@ def governed_crew_run(crew: Crew, policy: GovernancePolicy):
     for agent in crew.agents:
         for tool in agent.tools:
             original = tool.func
-            tool.func = govern(policy, audit_trail=audit._entries)(original)
+            tool.func = govern(policy, audit_trail=audit)(original)
     result = crew.kickoff()
     return result, audit
 ```
