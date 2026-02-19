@@ -2,7 +2,7 @@
 
 /**
  * Generate JSON metadata files for the GitHub Pages website.
- * This script extracts metadata from agents, prompts, instructions, skills, and plugins
+ * This script extracts metadata from agents, instructions, skills, hooks, and plugins
  * and writes them to website/data/ for client-side search and display.
  */
 
@@ -15,7 +15,6 @@ import {
     HOOKS_DIR,
     INSTRUCTIONS_DIR,
     PLUGINS_DIR,
-    PROMPTS_DIR,
     ROOT_FOLDER,
     SKILLS_DIR,
     WORKFLOWS_DIR
@@ -133,7 +132,7 @@ function generateAgentsData(gitDates) {
  */
 function generateHooksData(gitDates) {
   const hooks = [];
-  
+
   // Check if hooks directory exists
   if (!fs.existsSync(HOOKS_DIR)) {
     return {
@@ -261,41 +260,6 @@ function generatePromptsData(gitDates) {
     .readdirSync(PROMPTS_DIR)
     .filter((f) => f.endsWith(".prompt.md"));
 
-  // Track all unique tools for filters
-  const allTools = new Set();
-
-  for (const file of files) {
-    const filePath = path.join(PROMPTS_DIR, file);
-    const frontmatter = parseFrontmatter(filePath);
-    const relativePath = path
-      .relative(ROOT_FOLDER, filePath)
-      .replace(/\\/g, "/");
-
-    const tools = frontmatter?.tools || [];
-    tools.forEach((t) => allTools.add(t));
-
-    prompts.push({
-      id: file.replace(".prompt.md", ""),
-      title: extractTitle(filePath, frontmatter),
-      description: frontmatter?.description || "",
-      agent: frontmatter?.agent || null,
-      model: frontmatter?.model || null,
-      tools: tools,
-      path: relativePath,
-      filename: file,
-      lastUpdated: gitDates.get(relativePath) || null,
-    });
-  }
-
-  const sortedPrompts = prompts.sort((a, b) => a.title.localeCompare(b.title));
-
-  return {
-    items: sortedPrompts,
-    filters: {
-      tools: Array.from(allTools).sort(),
-    },
-  };
-}
 
 /**
  * Parse applyTo field into an array of patterns
@@ -663,7 +627,6 @@ function generateToolsData() {
  */
 function generateSearchIndex(
   agents,
-  prompts,
   instructions,
   hooks,
   workflows,
@@ -683,18 +646,6 @@ function generateSearchIndex(
       searchText: `${agent.title} ${agent.description} ${agent.tools.join(
         " "
       )}`.toLowerCase(),
-    });
-  }
-
-  for (const prompt of prompts) {
-    index.push({
-      type: "prompt",
-      id: prompt.id,
-      title: prompt.title,
-      description: prompt.description,
-      path: prompt.path,
-      lastUpdated: prompt.lastUpdated,
-      searchText: `${prompt.title} ${prompt.description}`.toLowerCase(),
     });
   }
 
@@ -874,7 +825,7 @@ async function main() {
   // Load git dates for all resource files (single efficient git command)
   console.log("Loading git history for last updated dates...");
   const gitDates = getGitFileDates(
-    ["agents/", "prompts/", "instructions/", "hooks/", "workflows/", "skills/", "plugins/"],
+    ["agents/", "instructions/", "hooks/", "workflows/", "skills/", "plugins/"],
     ROOT_FOLDER
   );
   console.log(`✓ Loaded dates for ${gitDates.size} files\n`);
@@ -892,6 +843,7 @@ async function main() {
     `✓ Generated ${hooks.length} hooks (${hooksData.filters.hooks.length} hook types, ${hooksData.filters.tags.length} tags)`
   );
 
+<<<<<<< HEAD
   const workflowsData = generateWorkflowsData(gitDates);
   const workflows = workflowsData.items;
   console.log(
@@ -904,6 +856,8 @@ async function main() {
     `✓ Generated ${prompts.length} prompts (${promptsData.filters.tools.length} tools)`
   );
 
+=======
+>>>>>>> 525a2f5 (Remove prompts from website generation and contributor scripts)
   const instructionsData = generateInstructionsData(gitDates);
   const instructions = instructionsData.items;
   console.log(
@@ -935,7 +889,6 @@ async function main() {
 
   const searchIndex = generateSearchIndex(
     agents,
-    prompts,
     instructions,
     hooks,
     workflows,
@@ -956,6 +909,7 @@ async function main() {
   );
 
   fs.writeFileSync(
+<<<<<<< HEAD
     path.join(WEBSITE_DATA_DIR, "workflows.json"),
     JSON.stringify(workflowsData, null, 2)
   );
@@ -966,6 +920,8 @@ async function main() {
   );
 
   fs.writeFileSync(
+=======
+>>>>>>> 525a2f5 (Remove prompts from website generation and contributor scripts)
     path.join(WEBSITE_DATA_DIR, "instructions.json"),
     JSON.stringify(instructionsData, null, 2)
   );
@@ -1000,7 +956,6 @@ async function main() {
     generated: new Date().toISOString(),
     counts: {
       agents: agents.length,
-      prompts: prompts.length,
       instructions: instructions.length,
       skills: skills.length,
       hooks: hooks.length,
