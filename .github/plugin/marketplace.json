@@ -50,7 +50,7 @@
       "name": "csharp-dotnet-development",
       "source": "./plugins/csharp-dotnet-development",
       "description": "Essential prompts, instructions, and chat modes for C# and .NET development including testing, documentation, and best practices.",
-      "version": "1.0.0"
+      "version": "1.1.0"
     },
     {
       "name": "csharp-mcp-development",
@@ -92,7 +92,7 @@
       "name": "gem-team",
       "source": "./plugins/gem-team",
       "description": "A modular multi-agent team for complex project execution with DAG-based planning, parallel execution, TDD verification, and automated testing.",
-      "version": "1.0.0"
+      "version": "1.1.0"
     },
     {
       "name": "go-mcp-development",
@@ -176,6 +176,12 @@
       "name": "php-mcp-development",
       "source": "./plugins/php-mcp-development",
       "description": "Comprehensive resources for building Model Context Protocol servers using the official PHP SDK with attribute-based discovery, including best practices, project generation, and expert assistance",
+      "version": "1.0.0"
+    },
+    {
+      "name": "polyglot-test-agent",
+      "source": "./plugins/polyglot-test-agent",
+      "description": "Multi-agent pipeline for generating comprehensive unit tests across any programming language. Orchestrates research, planning, and implementation phases using specialized agents to produce tests that compile, pass, and follow project conventions.",
       "version": "1.0.0"
     },
     {

@@ -1,54 +1,29 @@
 {
   "name": "csharp-dotnet-development",
   "description": "Essential prompts, instructions, and chat modes for C# and .NET development including testing, documentation, and best practices.",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": {
     "name": "Awesome Copilot Community"
   },
   "repository": "https://github.com/github/awesome-copilot",
   "license": "MIT",
-  "tags": [
+  "keywords": [
     "csharp",
     "dotnet",
     "aspnet",
     "testing"
   ],
-  "display": {
-    "ordering": "alpha",
-    "show_badge": false
-  },
-  "items": [
-    {
-      "path": "prompts/csharp-async.prompt.md",
-      "kind": "prompt"
-    },
-    {
-      "path": "prompts/aspnet-minimal-api-openapi.prompt.md",
-      "kind": "prompt"
-    },
-    {
-      "path": "instructions/csharp.instructions.md",
-      "kind": "instruction"
-    },
-    {
-      "path": "instructions/dotnet-architecture-good-practices.instructions.md",
-      "kind": "instruction"
-    },
-    {
-      "path": "agents/expert-dotnet-software-engineer.agent.md",
-      "kind": "agent"
-    },
-    {
-      "path": "prompts/csharp-xunit.prompt.md",
-      "kind": "prompt"
-    },
-    {
-      "path": "prompts/dotnet-best-practices.prompt.md",
-      "kind": "prompt"
-    },
-    {
-      "path": "prompts/dotnet-upgrade.prompt.md",
-      "kind": "prompt"
-    }
+  "agents": [
+    "./agents/expert-dotnet-software-engineer.md"
+  ],
+  "commands": [
+    "./commands/csharp-async.md",
+    "./commands/aspnet-minimal-api-openapi.md",
+    "./commands/csharp-xunit.md",
+    "./commands/csharp-nunit.md",
+    "./commands/csharp-mstest.md",
+    "./commands/csharp-tunit.md",
+    "./commands/dotnet-best-practices.md",
+    "./commands/dotnet-upgrade.md"
   ]
 }
