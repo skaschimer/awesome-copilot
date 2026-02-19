@@ -1,9 +1,9 @@
 ---
-description: 'Sync GitHub Copilot instructions, agents, and skills to detected AI coding agent configurations in this repository'
-applyTo: '**'
+name: sync-agents
+description: 'Synchronize GitHub Copilot instructions, custom agents, and skills into detected AI coding agent configurations in this repository. Use when asked to mirror .github/copilot-instructions.md, .github/instructions, .github/agents, or .github/skills into Claude, Codex, Cursor, Gemini, Windsurf, and related tooling.'
 ---
 
-# Sync Agent Instructions, Agents, and Skills from GitHub Copilot
+# Sync Agent Instructions, Agents, and Skills
 
 Mirror all GitHub Copilot customizations — instructions, custom agents, and agent skills —
 into every detected AI coding agent configuration found in this repository.
