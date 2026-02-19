@@ -6,10 +6,10 @@ import { fileURLToPath } from "url";
 import {
     AGENTS_DIR,
     AKA_INSTALL_URLS,
-    COLLECTIONS_DIR,
     DOCS_DIR,
     HOOKS_DIR,
     INSTRUCTIONS_DIR,
+    PLUGINS_DIR,
     PROMPTS_DIR,
     repoBaseUrl,
     ROOT_FOLDER,
@@ -20,7 +20,6 @@ import {
 } from "./constants.mjs";
 import {
     extractMcpServerConfigs,
-    parseCollectionYaml,
     parseFrontmatter,
     parseSkillMetadata,
     parseHookMetadata,
@@ -708,143 +707,151 @@ function generateUnifiedModeSection(cfg) {
 }
 
 /**
- * Generate the collections section with a table of all collections
+ * Read and parse a plugin.json file from a plugin directory.
  */
-function generateCollectionsSection(collectionsDir) {
-  // Check if collections directory exists, create it if it doesn't
-  if (!fs.existsSync(collectionsDir)) {
-    console.log("Collections directory does not exist, creating it...");
-    fs.mkdirSync(collectionsDir, { recursive: true });
+function readPluginJson(pluginDir) {
+  const jsonPath = path.join(pluginDir, ".github/plugin", "plugin.json");
+  if (!fs.existsSync(jsonPath)) return null;
+  try {
+    return JSON.parse(fs.readFileSync(jsonPath, "utf-8"));
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Generate the plugins section with a table of all plugins
+ */
+function generatePluginsSection(pluginsDir) {
+  // Check if plugins directory exists, create it if it doesn't
+  if (!fs.existsSync(pluginsDir)) {
+    console.log("Plugins directory does not exist, creating it...");
+    fs.mkdirSync(pluginsDir, { recursive: true });
   }
 
-  // Get all collection files
-  const collectionFiles = fs
-    .readdirSync(collectionsDir)
-    .filter((file) => file.endsWith(".collection.yml"));
+  // Get all plugin directories
+  const pluginDirs = fs
+    .readdirSync(pluginsDir, { withFileTypes: true })
+    .filter((d) => d.isDirectory())
+    .map((d) => d.name);
 
-  // Map collection files to objects with name for sorting
-  const collectionEntries = collectionFiles
-    .map((file) => {
-      const filePath = path.join(collectionsDir, file);
-      const collection = parseCollectionYaml(filePath);
+  // Map plugin dirs to objects with name for sorting
+  const pluginEntries = pluginDirs
+    .map((dir) => {
+      const pluginDir = path.join(pluginsDir, dir);
+      const plugin = readPluginJson(pluginDir);
 
-      if (!collection) {
-        console.warn(`Failed to parse collection: ${file}`);
+      if (!plugin) {
+        console.warn(`Failed to parse plugin: ${dir}`);
         return null;
       }
 
-      const collectionId =
-        collection.id || path.basename(file, ".collection.yml");
-      const name = collection.name || collectionId;
-      const isFeatured = collection.display?.featured === true;
-      return { file, filePath, collection, collectionId, name, isFeatured };
+      const pluginId = plugin.name || dir;
+      const name = plugin.name || dir;
+      const isFeatured = plugin.featured === true;
+      return { dir, pluginDir, plugin, pluginId, name, isFeatured };
     })
-    .filter((entry) => entry !== null); // Remove failed parses
+    .filter((entry) => entry !== null);
 
-  // Separate featured and regular collections
-  const featuredCollections = collectionEntries.filter(
-    (entry) => entry.isFeatured
-  );
-  const regularCollections = collectionEntries.filter(
-    (entry) => !entry.isFeatured
-  );
+  // Separate featured and regular plugins
+  const featuredPlugins = pluginEntries.filter((entry) => entry.isFeatured);
+  const regularPlugins = pluginEntries.filter((entry) => !entry.isFeatured);
 
   // Sort each group alphabetically by name
-  featuredCollections.sort((a, b) => a.name.localeCompare(b.name));
-  regularCollections.sort((a, b) => a.name.localeCompare(b.name));
+  featuredPlugins.sort((a, b) => a.name.localeCompare(b.name));
+  regularPlugins.sort((a, b) => a.name.localeCompare(b.name));
 
   // Combine: featured first, then regular
-  const sortedEntries = [...featuredCollections, ...regularCollections];
+  const sortedEntries = [...featuredPlugins, ...regularPlugins];
 
   console.log(
-    `Found ${collectionEntries.length} collection files (${featuredCollections.length} featured)`
+    `Found ${pluginEntries.length} plugins (${featuredPlugins.length} featured)`
   );
 
-  // If no collections, return empty string
+  // If no plugins, return empty string
   if (sortedEntries.length === 0) {
     return "";
   }
 
   // Create table header
-  let collectionsContent =
+  let pluginsContent =
     "| Name | Description | Items | Tags |\n| ---- | ----------- | ----- | ---- |\n";
 
-  // Generate table rows for each collection file
+  // Generate table rows for each plugin
   for (const entry of sortedEntries) {
-    const { collection, collectionId, name, isFeatured } = entry;
+    const { plugin, dir, name, isFeatured } = entry;
     const description = formatTableCell(
-      collection.description || "No description"
+      plugin.description || "No description"
     );
-    const itemCount = collection.items ? collection.items.length : 0;
-    const tags = collection.tags ? collection.tags.join(", ") : "";
+    const itemCount = (plugin.agents || []).length + (plugin.commands || []).length + (plugin.skills || []).length;
+    const keywords = plugin.keywords ? plugin.keywords.join(", ") : "";
 
-    const link = `../collections/${collectionId}.md`;
+    const link = `../plugins/${dir}/README.md`;
     const displayName = isFeatured ? `⭐ ${name}` : name;
 
-    collectionsContent += `| [${displayName}](${link}) | ${description} | ${itemCount} items | ${tags} |\n`;
+    pluginsContent += `| [${displayName}](${link}) | ${description} | ${itemCount} items | ${keywords} |\n`;
   }
 
-  return `${TEMPLATES.collectionsSection}\n${TEMPLATES.collectionsUsage}\n\n${collectionsContent}`;
+  return `${TEMPLATES.pluginsSection}\n${TEMPLATES.pluginsUsage}\n\n${pluginsContent}`;
 }
 
 /**
- * Generate the featured collections section for the main README
+ * Generate the featured plugins section for the main README
  */
-function generateFeaturedCollectionsSection(collectionsDir) {
-  // Check if collections directory exists
-  if (!fs.existsSync(collectionsDir)) {
+function generateFeaturedPluginsSection(pluginsDir) {
+  // Check if plugins directory exists
+  if (!fs.existsSync(pluginsDir)) {
     return "";
   }
 
-  // Get all collection files
-  const collectionFiles = fs
-    .readdirSync(collectionsDir)
-    .filter((file) => file.endsWith(".collection.yml"));
+  // Get all plugin directories
+  const pluginDirs = fs
+    .readdirSync(pluginsDir, { withFileTypes: true })
+    .filter((d) => d.isDirectory())
+    .map((d) => d.name);
 
-  // Map collection files to objects with name for sorting, filter for featured
-  const featuredCollections = collectionFiles
-    .map((file) => {
-      const filePath = path.join(collectionsDir, file);
+  // Map plugin dirs to objects, filter for featured
+  const featuredPlugins = pluginDirs
+    .map((dir) => {
+      const pluginDir = path.join(pluginsDir, dir);
       return safeFileOperation(
         () => {
-          const collection = parseCollectionYaml(filePath);
-          if (!collection) return null;
+          const plugin = readPluginJson(pluginDir);
+          if (!plugin) return null;
 
-          // Only include collections with featured: true
-          if (!collection.display?.featured) return null;
+          // Only include plugins with featured: true
+          if (!plugin.featured) return null;
 
-          const collectionId =
-            collection.id || path.basename(file, ".collection.yml");
-          const name = collection.name || collectionId;
+          const name = plugin.name || dir;
           const description = formatTableCell(
-            collection.description || "No description"
+            plugin.description || "No description"
           );
-          const tags = collection.tags ? collection.tags.join(", ") : "";
-          const itemCount = collection.items ? collection.items.length : 0;
+          const keywords = plugin.keywords ? plugin.keywords.join(", ") : "";
+          const itemCount = (plugin.agents || []).length + (plugin.commands || []).length + (plugin.skills || []).length;
 
           return {
-            file,
-            collection,
-            collectionId,
+            dir,
+            plugin,
+            pluginId: name,
             name,
             description,
-            tags,
+            keywords,
             itemCount,
           };
         },
-        filePath,
+        pluginDir,
         null
       );
     })
-    .filter((entry) => entry !== null); // Remove non-featured and failed parses
+    .filter((entry) => entry !== null);
 
   // Sort by name alphabetically
-  featuredCollections.sort((a, b) => a.name.localeCompare(b.name));
+  featuredPlugins.sort((a, b) => a.name.localeCompare(b.name));
 
-  console.log(`Found ${featuredCollections.length} featured collection(s)`);
+  console.log(`Found ${featuredPlugins.length} featured plugin(s)`);
 
-  // If no featured collections, return empty string
-  if (featuredCollections.length === 0) {
+  // If no featured plugins, return empty string
+  if (featuredPlugins.length === 0) {
     return "";
   }
 
@@ -852,167 +859,15 @@ function generateFeaturedCollectionsSection(collectionsDir) {
   let featuredContent =
     "| Name | Description | Items | Tags |\n| ---- | ----------- | ----- | ---- |\n";
 
-  // Generate table rows for each featured collection
-  for (const entry of featuredCollections) {
-    const { collectionId, name, description, tags, itemCount } = entry;
-    const readmeLink = `collections/${collectionId}.md`;
+  // Generate table rows for each featured plugin
+  for (const entry of featuredPlugins) {
+    const { dir, name, description, keywords, itemCount } = entry;
+    const readmeLink = `plugins/${dir}/README.md`;
 
-    featuredContent += `| [${name}](${readmeLink}) | ${description} | ${itemCount} items | ${tags} |\n`;
+    featuredContent += `| [${name}](${readmeLink}) | ${description} | ${itemCount} items | ${keywords} |\n`;
   }
 
-  return `${TEMPLATES.featuredCollectionsSection}\n\n${featuredContent}`;
-}
-
-/**
- * Generate individual collection README file
- * @param {Object} collection - Collection object
- * @param {string} collectionId - Collection ID
- * @param {{ name: string, displayName: string }[]} registryNames - Pre-loaded MCP registry names
- */
-function generateCollectionReadme(
-  collection,
-  collectionId,
-  registryNames = []
-) {
-  if (!collection || !collection.items) {
-    return `# ${collectionId}\n\nCollection not found or invalid.`;
-  }
-
-  const name = collection.name || collectionId;
-  const description = collection.description || "No description provided.";
-  const tags = collection.tags ? collection.tags.join(", ") : "None";
-
-  let content = `# ${name}\n\n${description}\n\n`;
-
-  if (collection.tags && collection.tags.length > 0) {
-    content += `**Tags:** ${tags}\n\n`;
-  }
-
-  content += `## Items in this Collection\n\n`;
-
-  // Check if collection has any agents to determine table structure (future: chatmodes may migrate)
-  const hasAgents = collection.items.some((item) => item.kind === "agent");
-
-  // Generate appropriate table header
-  if (hasAgents) {
-    content += `| Title | Type | Description | MCP Servers |\n| ----- | ---- | ----------- | ----------- |\n`;
-  } else {
-    content += `| Title | Type | Description |\n| ----- | ---- | ----------- |\n`;
-  }
-
-  let collectionUsageHeader = "## Collection Usage\n\n";
-  let collectionUsageContent = [];
-
-  // Sort items based on display.ordering setting
-  const items = [...collection.items];
-  if (collection.display?.ordering === "alpha") {
-    items.sort((a, b) => {
-      const titleA = extractTitle(path.join(ROOT_FOLDER, a.path));
-      const titleB = extractTitle(path.join(ROOT_FOLDER, b.path));
-      return titleA.localeCompare(titleB);
-    });
-  }
-
-  for (const item of items) {
-    const filePath = path.join(ROOT_FOLDER, item.path);
-    const title = extractTitle(filePath);
-    const description = extractDescription(filePath) || "No description";
-
-    const typeDisplay =
-      item.kind === "instruction"
-        ? "Instruction"
-        : item.kind === "agent"
-        ? "Agent"
-        : item.kind === "skill"
-        ? "Skill"
-        : "Prompt";
-    const link = `../${item.path}`;
-
-    // Create install badges for each item (skills don't use chat install badges)
-    const badgeType =
-      item.kind === "instruction"
-        ? "instructions"
-        : item.kind === "agent"
-        ? "agent"
-        : item.kind === "skill"
-        ? null
-        : "prompt";
-    const badges = badgeType ? makeBadges(item.path, badgeType) : "";
-
-    const usageDescription = item.usage
-      ? `${description} [see usage](#${title
-          .replace(/\s+/g, "-")
-          .toLowerCase()})`
-      : description;
-
-    // Generate MCP server column if collection has agents
-    content += buildCollectionRow({
-      hasAgents,
-      title,
-      link,
-      badges,
-      typeDisplay,
-      usageDescription,
-      filePath,
-      kind: item.kind,
-      registryNames,
-    });
-    // Generate Usage section for each collection
-    if (item.usage && item.usage.trim()) {
-      collectionUsageContent.push(
-        `### ${title}\n\n${item.usage.trim()}\n\n---\n\n`
-      );
-    }
-  }
-
-  // Append the usage section if any items had usage defined
-  if (collectionUsageContent.length > 0) {
-    content += `\n${collectionUsageHeader}${collectionUsageContent.join("")}`;
-  } else if (collection.display?.show_badge) {
-    content += "\n---\n";
-  }
-
-  // Optional badge note at the end if show_badge is true
-  if (collection.display?.show_badge) {
-    content += `*This collection includes ${items.length} curated items for **${name}**.*`;
-  }
-
-  return content;
-}
-
-/**
- * Build a single markdown table row for a collection item.
- * Handles optional MCP server column when agents are present.
- */
-function buildCollectionRow({
-  hasAgents,
-  title,
-  link,
-  badges,
-  typeDisplay,
-  usageDescription,
-  filePath,
-  kind,
-  registryNames = [],
-}) {
-  const titleCell = badges
-    ? `[${title}](${link})<br />${badges}`
-    : `[${title}](${link})`;
-
-  // Ensure description is table-safe
-  const safeUsage = formatTableCell(usageDescription);
-
-  if (hasAgents) {
-    // Only agents currently have MCP servers;
-    const mcpServers =
-      kind === "agent" ? extractMcpServerConfigs(filePath) : [];
-    const mcpServerCell =
-      mcpServers.length > 0
-        ? generateMcpServerLinks(mcpServers, registryNames)
-        : "";
-    return `| ${titleCell} | ${typeDisplay} | ${safeUsage} | ${mcpServerCell} |\n`;
-  }
-  return `| ${titleCell} | ${typeDisplay} | ${safeUsage} |\n`;
+  return `${TEMPLATES.featuredPluginsSection}\n\n${featuredContent}`;
 }
 
 // Utility: write file only if content changed
@@ -1067,7 +922,7 @@ async function main() {
     const agentsHeader = TEMPLATES.agentsSection.replace(/^##\s/m, "# ");
     const hooksHeader = TEMPLATES.hooksSection.replace(/^##\s/m, "# ");
     const skillsHeader = TEMPLATES.skillsSection.replace(/^##\s/m, "# ");
-    const collectionsHeader = TEMPLATES.collectionsSection.replace(
+    const pluginsHeader = TEMPLATES.pluginsSection.replace(
       /^##\s/m,
       "# "
     );
@@ -1113,12 +968,12 @@ async function main() {
       registryNames
     );
 
-    // Generate collections README
-    const collectionsReadme = buildCategoryReadme(
-      generateCollectionsSection,
-      COLLECTIONS_DIR,
-      collectionsHeader,
-      TEMPLATES.collectionsUsage,
+    // Generate plugins README
+    const pluginsReadme = buildCategoryReadme(
+      generatePluginsSection,
+      PLUGINS_DIR,
+      pluginsHeader,
+      TEMPLATES.pluginsUsage,
       registryNames
     );
 
@@ -1137,39 +992,15 @@ async function main() {
     writeFileIfChanged(path.join(DOCS_DIR, "README.hooks.md"), hooksReadme);
     writeFileIfChanged(path.join(DOCS_DIR, "README.skills.md"), skillsReadme);
     writeFileIfChanged(
-      path.join(DOCS_DIR, "README.collections.md"),
-      collectionsReadme
+      path.join(DOCS_DIR, "README.plugins.md"),
+      pluginsReadme
     );
 
-    // Generate individual collection README files
-    if (fs.existsSync(COLLECTIONS_DIR)) {
-      console.log("Generating individual collection README files...");
+    // Plugin READMEs are authoritative (already exist in each plugin folder)
 
-      const collectionFiles = fs
-        .readdirSync(COLLECTIONS_DIR)
-        .filter((file) => file.endsWith(".collection.yml"));
-
-      for (const file of collectionFiles) {
-        const filePath = path.join(COLLECTIONS_DIR, file);
-        const collection = parseCollectionYaml(filePath);
-
-        if (collection) {
-          const collectionId =
-            collection.id || path.basename(file, ".collection.yml");
-          const readmeContent = generateCollectionReadme(
-            collection,
-            collectionId,
-            registryNames
-          );
-          const readmeFile = path.join(COLLECTIONS_DIR, `${collectionId}.md`);
-          writeFileIfChanged(readmeFile, readmeContent);
-        }
-      }
-    }
-
-    // Generate featured collections section and update main README.md
-    console.log("Updating main README.md with featured collections...");
-    const featuredSection = generateFeaturedCollectionsSection(COLLECTIONS_DIR);
+    // Generate featured plugins section and update main README.md
+    console.log("Updating main README.md with featured plugins...");
+    const featuredSection = generateFeaturedPluginsSection(PLUGINS_DIR);
 
     if (featuredSection) {
       const mainReadmePath = path.join(ROOT_FOLDER, "README.md");
@@ -1177,8 +1008,8 @@ async function main() {
       if (fs.existsSync(mainReadmePath)) {
         let readmeContent = fs.readFileSync(mainReadmePath, "utf8");
 
-        // Define markers to identify where to insert the featured collections
-        const startMarker = "## 🌟 Featured Collections";
+        // Define markers to identify where to insert the featured plugins
+        const startMarker = "## 🌟 Featured Plugins";
         const endMarker = "## MCP Server";
 
         // Check if the section already exists
@@ -1205,14 +1036,14 @@ async function main() {
         }
 
         writeFileIfChanged(mainReadmePath, readmeContent);
-        console.log("Main README.md updated with featured collections");
+        console.log("Main README.md updated with featured plugins");
       } else {
         console.warn(
-          "README.md not found, skipping featured collections update"
+          "README.md not found, skipping featured plugins update"
         );
       }
     } else {
-      console.log("No featured collections found to add to README.md");
+      console.log("No featured plugins found to add to README.md");
     }
   } catch (error) {
     console.error(`Error generating category README files: ${error.message}`);

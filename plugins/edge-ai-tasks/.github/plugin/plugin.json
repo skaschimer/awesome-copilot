@@ -6,5 +6,16 @@
     "name": "Awesome Copilot Community"
   },
   "repository": "https://github.com/github/awesome-copilot",
-  "license": "MIT"
+  "license": "MIT",
+  "keywords": [
+    "architecture",
+    "planning",
+    "research",
+    "tasks",
+    "implementation"
+  ],
+  "agents": [
+    "./agents/task-researcher.md",
+    "./agents/task-planner.md"
+  ]
 }

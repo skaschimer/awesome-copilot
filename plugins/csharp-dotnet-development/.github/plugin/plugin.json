@@ -1,10 +1,29 @@
 {
   "name": "csharp-dotnet-development",
   "description": "Essential prompts, instructions, and chat modes for C# and .NET development including testing, documentation, and best practices.",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": {
     "name": "Awesome Copilot Community"
   },
   "repository": "https://github.com/github/awesome-copilot",
-  "license": "MIT"
+  "license": "MIT",
+  "keywords": [
+    "csharp",
+    "dotnet",
+    "aspnet",
+    "testing"
+  ],
+  "agents": [
+    "./agents/expert-dotnet-software-engineer.md"
+  ],
+  "commands": [
+    "./commands/csharp-async.md",
+    "./commands/aspnet-minimal-api-openapi.md",
+    "./commands/csharp-xunit.md",
+    "./commands/csharp-nunit.md",
+    "./commands/csharp-mstest.md",
+    "./commands/csharp-tunit.md",
+    "./commands/dotnet-best-practices.md",
+    "./commands/dotnet-upgrade.md"
+  ]
 }

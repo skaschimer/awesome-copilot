@@ -36,26 +36,26 @@ Ready-to-use prompt templates for specific development scenarios and tasks, defi
 - Run the \`Chat: Run Prompt\` command from the Command Palette
 - Hit the run button while you have a prompt file open in VS Code`,
 
-  collectionsSection: `## 📦 Collections
+  pluginsSection: `## 🔌 Plugins
 
-Curated collections of related prompts, instructions, and agents organized around specific themes, workflows, or use cases.`,
+Curated plugins of related prompts, agents, and skills organized around specific themes, workflows, or use cases. Plugins can be installed directly via GitHub Copilot CLI.`,
 
-  collectionsUsage: `### How to Use Collections
+  pluginsUsage: `### How to Use Plugins
 
-**Browse Collections:**
-- ⭐ Featured collections are highlighted and appear at the top of the list
-- Explore themed collections that group related customizations
-- Each collection includes prompts, instructions, and agents for specific workflows
-- Collections make it easy to adopt comprehensive toolkits for particular scenarios
+**Browse Plugins:**
+- ⭐ Featured plugins are highlighted and appear at the top of the list
+- Explore themed plugins that group related customizations
+- Each plugin includes prompts, agents, and skills for specific workflows
+- Plugins make it easy to adopt comprehensive toolkits for particular scenarios
 
-**Install Items:**
-- Click install buttons for individual items within collections
+**Install Plugins:**
+- Use \\\`copilot plugin install <plugin-name>@awesome-copilot\\\` to install a plugin
 - Or browse to the individual files to copy content manually
-- Collections help you discover related customizations you might have missed`,
+- Plugins help you discover related customizations you might have missed`,
 
-  featuredCollectionsSection: `## 🌟 Featured Collections
+  featuredPluginsSection: `## 🌟 Featured Plugins
 
-Discover our curated collections of prompts, instructions, and agents organized around specific themes and workflows.`,
+Discover our curated plugins of prompts, agents, and skills organized around specific themes and workflows.`,
 
   agentsSection: `## 🤖 Custom Agents
 
@@ -151,9 +151,9 @@ const PROMPTS_DIR = path.join(ROOT_FOLDER, "prompts");
 const AGENTS_DIR = path.join(ROOT_FOLDER, "agents");
 const SKILLS_DIR = path.join(ROOT_FOLDER, "skills");
 const HOOKS_DIR = path.join(ROOT_FOLDER, "hooks");
-const COLLECTIONS_DIR = path.join(ROOT_FOLDER, "collections");
+const PLUGINS_DIR = path.join(ROOT_FOLDER, "plugins");
 const COOKBOOK_DIR = path.join(ROOT_FOLDER, "cookbook");
-const MAX_COLLECTION_ITEMS = 50;
+const MAX_PLUGIN_ITEMS = 50;
 
 // Agent Skills validation constants
 const SKILL_NAME_MIN_LENGTH = 1;
@@ -166,12 +166,12 @@ const DOCS_DIR = path.join(ROOT_FOLDER, "docs");
 export {
   AGENTS_DIR,
   AKA_INSTALL_URLS,
-  COLLECTIONS_DIR,
+  PLUGINS_DIR,
   COOKBOOK_DIR,
   DOCS_DIR,
   HOOKS_DIR,
   INSTRUCTIONS_DIR,
-  MAX_COLLECTION_ITEMS,
+  MAX_PLUGIN_ITEMS,
   PROMPTS_DIR,
   repoBaseUrl,
   ROOT_FOLDER,

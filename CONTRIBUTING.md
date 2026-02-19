@@ -2,31 +2,6 @@
 
 Thank you for your interest in contributing to the Awesome GitHub Copilot repository! We welcome contributions from the community to help expand our collection of custom instructions and prompts.
 
-## Prerequisites
-
-### Windows Users: Enable Symlinks
-
-This repository uses symbolic links for plugins. On Windows, you need to enable symlink support before cloning:
-
-1. **Enable Developer Mode** (recommended):
-   - Open **Settings** → **Update & Security** → **For developers**
-   - Enable **Developer Mode**
-   - This allows creating symlinks without administrator privileges
-
-2. **Configure Git to use symlinks**:
-   ```bash
-   git config --global core.symlinks true
-   ```
-
-3. **Clone the repository** (after enabling the above):
-   ```bash
-   git clone https://github.com/github/awesome-copilot.git
-   ```
-
-> **Note:** If you cloned the repository before enabling symlinks, the symlinks will appear as plain text files containing the target path. You'll need to delete the local repository and re-clone after enabling symlink support.
-
-**Alternative for older Windows versions:** If Developer Mode is not available, you can run Git Bash as Administrator, or grant your user the "Create symbolic links" privilege via Local Security Policy (`secpol.msc` → Local Policies → User Rights Assignment → Create symbolic links).
-
 ## How to Contribute
 
 ### Adding Instructions
@@ -136,136 +111,71 @@ Skills are self-contained folders in the `skills/` directory that include a `SKI
 3. **Add optional assets**: Keep bundled assets reasonably sized (under 5MB each) and reference them from `SKILL.md`
 4. **Validate and update docs**: Run `npm run skill:validate` and then `npm run build` to update the generated README tables
 
-### Adding Collections
+### Adding Plugins
 
-Collections group related prompts, instructions, agents, and skills around specific themes or workflows, making it easier for users to discover and adopt comprehensive toolkits.
+Plugins group related agents, commands (prompts), and skills around specific themes or workflows, making it easy for users to install comprehensive toolkits via GitHub Copilot CLI.
 
-1. **Create your collection manifest**: Add a new `.collection.yml` file in the `collections/` directory
-2. **Follow the naming convention**: Use descriptive, lowercase filenames with hyphens (e.g., `python-web-development.collection.yml`)
-3. **Reference existing items**: Collections should only reference files that already exist in the repository
-4. **Test your collection**: Verify all referenced files exist and work well together
+1. **Create your plugin**: Run `npm run plugin:create` to scaffold a new plugin
+2. **Follow the naming convention**: Use descriptive, lowercase folder names with hyphens (e.g., `python-web-development`)
+3. **Define your content**: List agents, commands, and skills in `plugin.json` using the Claude Code spec fields
+4. **Test your plugin**: Run `npm run plugin:validate` to verify your plugin structure
 
-#### Creating a collection
-
-```bash
-# Using the creation script
-node create-collection.js my-collection-id
-
-# Or using VS Code Task: Ctrl+Shift+P > "Tasks: Run Task" > "create-collection"
-```
-
-#### Example collection format
-
-```yaml
-id: my-collection-id
-name: My Collection Name
-description: A brief description of what this collection provides and who should use it.
-tags: [tag1, tag2, tag3] # Optional discovery tags
-items:
-  - path: prompts/my-prompt.prompt.md
-    kind: prompt
-  - path: instructions/my-instructions.instructions.md
-    kind: instruction
-  - path: agents/my-custom.agent.md
-    kind: agent
-    usage: |
-     recommended # or "optional" if not essential to the workflow
-
-     This agent requires the following instructions/prompts/MCPs:
-      - Instruction 1
-      - Prompt 1
-      - MCP 1
-
-     This agent is ideal for...
-      - Use case 1
-      - Use case 2
-    
-      Here is an example of how to use it:
-      ```markdown, task-plan.prompt.md
-      ---
-      mode: task-planner
-      title: Plan microsoft fabric realtime intelligence terraform support
-      ---
-      #file: <file including in chat context>
-      Do an action to achieve goal.
-      ```
-
-      To get the best results, consider...
-      - Tip 1
-      - Tip 2
-    
-display:
-  ordering: alpha # or "manual" to preserve order above
-  show_badge: false # set to true to show collection badge
-```
-
-For full example of usage checkout edge-ai tasks collection:
-- [edge-ai-tasks.collection.yml](./collections/edge-ai-tasks.collection.yml)
-- [edge-ai-tasks.md](./collections/edge-ai-tasks.md)
-
-#### Collection Guidelines
-
-- **Focus on workflows**: Group items that work together for specific use cases
-- **Reasonable size**: Typically 3-10 items work well
-- **Test combinations**: Ensure the items complement each other effectively
-- **Clear purpose**: The collection should solve a specific problem or workflow
-- **Validate before submitting**: Run `node validate-collections.js` to ensure your manifest is valid
-
-### Working with Plugins
-
-Plugins are installable packages automatically generated from collections. They contain symlinked agents, commands (prompts), and skills from the source collection.
-
-#### Creating a Plugin from a Collection
-
-When you create a new collection, you can generate a corresponding plugin:
+#### Creating a plugin
 
 ```bash
-# Migrate a collection to a new plugin (first time only)
-npm run plugin:migrate -- --collection <collection-id>
+npm run plugin:create -- --name my-plugin-id
 ```
 
-#### Updating Plugins After Collection Changes
+#### Plugin structure
 
-If you modify a collection (add/remove items, update metadata), refresh the corresponding plugin:
-
-```bash
-# Refresh a single plugin
-npm run plugin:refresh -- --collection <collection-id>
-
-# Refresh all existing plugins
-npm run plugin:refresh -- --all
+```
+plugins/my-plugin-id/
+├── .github/plugin/plugin.json  # Plugin metadata (Claude Code spec format)
+└── README.md                   # Plugin documentation
 ```
 
-#### Plugin Structure
+> **Note:** Plugin content is defined declaratively in plugin.json using Claude Code spec fields (`agents`, `commands`, `skills`). Source files live in top-level directories and are materialized into plugins by CI.
 
-```plaintext
-plugins/<collection-id>/
-├── .github/plugin/plugin.json  # Plugin metadata (auto-generated)
-├── README.md                   # Plugin documentation (auto-generated)
-├── agents/                     # Symlinks to agent files (.md)
-├── commands/                   # Symlinks to prompt files (.md)
-└── skills/                     # Symlinks to skill folders
+#### plugin.json example
+
+```json
+{
+  "name": "my-plugin-id",
+  "description": "Plugin description",
+  "version": "1.0.0",
+  "keywords": [],
+  "author": { "name": "Awesome Copilot Community" },
+  "repository": "https://github.com/github/awesome-copilot",
+  "license": "MIT",
+  "agents": ["./agents/my-agent.md"],
+  "commands": ["./commands/my-command.md"],
+  "skills": ["./skills/my-skill/"]
+}
 ```
 
 #### Plugin Guidelines
 
-- **Symlinks, not copies**: Plugin files are symlinks to the source files, avoiding duplication
-- **Instructions excluded**: Instructions are not currently supported in plugins
-- **Auto-generated content**: The `plugin.json` and `README.md` are generated from the collection metadata
-- **Keep plugins in sync**: After modifying a collection, run `plugin:refresh` to update the plugin
+- **Declarative content**: Plugin content is specified via `agents`, `commands`, and `skills` arrays in plugin.json — source files live in top-level directories and are materialized into plugins by CI
+- **Valid references**: All paths referenced in plugin.json must point to existing source files in the repository
+- **Instructions excluded**: Instructions are standalone resources and are not part of plugins
+- **Clear purpose**: The plugin should solve a specific problem or workflow
+- **Validate before submitting**: Run `npm run plugin:validate` to ensure your plugin is valid
 
 ## Submitting Your Contribution
 
 1. **Fork this repository**
 2. **Create a new branch** for your contribution
-3. **Add your instruction, prompt file, chatmode, or collection** following the guidelines above
+3. **Add your instruction, prompt file, chatmode, or plugin** following the guidelines above
 4. **Run the update script**: `npm start` to update the README with your new file (make sure you run `npm install` first if you haven't already)
    - A GitHub Actions workflow will verify that this step was performed correctly
    - If the README.md would be modified by running the script, the PR check will fail with a comment showing the required changes
-5. **Submit a pull request** with:
+5. **Submit a pull request** targeting the `staged` branch with:
    - A clear title describing your contribution
    - A brief description of what your instruction/prompt does
    - Any relevant context or usage notes
+
+> [!IMPORTANT]
+> All pull requests should target the **`staged`** branch, not `main`.
 
 > [!NOTE] 
 > We use [all-contributors](https://github.com/all-contributors/all-contributors) to recognize all types of contributions to the project. Jump to [Contributors Recognition](#contributor-recognition) to learn more!
@@ -324,7 +234,7 @@ We welcome many kinds of contributions, including the custom categories below:
 | **Prompts** | Reusable or one-off prompts for GitHub Copilot | ⌨️ |
 | **Agents** | Defined GitHub Copilot roles or personalities | 🎭 |
 | **Skills** | Specialized knowledge of a task for GitHub Copilot | 🧰 |
-| **Collections** | Curated bundles of related prompts, agents, or instructions | 🎁 |
+| **Plugins** | Installable packages of related prompts, agents, or skills | 🎁 |
 
 In addition, all standard contribution types supported by [All Contributors](https://allcontributors.org/emoji-key/) are recognized.
 

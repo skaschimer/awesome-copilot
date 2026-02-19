@@ -6,5 +6,20 @@
     "name": "Awesome Copilot Community"
   },
   "repository": "https://github.com/github/awesome-copilot",
-  "license": "MIT"
+  "license": "MIT",
+  "keywords": [
+    "context",
+    "productivity",
+    "refactoring",
+    "best-practices",
+    "architecture"
+  ],
+  "agents": [
+    "./agents/context-architect.md"
+  ],
+  "commands": [
+    "./commands/context-map.md",
+    "./commands/what-context-needed.md",
+    "./commands/refactor-plan.md"
+  ]
 }

@@ -6,5 +6,18 @@
     "name": "Awesome Copilot Community"
   },
   "repository": "https://github.com/github/awesome-copilot",
-  "license": "MIT"
+  "license": "MIT",
+  "keywords": [
+    "typescript",
+    "mcp",
+    "model-context-protocol",
+    "nodejs",
+    "server-development"
+  ],
+  "agents": [
+    "./agents/typescript-mcp-expert.md"
+  ],
+  "commands": [
+    "./commands/typescript-mcp-server-generator.md"
+  ]
 }
