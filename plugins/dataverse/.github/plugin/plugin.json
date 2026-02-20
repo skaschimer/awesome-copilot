@@ -1,5 +1,5 @@
 {
-  "name": "dataverse-mcp",
+  "name": "dataverse",
   "description": "Comprehensive collection for Microsoft Dataverse integrations. Includes MCP setup commands.",
   "version": "1.0.0",
   "author": {

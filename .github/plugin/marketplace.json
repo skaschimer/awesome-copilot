@@ -65,8 +65,8 @@
       "version": "1.0.0"
     },
     {
-      "name": "dataverse-mcp",
-      "source": "./plugins/dataverse-mcp",
+      "name": "dataverse",
+      "source": "./plugins/dataverse",
       "description": "Comprehensive collection for Microsoft Dataverse integrations. Includes MCP setup commands.",
       "version": "1.0.0"
     },

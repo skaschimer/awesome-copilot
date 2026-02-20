@@ -91,7 +91,7 @@ Based on their choice:
    Accept: application/json
    ```
 
-4. Parse the JSON response and filter for environments where `properties.databaseType` is `"CommonDataService"`.
+4. Parse the JSON response and filter for environments where `properties?.linkedEnvironmentMetadata?.instanceUrl` is not null.
 
 5. For each matching environment, extract:
    - `properties.displayName` as `displayName`
