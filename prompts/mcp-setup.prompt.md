@@ -1,5 +1,5 @@
 ---
-name: Dataverse MCP setup
+name: mcp setup
 description: Configure an MCP server for GitHub Copilot with your Dataverse environment.
 ---
 
