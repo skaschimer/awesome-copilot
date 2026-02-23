@@ -28,7 +28,7 @@ Good: `Read my blog post "[Crafting an accessible resume](https://example.com)"`
 
 ## 3. Heading Hierarchy
 
-- There must be only one H1 (`#`) per document, used as the page title.
+- There must be only one H1 (`#`) per document, used as the page title. Note: in projects where H1 is auto-generated from front matter, start content at H2.
 - Headings must follow a logical hierarchy and never skip levels (e.g., `##` followed by `####` is a violation).
 - Flag bold text (`**text**`) used as a visual substitute for a proper heading.
 - Proper heading structure allows assistive technology users to navigate by section and helps sighted users scan content.
