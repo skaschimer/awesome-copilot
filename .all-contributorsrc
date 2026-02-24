@@ -1821,6 +1821,15 @@
       "contributions": [
         "plugin"
       ]
+    },
+    {
+      "login": "bhect0",
+      "name": "Héctor Benedicte",
+      "avatar_url": "https://avatars.githubusercontent.com/u/96436904?v=4",
+      "profile": "https://github.com/bhect0",
+      "contributions": [
+        "code"
+      ]
     }
   ]
 }
