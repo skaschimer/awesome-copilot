@@ -1,6 +1,10 @@
 # 🔌 Plugins
 
 Curated plugins of related prompts, agents, and skills organized around specific themes, workflows, or use cases. Plugins can be installed directly via GitHub Copilot CLI.
+### How to Contribute
+
+See [CONTRIBUTING.md](../CONTRIBUTING.md#adding-plugins) for guidelines on how to contribute new plugins, improve existing ones, and share your use cases.
+
 ### How to Use Plugins
 
 **Browse Plugins:**
