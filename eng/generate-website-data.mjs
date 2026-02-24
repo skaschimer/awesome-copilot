@@ -10,22 +10,22 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import {
-    AGENTS_DIR,
-    COOKBOOK_DIR,
-    HOOKS_DIR,
-    INSTRUCTIONS_DIR,
-    PLUGINS_DIR,
-    ROOT_FOLDER,
-    SKILLS_DIR,
-    WORKFLOWS_DIR
+  AGENTS_DIR,
+  COOKBOOK_DIR,
+  HOOKS_DIR,
+  INSTRUCTIONS_DIR,
+  PLUGINS_DIR,
+  ROOT_FOLDER,
+  SKILLS_DIR,
+  WORKFLOWS_DIR,
 } from "./constants.mjs";
 import { getGitFileDates } from "./utils/git-dates.mjs";
 import {
-    parseFrontmatter,
-    parseSkillMetadata,
-    parseHookMetadata,
-    parseWorkflowMetadata,
-    parseYamlFile,
+  parseFrontmatter,
+  parseHookMetadata,
+  parseSkillMetadata,
+  parseWorkflowMetadata,
+  parseYamlFile,
 } from "./yaml-parser.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -240,7 +240,9 @@ function generateWorkflowsData(gitDates) {
     });
   }
 
-  const sortedWorkflows = workflows.sort((a, b) => a.title.localeCompare(b.title));
+  const sortedWorkflows = workflows.sort((a, b) =>
+    a.title.localeCompare(b.title)
+  );
 
   return {
     items: sortedWorkflows,
@@ -250,16 +252,6 @@ function generateWorkflowsData(gitDates) {
     },
   };
 }
-
-/**
- * Generate prompts metadata
- */
-function generatePromptsData(gitDates) {
-  const prompts = [];
-  const files = fs
-    .readdirSync(PROMPTS_DIR)
-    .filter((f) => f.endsWith(".prompt.md"));
-
 
 /**
  * Parse applyTo field into an array of patterns
@@ -515,8 +507,9 @@ function generatePluginsData(gitDates) {
     return { items: [], filters: { tags: [] } };
   }
 
-  const pluginDirs = fs.readdirSync(PLUGINS_DIR, { withFileTypes: true })
-    .filter(d => d.isDirectory());
+  const pluginDirs = fs
+    .readdirSync(PLUGINS_DIR, { withFileTypes: true })
+    .filter((d) => d.isDirectory());
 
   for (const dir of pluginDirs) {
     const pluginDir = path.join(PLUGINS_DIR, dir.name);
@@ -531,9 +524,9 @@ function generatePluginsData(gitDates) {
 
       // Build items list from spec fields (agents, commands, skills)
       const items = [
-        ...(data.agents || []).map(p => ({ kind: "agent", path: p })),
-        ...(data.commands || []).map(p => ({ kind: "prompt", path: p })),
-        ...(data.skills || []).map(p => ({ kind: "skill", path: p })),
+        ...(data.agents || []).map((p) => ({ kind: "agent", path: p })),
+        ...(data.commands || []).map((p) => ({ kind: "prompt", path: p })),
+        ...(data.skills || []).map((p) => ({ kind: "skill", path: p })),
       ];
 
       const tags = data.keywords || data.tags || [];
@@ -547,7 +540,9 @@ function generatePluginsData(gitDates) {
         itemCount: items.length,
         items: items,
         lastUpdated: dates.lastModified || null,
-        searchText: `${data.name || dir.name} ${data.description || ""} ${tags.join(" ")}`.toLowerCase(),
+        searchText: `${data.name || dir.name} ${
+          data.description || ""
+        } ${tags.join(" ")}`.toLowerCase(),
       });
     } catch (e) {
       console.warn(`Failed to parse plugin: ${dir.name}`, e.message);
@@ -555,13 +550,13 @@ function generatePluginsData(gitDates) {
   }
 
   // Collect all unique tags
-  const allTags = [...new Set(plugins.flatMap(p => p.tags))].sort();
+  const allTags = [...new Set(plugins.flatMap((p) => p.tags))].sort();
 
   const sortedPlugins = plugins.sort((a, b) => a.name.localeCompare(b.name));
 
   return {
     items: sortedPlugins,
-    filters: { tags: allTags }
+    filters: { tags: allTags },
   };
 }
 
@@ -685,9 +680,11 @@ function generateSearchIndex(
       description: workflow.description,
       path: workflow.path,
       lastUpdated: workflow.lastUpdated,
-      searchText: `${workflow.title} ${workflow.description} ${workflow.triggers.join(
+      searchText: `${workflow.title} ${
+        workflow.description
+      } ${workflow.triggers.join(" ")} ${workflow.tags.join(
         " "
-      )} ${workflow.tags.join(" ")}`.toLowerCase(),
+      )}`.toLowerCase(),
     });
   }
 
@@ -843,21 +840,12 @@ async function main() {
     `✓ Generated ${hooks.length} hooks (${hooksData.filters.hooks.length} hook types, ${hooksData.filters.tags.length} tags)`
   );
 
-<<<<<<< HEAD
   const workflowsData = generateWorkflowsData(gitDates);
   const workflows = workflowsData.items;
   console.log(
     `✓ Generated ${workflows.length} workflows (${workflowsData.filters.triggers.length} triggers, ${workflowsData.filters.tags.length} tags)`
   );
 
-  const promptsData = generatePromptsData(gitDates);
-  const prompts = promptsData.items;
-  console.log(
-    `✓ Generated ${prompts.length} prompts (${promptsData.filters.tools.length} tools)`
-  );
-
-=======
->>>>>>> 525a2f5 (Remove prompts from website generation and contributor scripts)
   const instructionsData = generateInstructionsData(gitDates);
   const instructions = instructionsData.items;
   console.log(
@@ -909,19 +897,11 @@ async function main() {
   );
 
   fs.writeFileSync(
-<<<<<<< HEAD
     path.join(WEBSITE_DATA_DIR, "workflows.json"),
     JSON.stringify(workflowsData, null, 2)
   );
 
   fs.writeFileSync(
-    path.join(WEBSITE_DATA_DIR, "prompts.json"),
-    JSON.stringify(promptsData, null, 2)
-  );
-
-  fs.writeFileSync(
-=======
->>>>>>> 525a2f5 (Remove prompts from website generation and contributor scripts)
     path.join(WEBSITE_DATA_DIR, "instructions.json"),
     JSON.stringify(instructionsData, null, 2)
   );
