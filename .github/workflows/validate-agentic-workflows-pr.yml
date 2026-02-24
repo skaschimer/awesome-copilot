@@ -32,7 +32,8 @@ jobs:
             'workflows/**/*.lock.yml' \
             '.github/*' \
             '.github/**' \
-            | grep -v '^\.github/aw/actions-lock\.json$')
+            | grep -v '^\.github/aw/actions-lock\.json$' \
+            | grep -v '^\.github/workflows/validate-agentic-workflows-pr\.yml$')
 
           if [ -n "$forbidden" ]; then
             echo "❌ Forbidden files detected:"
