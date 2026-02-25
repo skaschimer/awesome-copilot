@@ -9,7 +9,7 @@ interface Props {
 
 const {
   title,
-  description = "Community-driven collection of custom agents, prompts, and instructions for GitHub Copilot",
+  description = "Community-driven collection of custom agents, instructions, and skills for GitHub Copilot",
   activeNav = "",
 } = Astro.props;
 const base = import.meta.env.BASE_URL;
@@ -56,10 +56,6 @@ try {
             <a
               href={`${base}agents/`}
               class:list={[{ active: activeNav === "agents" }]}>Agents</a
-            >
-            <a
-              href={`${base}prompts/`}
-              class:list={[{ active: activeNav === "prompts" }]}>Prompts</a
             >
             <a
               href={`${base}instructions/`}

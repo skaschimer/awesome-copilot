@@ -287,7 +287,7 @@ export function setupInstallDropdown(containerId: string): void {
 /**
  * Open file viewer modal
  * @param filePath - Path to the file
- * @param type - Resource type (agent, prompt, instruction, etc.)
+ * @param type - Resource type (agent, instruction, etc.)
  * @param updateUrl - Whether to update the URL hash (default: true)
  * @param trigger - The element that triggered the modal (for focus return)
  */
