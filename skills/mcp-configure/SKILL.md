@@ -1,9 +1,9 @@
 ---
-name: mcp setup
+name: mcp-configure
 description: Configure an MCP server for GitHub Copilot with your Dataverse environment.
 ---
 
-# Setup Dataverse MCP for GitHub Copilot
+# Configure Dataverse MCP for GitHub Copilot
 
 This skill configures the Dataverse MCP server for GitHub Copilot with your organization's environment URL. Each organization is registered with a unique server name based on the org identifier (e.g., `DataverseMcporgbc9a965c`). If the user provided a URL it is: $ARGUMENTS.
 

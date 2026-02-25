@@ -11,7 +11,7 @@
     "dataverse",
     "mcp"
   ],
-  "commands": [
-    "./commands/mcp-setup.md"
+  "skills": [
+    "./skills/mcp-configure/"
   ]
 }
