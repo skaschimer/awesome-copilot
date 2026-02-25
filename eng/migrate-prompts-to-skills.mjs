@@ -2,9 +2,10 @@
 
 import fs from "fs";
 import path from "path";
-import { ROOT_FOLDER, PROMPTS_DIR, SKILLS_DIR } from "./constants.mjs";
+import { ROOT_FOLDER, SKILLS_DIR } from "./constants.mjs";
 import { parseFrontmatter } from "./yaml-parser.mjs";
 
+const PROMPTS_DIR = path.join(ROOT_FOLDER, "prompts");
 /**
  * Convert a prompt file to a skill folder
  * @param {string} promptFilePath - Full path to the prompt file
@@ -13,7 +14,7 @@ import { parseFrontmatter } from "./yaml-parser.mjs";
 function convertPromptToSkill(promptFilePath) {
   const filename = path.basename(promptFilePath);
   const baseName = filename.replace(".prompt.md", "");
-  
+
   console.log(`\nConverting: ${baseName}`);
 
   // Parse the prompt file frontmatter
@@ -44,7 +45,7 @@ function convertPromptToSkill(promptFilePath) {
   // Build SKILL.md content
   const skillContent = `---
 name: ${skillFrontmatter.name}
-description: '${skillFrontmatter.description.replace(/'/g, "'\\''")}'
+description: '${skillFrontmatter.description.replace(/'/g, "'''")}'
 ---
 
 ${mainContent}

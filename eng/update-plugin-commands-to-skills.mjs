@@ -12,7 +12,7 @@ import { PLUGINS_DIR } from "./constants.mjs";
 function updatePluginManifest(pluginJsonPath) {
   const pluginDir = path.dirname(path.dirname(path.dirname(pluginJsonPath)));
   const pluginName = path.basename(pluginDir);
-  
+
   console.log(`\nProcessing plugin: ${pluginName}`);
 
   // Read and parse plugin.json
@@ -34,20 +34,33 @@ function updatePluginManifest(pluginJsonPath) {
   const commandCount = plugin.commands.length;
   console.log(`  Found ${commandCount} command(s) to convert`);
 
-  // Convert commands to skills format
+  // Validate and convert commands to skills format
   // Commands: "./commands/foo.md" → Skills: "./skills/foo/"
-  const skills = plugin.commands.map((cmd) => {
+  const validCommands = plugin.commands.filter((cmd) => {
+    if (typeof cmd !== "string") {
+      console.log(`  ⚠  Skipping non-string command entry: ${JSON.stringify(cmd)}`);
+      return false;
+    }
+    if (!cmd.startsWith("./commands/") || !cmd.endsWith(".md")) {
+      console.log(`  ⚠  Skipping command with unexpected format: ${cmd}`);
+      return false;
+    }
+    return true;
+  });
+  const skills = validCommands.map((cmd) => {
     const basename = path.basename(cmd, ".md");
     return `./skills/${basename}/`;
   });
-
-  // Initialize skills array if it doesn't exist
-  if (!plugin.skills) {
+  // Initialize skills array if it doesn't exist or is not an array
+  if (!Array.isArray(plugin.skills)) {
     plugin.skills = [];
   }
-
-  // Add converted commands to skills array
-  plugin.skills.push(...skills);
+  // Add converted commands to skills array, de-duplicating entries
+  const allSkills = new Set(plugin.skills);
+  for (const skillPath of skills) {
+    allSkills.add(skillPath);
+  }
+  plugin.skills = Array.from(allSkills);
 
   // Remove commands field
   delete plugin.commands;
