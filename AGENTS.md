@@ -93,12 +93,10 @@ All agent files (`*.agent.md`) and instruction files (`*.instructions.md`) must 
 - Each workflow is a standalone `.md` file in the `workflows/` directory
 - Must have `name` field (human-readable name)
 - Must have `description` field (wrapped in single quotes, not empty)
-- Should have `triggers` field (array of trigger types, e.g., `['schedule', 'issues']`)
 - Contains agentic workflow frontmatter (`on`, `permissions`, `safe-outputs`) and natural language instructions
 - File names should be lower case with words separated by hyphens
 - Only `.md` files are accepted — `.yml`, `.yaml`, and `.lock.yml` files are blocked by CI
-- Optionally includes `tags` field for categorization
-- Follow the [GitHub Agentic Workflows specification](https://github.github.com/gh-aw)
+- Follow the [GitHub Agentic Workflows specification](https://github.github.com/gh-aw/reference/workflow-structure/)
 
 #### Plugin Folders (plugins/*)
 - Each plugin is a folder containing a `.github/plugin/plugin.json` file with metadata
@@ -131,7 +129,7 @@ When adding a new agent, instruction, skill, hook, workflow, or plugin:
 
 **For Workflows:**
 1. Create a new `.md` file in `workflows/` with a descriptive name (e.g., `daily-issues-report.md`)
-2. Include frontmatter with `name`, `description`, `triggers`, plus agentic workflow fields (`on`, `permissions`, `safe-outputs`)
+2. Include frontmatter with `name` and `description`, plus agentic workflow fields (`on`, `permissions`, `safe-outputs`)
 3. Compile with `gh aw compile --validate` to verify it's valid
 4. Update the README.md by running: `npm run build`
 5. Verify the workflow appears in the generated README
@@ -250,13 +248,11 @@ For workflow files (workflows/*.md):
 - [ ] File has markdown front matter
 - [ ] Has `name` field with human-readable name
 - [ ] Has non-empty `description` field wrapped in single quotes
-- [ ] Has `triggers` array field listing workflow trigger types
 - [ ] File name is lower case with hyphens
 - [ ] Contains `on` and `permissions` in frontmatter
 - [ ] Workflow uses least-privilege permissions and safe outputs
 - [ ] No `.yml`, `.yaml`, or `.lock.yml` files included
-- [ ] Follows [GitHub Agentic Workflows specification](https://github.github.com/gh-aw)
-- [ ] Optionally includes `tags` array field for categorization
+- [ ] Follows [GitHub Agentic Workflows specification](https://github.github.com/gh-aw/reference/workflow-structure/)
 
 For plugins (plugins/*/):
 - [ ] Directory contains a `.github/plugin/plugin.json` file

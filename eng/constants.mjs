@@ -10,7 +10,11 @@ const TEMPLATES = {
 
 Team and project-specific instructions to enhance GitHub Copilot's behavior for specific technologies and coding practices.`,
 
-  instructionsUsage: `### How to Use Custom Instructions
+  instructionsUsage: `### How to Contribute
+
+See [CONTRIBUTING.md](../CONTRIBUTING.md#adding-instructions) for guidelines on how to contribute new instructions, improve existing ones, and share your use cases.
+
+### How to Use Custom Instructions
 
 **To Install:**
 - Click the **VS Code** or **VS Code Insiders** install button for the instruction you want to use
@@ -25,7 +29,11 @@ Team and project-specific instructions to enhance GitHub Copilot's behavior for 
 
 Curated plugins of related agents and skills organized around specific themes, workflows, or use cases. Plugins can be installed directly via GitHub Copilot CLI.`,
 
-  pluginsUsage: `### How to Use Plugins
+  pluginsUsage: `### How to Contribute
+
+See [CONTRIBUTING.md](../CONTRIBUTING.md#adding-plugins) for guidelines on how to contribute new plugins, improve existing ones, and share your use cases.
+
+### How to Use Plugins
 
 **Browse Plugins:**
 - ⭐ Featured plugins are highlighted and appear at the top of the list
@@ -46,7 +54,11 @@ Discover our curated plugins of agents and skills organized around specific them
 
 Custom agents for GitHub Copilot, making it easy for users and organizations to "specialize" their Copilot coding agent (CCA) through simple file-based configuration.`,
 
-  agentsUsage: `### How to Use Custom Agents
+  agentsUsage: `### How to Contribute
+
+See [CONTRIBUTING.md](../CONTRIBUTING.md#adding-agents) for guidelines on how to contribute new agents, improve existing ones, and share your use cases.
+
+### How to Use Custom Agents
 
 **To Install:**
 - Click the **VS Code** or **VS Code Insiders** install button for the agent you want to use
@@ -68,7 +80,11 @@ Agent Skills are self-contained folders with instructions and bundled resources 
 
 Skills differ from other primitives by supporting bundled assets (scripts, code samples, reference data) that agents can utilize when performing specialized tasks.`,
 
-  skillsUsage: `### How to Use Agent Skills
+  skillsUsage: `### How to Contribute
+
+See [CONTRIBUTING.md](../CONTRIBUTING.md#adding-skills) for guidelines on how to contribute new agent skills, improve existing ones, and share your use cases.
+
+### How to Use Agent Skills
 
 **What's Included:**
 - Each skill is a folder containing a \`SKILL.md\` instruction file
@@ -89,7 +105,11 @@ Skills differ from other primitives by supporting bundled assets (scripts, code 
 
 Hooks enable automated workflows triggered by specific events during GitHub Copilot coding agent sessions, such as session start, session end, user prompts, and tool usage.`,
 
-  hooksUsage: `### How to Use Hooks
+  hooksUsage: `### How to Contribute
+
+See [CONTRIBUTING.md](../CONTRIBUTING.md#adding-hooks) for guidelines on how to contribute new hooks, improve existing ones, and share your use cases.
+
+### How to Use Hooks
 
 **What's Included:**
 - Each hook is a folder containing a \`README.md\` file and a \`hooks.json\` configuration
@@ -117,7 +137,11 @@ Hooks enable automated workflows triggered by specific events during GitHub Copi
 
 [Agentic Workflows](https://github.github.com/gh-aw) are AI-powered repository automations that run coding agents in GitHub Actions. Defined in markdown with natural language instructions, they enable event-triggered and scheduled automation with built-in guardrails and security-first design.`,
 
-  workflowsUsage: `### How to Use Agentic Workflows
+  workflowsUsage: `### How to Contribute
+
+See [CONTRIBUTING.md](../CONTRIBUTING.md#adding-agentic-workflows) for guidelines on how to contribute new workflows, improve existing ones, and share your use cases.
+
+### How to Use Agentic Workflows
 
 **What's Included:**
 - Each workflow is a single \`.md\` file with YAML frontmatter and natural language instructions
@@ -180,12 +204,12 @@ const DOCS_DIR = path.join(ROOT_FOLDER, "docs");
 export {
   AGENTS_DIR,
   AKA_INSTALL_URLS,
-  PLUGINS_DIR,
   COOKBOOK_DIR,
   DOCS_DIR,
   HOOKS_DIR,
   INSTRUCTIONS_DIR,
   MAX_PLUGIN_ITEMS,
+  PLUGINS_DIR,
   repoBaseUrl,
   ROOT_FOLDER,
   SKILL_DESCRIPTION_MAX_LENGTH,
@@ -196,6 +220,5 @@ export {
   TEMPLATES,
   vscodeInsidersInstallImage,
   vscodeInstallImage,
-  WORKFLOWS_DIR
+  WORKFLOWS_DIR,
 };
-
