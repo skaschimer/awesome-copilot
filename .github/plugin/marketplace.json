@@ -167,12 +167,6 @@
       "version": "1.0.0"
     },
     {
-      "name": "pcf-development",
-      "source": "pcf-development",
-      "description": "Complete toolkit for developing custom code components using Power Apps Component Framework for model-driven and canvas apps",
-      "version": "1.0.0"
-    },
-    {
       "name": "php-mcp-development",
       "source": "php-mcp-development",
       "description": "Comprehensive resources for building Model Context Protocol servers using the official PHP SDK with attribute-based discovery, including best practices, project generation, and expert assistance",
