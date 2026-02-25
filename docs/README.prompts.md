@@ -1,6 +1,10 @@
 # 🎯 Reusable Prompts
 
 Ready-to-use prompt templates for specific development scenarios and tasks, defining prompt text with a specific mode, model, and available set of tools.
+### How to Contribute
+
+See [CONTRIBUTING.md](../CONTRIBUTING.md#adding-prompts) for guidelines on how to contribute new prompts, improve existing ones, and share your use cases.
+
 ### How to Use Reusable Prompts
 
 **To Install:**
