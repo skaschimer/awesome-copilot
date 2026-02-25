@@ -228,6 +228,8 @@ export function getResourceType(filePath: string): string {
     return "skill";
   if (/(^|\/)hooks\//.test(filePath) && filePath.endsWith("README.md"))
     return "hook";
+  if (/(^|\/)workflows\//.test(filePath) && filePath.endsWith(".md"))
+    return "workflow";
   // Check for plugin directories (e.g., plugins/<id>, plugins/<id>/)
   if (/(^|\/)plugins\/[^/]+\/?$/.test(filePath)) return "plugin";
   // Check for plugin.json files (e.g., plugins/<id>/.github/plugin/plugin.json)
@@ -244,6 +246,7 @@ export function formatResourceType(type: string): string {
     instruction: "📋 Instruction",
     skill: "⚡ Skill",
     hook: "🪝 Hook",
+    workflow: "⚡ Workflow",
     plugin: "🔌 Plugin",
   };
   return labels[type] || type;
@@ -258,6 +261,7 @@ export function getResourceIcon(type: string): string {
     instruction: "📋",
     skill: "⚡",
     hook: "🪝",
+    workflow: "⚡",
     plugin: "🔌",
   };
   return icons[type] || "📄";
