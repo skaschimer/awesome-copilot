@@ -15,6 +15,10 @@ const VSCODE_INSTALL_CONFIG: Record<
     baseUrl: "https://aka.ms/awesome-copilot/install/instructions",
     scheme: "chat-instructions",
   },
+  instruction: {
+    baseUrl: "https://aka.ms/awesome-copilot/install/instructions",
+    scheme: "chat-instructions",
+  },
   agent: {
     baseUrl: "https://aka.ms/awesome-copilot/install/agent",
     scheme: "chat-agent",
