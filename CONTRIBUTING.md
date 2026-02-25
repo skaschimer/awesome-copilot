@@ -313,12 +313,8 @@ We welcome many kinds of contributions, including the custom categories below:
 | **Instructions** | Custom instruction sets that guide GitHub Copilot behavior | 🧭 |
 | **Agents** | Defined GitHub Copilot roles or personalities | 🎭 |
 | **Skills** | Specialized knowledge of a task for GitHub Copilot | 🧰 |
-<<<<<<< HEAD
 | **Workflows** | Agentic Workflows for AI-powered repository automation | ⚡ |
 | **Plugins** | Installable packages of related prompts, agents, or skills | 🎁 |
-=======
-| **Plugins** | Installable packages of related agents, commands, or skills | 🎁 |
->>>>>>> 9e10967 (Update documentation to remove prompts references)
 
 In addition, all standard contribution types supported by [All Contributors](https://allcontributors.org/emoji-key/) are recognized.
 
