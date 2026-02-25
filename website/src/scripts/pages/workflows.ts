@@ -18,7 +18,6 @@ interface Workflow extends SearchItem {
   id: string;
   path: string;
   triggers: string[];
-  tags: string[];
   lastUpdated?: string | null;
 }
 
@@ -26,7 +25,6 @@ interface WorkflowsData {
   items: Workflow[];
   filters: {
     triggers: string[];
-    tags: string[];
   };
 }
 
@@ -36,10 +34,8 @@ const resourceType = "workflow";
 let allItems: Workflow[] = [];
 let search = new FuzzySearch<Workflow>();
 let triggerSelect: Choices;
-let tagSelect: Choices;
 let currentFilters = {
   triggers: [] as string[],
-  tags: [] as string[],
 };
 let currentSort: SortOption = "title";
 
@@ -68,11 +64,6 @@ function applyFiltersAndRender(): void {
       item.triggers.some((t) => currentFilters.triggers.includes(t))
     );
   }
-  if (currentFilters.tags.length > 0) {
-    results = results.filter((item) =>
-      item.tags.some((t) => currentFilters.tags.includes(t))
-    );
-  }
 
   results = sortItems(results);
 
@@ -82,12 +73,6 @@ function applyFiltersAndRender(): void {
     activeFilters.push(
       `${currentFilters.triggers.length} trigger${
         currentFilters.triggers.length > 1 ? "s" : ""
-      }`
-    );
-  if (currentFilters.tags.length > 0)
-    activeFilters.push(
-      `${currentFilters.tags.length} tag${
-        currentFilters.tags.length > 1 ? "s" : ""
       }`
     );
   let countText = `${results.length} of ${allItems.length} workflows`;
@@ -123,12 +108,6 @@ function renderItems(items: Workflow[], query = ""): void {
             .map(
               (t) =>
                 `<span class="resource-tag tag-trigger">${escapeHtml(t)}</span>`
-            )
-            .join("")}
-          ${item.tags
-            .map(
-              (t) =>
-                `<span class="resource-tag tag-tag">${escapeHtml(t)}</span>`
             )
             .join("")}
           ${getLastUpdatedHtml(item.lastUpdated)}
@@ -191,21 +170,6 @@ export async function initWorkflowsPage(): Promise<void> {
     applyFiltersAndRender();
   });
 
-  // Setup tag filter
-  tagSelect = createChoices("#filter-tag", {
-    placeholderValue: "All Tags",
-  });
-  tagSelect.setChoices(
-    data.filters.tags.map((t) => ({ value: t, label: t })),
-    "value",
-    "label",
-    true
-  );
-  document.getElementById("filter-tag")?.addEventListener("change", () => {
-    currentFilters.tags = getChoicesValues(tagSelect);
-    applyFiltersAndRender();
-  });
-
   sortSelect?.addEventListener("change", () => {
     currentSort = sortSelect.value as SortOption;
     applyFiltersAndRender();
@@ -218,10 +182,9 @@ export async function initWorkflowsPage(): Promise<void> {
   );
 
   clearFiltersBtn?.addEventListener("click", () => {
-    currentFilters = { triggers: [], tags: [] };
+    currentFilters = { triggers: [] };
     currentSort = "title";
     triggerSelect.removeActiveItems();
-    tagSelect.removeActiveItems();
     if (searchInput) searchInput.value = "";
     if (sortSelect) sortSelect.value = "title";
     applyFiltersAndRender();
