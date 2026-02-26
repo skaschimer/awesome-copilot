@@ -166,7 +166,7 @@ A: Yes, closing a file can remove it from Copilot's active context. However, fil
 
 Now that you understand how context works in GitHub Copilot, explore these related topics:
 
-- **[What are Agents, Skills, and Instructions](../learning-hub/what-are-agents-skills-instructions/)** - Learn about customization types that provide persistent context
-- **[Copilot Configuration Basics](../learning-hub/copilot-configuration-basics/)** - Configure settings to optimize context usage
-- **[Creating Effective Skills](../learning-hub/creating-effective-skills/)** - Use context effectively in your skills
+- **[What are Agents, Skills, and Instructions](../what-are-agents-skills-instructions/)** - Learn about customization types that provide persistent context
+- **[Copilot Configuration Basics](../copilot-configuration-basics/)** - Configure settings to optimize context usage
+- **[Creating Effective Skills](../creating-effective-skills/)** - Use context effectively in your skills
 - **Common Pitfalls and Solutions** _(coming soon)_ - Avoid context-related mistakes

@@ -186,7 +186,7 @@ If your team has internal tools or proprietary APIs, you can build custom MCP se
 | **Resources** | Data the AI can read | Database schemas, API docs |
 | **Prompts** | Pre-built conversation templates | Common troubleshooting flows |
 
-MCP server SDKs are available in [Python](https://github.com/modelcontextprotocol/python-sdk), [TypeScript](https://github.com/modelcontextprotocol/typescript-sdk), and other languages. Browse the [Agents Directory](../agents/) for examples of agents built around MCP server expertise.
+MCP server SDKs are available in [Python](https://github.com/modelcontextprotocol/python-sdk), [TypeScript](https://github.com/modelcontextprotocol/typescript-sdk), and other languages. Browse the [Agents Directory](../../agents/) for examples of agents built around MCP server expertise.
 
 ## Best Practices
 
@@ -216,8 +216,8 @@ A: There's no hard limit, but each server is a running process. Configure only t
 
 ## Next Steps
 
-- **Build Agents**: [Building Custom Agents](../learning-hub/building-custom-agents/) — Create agents that leverage MCP tools
-- **Explore Examples**: Browse the [Agents Directory](../agents/) for agents built around MCP server integrations
+- **Build Agents**: [Building Custom Agents](../building-custom-agents/) — Create agents that leverage MCP tools
+- **Explore Examples**: Browse the [Agents Directory](../../agents/) for agents built around MCP server integrations
 - **Protocol Deep Dive**: [MCP Specification](https://spec.modelcontextprotocol.io/) — Learn the protocol details for building your own servers
 
 ---

@@ -82,7 +82,7 @@ tools: ['codebase', 'terminal', 'github']
 | `fetch` | Make HTTP requests to external APIs |
 | `edit` | Modify files in the workspace |
 
-For MCP server tools, reference them by server name (e.g., `postgres`, `docker`). See [Understanding MCP Servers](../learning-hub/understanding-mcp-servers/) for details.
+For MCP server tools, reference them by server name (e.g., `postgres`, `docker`). See [Understanding MCP Servers](../understanding-mcp-servers/) for details.
 
 ### Agent Instructions
 
@@ -224,7 +224,7 @@ tools: ['codebase', 'terminal', 'postgres-mcp']
 ---
 ```
 
-The agent can then query your database, analyze query plans, and suggest optimizations—all within the conversation. For setup details, see [Understanding MCP Servers](../learning-hub/understanding-mcp-servers/).
+The agent can then query your database, analyze query plans, and suggest optimizations—all within the conversation. For setup details, see [Understanding MCP Servers](../understanding-mcp-servers/).
 
 ## Best Practices
 
@@ -273,7 +273,7 @@ A: Start with 2–3 agents for your most common workflows. Add more as patterns 
 
 **Q: Can I use an agent with the Copilot coding agent?**
 
-A: Yes. When you assign an issue to Copilot, you can specify which agent should handle it. The agent's persona and tool access apply to the autonomous coding session. See [Using the Copilot Coding Agent](../learning-hub/using-copilot-coding-agent/) for details.
+A: Yes. When you assign an issue to Copilot, you can specify which agent should handle it. The agent's persona and tool access apply to the autonomous coding session. See [Using the Copilot Coding Agent](../using-copilot-coding-agent/) for details.
 
 **Q: Should agents include code examples?**
 
@@ -295,9 +295,9 @@ A: Yes, when defining output format or coding patterns. Show what you expect the
 
 ## Next Steps
 
-- **Explore Repository Examples**: Browse the [Agents Directory](../agents/) for production agent definitions
-- **Connect External Tools**: [Understanding MCP Servers](../learning-hub/understanding-mcp-servers/) — Give agents access to databases, APIs, and more
-- **Automate with Coding Agent**: [Using the Copilot Coding Agent](../learning-hub/using-copilot-coding-agent/) — Run agents autonomously on issues
-- **Add Reusable Tasks**: [Creating Effective Skills](../learning-hub/creating-effective-skills/) — Build tasks agents can discover and invoke
+- **Explore Repository Examples**: Browse the [Agents Directory](../../agents/) for production agent definitions
+- **Connect External Tools**: [Understanding MCP Servers](../understanding-mcp-servers/) — Give agents access to databases, APIs, and more
+- **Automate with Coding Agent**: [Using the Copilot Coding Agent](../using-copilot-coding-agent/) — Run agents autonomously on issues
+- **Add Reusable Tasks**: [Creating Effective Skills](../creating-effective-skills/) — Build tasks agents can discover and invoke
 
 ---

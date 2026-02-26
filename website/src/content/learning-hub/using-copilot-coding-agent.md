@@ -170,7 +170,7 @@ and write comprehensive unit and integration tests. Follow best practices for
 the language and framework. Never modify production code unless asked.
 ```
 
-> **Tip**: Browse the [Agents Directory](/agents/) on this site for ready-to-use agent profiles you can add to your repository.
+> **Tip**: Browse the [Agents Directory](../../agents/) on this site for ready-to-use agent profiles you can add to your repository.
 
 ## Writing Effective Issues for the Coding Agent
 
@@ -307,7 +307,7 @@ When creating database migrations, follow this process:
 | Can include scripts | No | Yes | No (but can reference skills) |
 | Scope | File-pattern based | Task-based | Session-wide |
 
-> **Tip**: Browse the [Skills Directory](/skills/) for ready-to-use skills you can add to your repository. Each skill includes a `SKILL.md` and any bundled assets needed.
+> **Tip**: Browse the [Skills Directory](../../skills/) for ready-to-use skills you can add to your repository. Each skill includes a `SKILL.md` and any bundled assets needed.
 
 ## Leveraging Community Resources
 
@@ -315,19 +315,19 @@ This repository provides a curated collection of agents, skills, and hooks desig
 
 ### Adding Agents from This Repo
 
-1. Browse the [Agents Directory](/agents/) for agents matching your needs
+1. Browse the [Agents Directory](../../agents/) for agents matching your needs
 2. Copy the `.agent.md` file into your repository's `.github/agents/` directory
 3. The agent will be available in the dropdown when assigning work to the coding agent
 
 ### Adding Skills from This Repo
 
-1. Browse the [Skills Directory](/skills/) for specialized skills
+1. Browse the [Skills Directory](../../skills/) for specialized skills
 2. Copy the entire skill folder into your repository's `.github/skills/` directory
 3. The coding agent will automatically use the skill when it's relevant to a task
 
 ### Adding Hooks from This Repo
 
-1. Browse the [Hooks Directory](/hooks/) for automation hooks
+1. Browse the [Hooks Directory](../../hooks/) for automation hooks
 2. Copy the `hooks.json` content into a file in `.github/hooks/` in your repository
 3. Copy any referenced scripts alongside it
 4. The hooks will run automatically during coding agent sessions
@@ -344,7 +344,7 @@ Hooks are especially valuable with the coding agent because they provide determi
 - **`sessionStart`**: Log the start of autonomous sessions for governance
 - **`sessionEnd`**: Send notifications when the agent finishes
 
-See [Automating with Hooks](../learning-hub/automating-with-hooks/) for configuration details.
+See [Automating with Hooks](../automating-with-hooks/) for configuration details.
 
 ## Best Practices
 
@@ -404,10 +404,10 @@ A: Yes. You can specify which agent to use when assigning work — the coding ag
 ## Next Steps
 
 - **Set Up Your Environment**: Create `.github/copilot-setup-steps.yml` for your project
-- **Create Skills**: [Creating Effective Skills](../learning-hub/creating-effective-skills/) — Build skills the coding agent can use automatically
-- **Add Guardrails**: [Automating with Hooks](../learning-hub/automating-with-hooks/) — Ensure code quality in autonomous sessions
-- **Build Custom Agents**: [Building Custom Agents](../learning-hub/building-custom-agents/) — Create specialized agents for the coding agent to use
-- **Explore Configuration**: [Copilot Configuration Basics](../learning-hub/copilot-configuration-basics/) — Set up repository-level customizations
-- **Browse Community Resources**: Explore the [Agents](/agents/), [Skills](/skills/), and [Hooks](/hooks/) directories for ready-to-use resources
+- **Create Skills**: [Creating Effective Skills](../creating-effective-skills/) — Build skills the coding agent can use automatically
+- **Add Guardrails**: [Automating with Hooks](../automating-with-hooks/) — Ensure code quality in autonomous sessions
+- **Build Custom Agents**: [Building Custom Agents](../building-custom-agents/) — Create specialized agents for the coding agent to use
+- **Explore Configuration**: [Copilot Configuration Basics](../copilot-configuration-basics/) — Set up repository-level customizations
+- **Browse Community Resources**: Explore the [Agents](../../agents/), [Skills](../../skills/), and [Hooks](../../hooks/) directories for ready-to-use resources
 
 ---

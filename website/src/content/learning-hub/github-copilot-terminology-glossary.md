@@ -30,7 +30,7 @@ A specialized configuration file (`*.agent.md`) that defines a GitHub Copilot pe
 
 **When to use**: For recurring workflows that benefit from deep tooling integrations and persistent conversational context.
 
-**Learn more**: [What are Agents, Skills, and Instructions](/learning-hub/what-are-agents-skills-instructions/)
+**Learn more**: [What are Agents, Skills, and Instructions](../what-are-agents-skills-instructions/)
 
 ---
 
@@ -60,7 +60,7 @@ A curated grouping of related skills, instructions, and agents organized around 
 
 **Example**: The "Awesome Copilot" collection bundles meta-skills for discovering and generating GitHub Copilot customizations.
 
-**Learn more**: [Collections README](../../docs/README.collections.md)
+**Learn more**: [What are Agents, Skills, and Instructions](../what-are-agents-skills-instructions/)
 
 ---
 
@@ -126,7 +126,7 @@ A configuration file (`*.instructions.md`) that provides persistent background c
 
 **When to use**: For long-lived guidance that applies across many sessions, like coding standards or compliance requirements.
 
-**Learn more**: [What are Agents, Skills, and Instructions](/learning-hub/what-are-agents-skills-instructions/), [Defining Custom Instructions](/learning-hub/defining-custom-instructions/)
+**Learn more**: [What are Agents, Skills, and Instructions](../what-are-agents-skills-instructions/), [Defining Custom Instructions](../defining-custom-instructions/)
 
 ---
 
@@ -146,7 +146,7 @@ The identity, tone, and behavioral characteristics defined for an [Agent](#agent
 
 **Deprecated** — Prompts (`*.prompt.md`) were reusable chat templates that captured specific tasks or workflows, invoked using the `/` command in GitHub Copilot Chat. Prompts have been superseded by [Skills](#skill), which offer the same slash-command invocation plus agent discovery, bundled assets, and cross-platform portability.
 
-If you have existing prompts, consider migrating them to skills. See [Creating Effective Skills](/learning-hub/creating-effective-skills/) for guidance.
+If you have existing prompts, consider migrating them to skills. See [Creating Effective Skills](../creating-effective-skills/) for guidance.
 
 **See**: [Skill](#skill)
 
@@ -165,7 +165,7 @@ A self-contained folder containing a `SKILL.md` file and optional bundled assets
 
 **When to use**: For standardizing how Copilot responds to recurring tasks, especially when bundled resources improve quality.
 
-**Learn more**: [What are Agents, Skills, and Instructions](/learning-hub/what-are-agents-skills-instructions/), [Creating Effective Skills](/learning-hub/creating-effective-skills/)
+**Learn more**: [What are Agents, Skills, and Instructions](../what-are-agents-skills-instructions/), [Creating Effective Skills](../creating-effective-skills/)
 
 ---
 
@@ -177,7 +177,7 @@ A standardized protocol for connecting AI assistants like GitHub Copilot to exte
 
 **Example**: An MCP server might provide access to your company's internal documentation, AWS resources, or a specific database system.
 
-**Learn more**: [Model Context Protocol](https://modelcontextprotocol.io/) | [MCP Specification](https://spec.modelcontextprotocol.io/) | [Understanding MCP Servers](/learning-hub/understanding-mcp-servers/)
+**Learn more**: [Model Context Protocol](https://modelcontextprotocol.io/) | [MCP Specification](https://spec.modelcontextprotocol.io/) | [Understanding MCP Servers](../understanding-mcp-servers/)
 
 **Related terms**: [Tools](#tools), [Built-in Tool](#built-in-tool)
 
@@ -191,7 +191,7 @@ A shell command or script that runs automatically in response to lifecycle event
 
 **When to use**: For deterministic automation that must happen reliably, like formatting code, running linters, or auditing prompts for compliance.
 
-**Learn more**: [Automating with Hooks](/learning-hub/automating-with-hooks/)
+**Learn more**: [Automating with Hooks](../automating-with-hooks/)
 
 **Related terms**: [Agent](#agent), [Coding Agent](#coding-agent)
 
@@ -209,7 +209,7 @@ The autonomous GitHub Copilot agent that works on issues in a cloud environment 
 
 **When to use**: For well-defined tasks with clear acceptance criteria that can be completed autonomously.
 
-**Learn more**: [Using the Copilot Coding Agent](/learning-hub/using-copilot-coding-agent/)
+**Learn more**: [Using the Copilot Coding Agent](../using-copilot-coding-agent/)
 
 **Related terms**: [Agent](#agent), [Hook](#hook)
 
@@ -223,7 +223,7 @@ An installable package that extends GitHub Copilot CLI with a bundled set of age
 
 **When to use**: When you want to share a curated set of Copilot capabilities across multiple projects or team members, or when you want to install community-contributed tooling without manually copying files.
 
-**Learn more**: [Installing and Using Plugins](/learning-hub/installing-and-using-plugins/)
+**Learn more**: [Installing and Using Plugins](../installing-and-using-plugins/)
 
 **Related terms**: [Agent](#agent), [Skill](#skill), [Hook](#hook)
 
@@ -247,4 +247,4 @@ tools: ['codebase', 'terminalCommand', 'github']
 
 ---
 
-**Have a term you'd like to see added?** Contributions are welcome! See our [Contributing Guidelines](../../CONTRIBUTING.md) for how to suggest additions to this glossary.
+**Have a term you'd like to see added?** Contributions are welcome! See our [Contributing Guidelines](https://github.com/github/awesome-copilot/blob/main/CONTRIBUTING.md) for how to suggest additions to this glossary.

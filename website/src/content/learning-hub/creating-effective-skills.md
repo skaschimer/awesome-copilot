@@ -390,14 +390,14 @@ A: Yes, for clarity. Show examples of desired output format, patterns to follow,
 
 Now that you understand effective skills, you can:
 
-- **Explore Repository Examples**: Browse the [Skills Directory](../skills/) for production skills covering diverse workflows
-- **Learn About Agents**: [Building Custom Agents](../learning-hub/building-custom-agents/) — When to upgrade from skills to full agents
-- **Understand Instructions**: [Defining Custom Instructions](../learning-hub/defining-custom-instructions/) — Complement skills with automatic context
+- **Explore Repository Examples**: Browse the [Skills Directory](../../skills/) for production skills covering diverse workflows
+- **Learn About Agents**: [Building Custom Agents](../building-custom-agents/) — When to upgrade from skills to full agents
+- **Understand Instructions**: [Defining Custom Instructions](../defining-custom-instructions/) — Complement skills with automatic context
 - **Decision Framework**: Choosing the Right Customization _(coming soon)_ — When to use skills vs other types
 
 **Suggested Reading Order**:
 1. This article (creating effective skills)
-2. [Building Custom Agents](../learning-hub/building-custom-agents/) — More sophisticated workflows
+2. [Building Custom Agents](../building-custom-agents/) — More sophisticated workflows
 3. Choosing the Right Customization _(coming soon)_ — Decision guidance
 
 ---
