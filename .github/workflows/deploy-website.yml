@@ -4,19 +4,13 @@
 name: Deploy Website to GitHub Pages
 
 on:
-  # Runs on pushes targeting the default branch
-  push:
-    branches: ["main"]
-    paths:
-      - "website/**"
-      - "agents/**"
-      - "prompts/**"
-      - "instructions/**"
-      - "skills/**"
-      - "plugins/**"
-      - "cookbook/**"
-      - "eng/generate-website-data.mjs"
-      - ".github/workflows/deploy-website.yml"
+  # Runs after the Publish to main workflow completes successfully.
+  # Note: pushes made by GITHUB_TOKEN do not trigger push-based workflows,
+  # so workflow_run is required to chain off the publish workflow.
+  workflow_run:
+    workflows: ["Publish to main"]
+    types:
+      - completed
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -36,6 +30,7 @@ concurrency:
 jobs:
   # Build job
   build:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
