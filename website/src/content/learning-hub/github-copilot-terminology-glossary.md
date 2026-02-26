@@ -177,9 +177,41 @@ A standardized protocol for connecting AI assistants like GitHub Copilot to exte
 
 **Example**: An MCP server might provide access to your company's internal documentation, AWS resources, or a specific database system.
 
-**Learn more**: [Model Context Protocol](https://modelcontextprotocol.io/) | [MCP Specification](https://spec.modelcontextprotocol.io/)
+**Learn more**: [Model Context Protocol](https://modelcontextprotocol.io/) | [MCP Specification](https://spec.modelcontextprotocol.io/) | [Understanding MCP Servers](/learning-hub/understanding-mcp-servers/)
 
 **Related terms**: [Tools](#tools), [Built-in Tool](#built-in-tool)
+
+---
+
+### Hook
+
+A shell command or script that runs automatically in response to lifecycle events during a Copilot agent session. Hooks are defined in a `hooks.json` file and can trigger on events like session start, prompt submission, or before a commit. They provide deterministic automation—linting, formatting, governance scanning—that doesn't depend on the AI remembering to do it.
+
+**Example**: A `copilotAgentCommit` hook that runs Prettier before every commit the agent makes.
+
+**When to use**: For deterministic automation that must happen reliably, like formatting code, running linters, or auditing prompts for compliance.
+
+**Learn more**: [Automating with Hooks](/learning-hub/automating-with-hooks/)
+
+**Related terms**: [Agent](#agent), [Coding Agent](#coding-agent)
+
+---
+
+### Coding Agent
+
+The autonomous GitHub Copilot agent that works on issues in a cloud environment without continuous human guidance. You assign an issue to Copilot, it spins up a dev environment, implements a solution, runs tests, and opens a pull request for review.
+
+**Key characteristics**:
+- Runs in an isolated cloud environment
+- Uses your repository's instructions, agents, skills, and hooks
+- Always produces a PR—it can't merge or deploy
+- Supports iteration via PR comments
+
+**When to use**: For well-defined tasks with clear acceptance criteria that can be completed autonomously.
+
+**Learn more**: [Using the Copilot Coding Agent](/learning-hub/using-copilot-coding-agent/)
+
+**Related terms**: [Agent](#agent), [Hook](#hook)
 
 ---
 

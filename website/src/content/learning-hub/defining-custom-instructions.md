@@ -308,10 +308,10 @@ Now that you understand custom instructions, you can:
 
 - **Explore Repository Examples**: Browse [Instructions Directory](../instructions/) - Over 120 real-world examples covering frameworks, languages, and domains
 - **Learn About Skills**: [Creating Effective Skills](../learning-hub/creating-effective-skills/) - Discover when to use skills instead of instructions
-- **Understand Agents**: Building Custom Agents _(coming soon)_ - See how agents complement instructions for complex workflows
+- **Understand Agents**: [Building Custom Agents](../learning-hub/building-custom-agents/) - See how agents complement instructions for complex workflows
 - **Configuration Basics**: [Copilot Configuration Basics](../learning-hub/copilot-configuration-basics/) - Learn how to organize and manage your customizations
 
 **Suggested Reading Order**:
 1. This article (defining custom instructions)
 2. [Creating Effective Skills](../learning-hub/creating-effective-skills/) - Learn complementary customization type
-3. Choosing the Right Customization _(coming soon)_ - Decision framework for when to use each type
+3. [Building Custom Agents](../learning-hub/building-custom-agents/) - Decision framework for when to use each type

@@ -382,4 +382,4 @@ Now that you understand Copilot configuration, explore how to create powerful cu
 - **[Understanding Copilot Context](../learning-hub/understanding-copilot-context/)** - Learn how configuration affects context usage
 - **[Defining Custom Instructions](../learning-hub/defining-custom-instructions/)** - Create persistent context for your projects
 - **[Creating Effective Skills](../learning-hub/creating-effective-skills/)** - Build reusable task folders with bundled assets
-- **Building Custom Agents** _(coming soon)_ - Develop specialized assistants
+- **[Building Custom Agents](../learning-hub/building-custom-agents/)** - Develop specialized assistants
