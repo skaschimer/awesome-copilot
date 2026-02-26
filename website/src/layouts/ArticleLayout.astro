@@ -54,7 +54,11 @@ const currentSlug = Astro.url.pathname.replace(/\/$/, '').split('/').pop();
         <h1>{title}</h1>
         {description && <p>{description}</p>}
         <div class="article-meta">
-          {estimatedReadingTime && <span class="meta-item">📖 {estimatedReadingTime}</span>}
+          {estimatedReadingTime && (
+            <span class="meta-item">
+              <span aria-hidden="true">📖</span> {estimatedReadingTime}
+            </span>
+          )}
           {lastUpdated && <span class="meta-item">Updated: {lastUpdated}</span>}
         </div>
         {tags && tags.length > 0 && (

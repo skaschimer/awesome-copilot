@@ -6,23 +6,24 @@ import { fundamentalsOrder, referenceOrder } from '../../config/learning-hub';
 const base = import.meta.env.BASE_URL;
 const articles = await getCollection('learning-hub');
 
-const fundamentalsOrderIndex = {};
-fundamentalsOrder.forEach((id, index) => {
-  fundamentalsOrderIndex[id] = index;
-});
+const createOrderIndexMap = (order) => {
+  const map = new Map();
+  order.forEach((id, index) => {
+    map.set(id, index);
+  });
+  return map;
+};
 
-const referenceOrderIndex = {};
-referenceOrder.forEach((id, index) => {
-  referenceOrderIndex[id] = index;
-});
+const fundamentalsOrderIndex = createOrderIndexMap(fundamentalsOrder);
+const referenceOrderIndex = createOrderIndexMap(referenceOrder);
 
 const fundamentals = articles
   .filter((a) => fundamentalsOrder.includes(a.id))
-  .sort((a, b) => fundamentalsOrderIndex[a.id] - fundamentalsOrderIndex[b.id]);
+  .sort((a, b) => fundamentalsOrderIndex.get(a.id) - fundamentalsOrderIndex.get(b.id));
 
 const reference = articles
   .filter((a) => referenceOrder.includes(a.id))
-  .sort((a, b) => referenceOrderIndex[a.id] - referenceOrderIndex[b.id]);
+  .sort((a, b) => referenceOrderIndex.get(a.id) - referenceOrderIndex.get(b.id));
 ---
 
 <BaseLayout title="Learning Hub" description="Curated articles and walkthroughs to help you unlock everything you can do with GitHub Copilot" activeNav="learning-hub">
