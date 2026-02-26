@@ -215,6 +215,20 @@ The autonomous GitHub Copilot agent that works on issues in a cloud environment 
 
 ---
 
+### Plugin
+
+An installable package that extends GitHub Copilot CLI with a bundled set of agents, skills, hooks, MCP server configurations, and LSP integrations. Plugins provide a way to distribute and share custom capabilities across projects and teams, with versioning, discovery, and one-command installation via marketplaces.
+
+**Example**: Installing `database-data-management@awesome-copilot` to get a database specialist agent, migration skills, and schema validation hooks in a single command.
+
+**When to use**: When you want to share a curated set of Copilot capabilities across multiple projects or team members, or when you want to install community-contributed tooling without manually copying files.
+
+**Learn more**: [Installing and Using Plugins](/learning-hub/installing-and-using-plugins/)
+
+**Related terms**: [Agent](#agent), [Skill](#skill), [Hook](#hook)
+
+---
+
 ### Tools
 
 Capabilities that GitHub Copilot can invoke to perform actions or retrieve information. Tools fall into two categories:
