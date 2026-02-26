@@ -118,7 +118,7 @@ Using `#` to reference specific files gives Copilot precise context about which 
 GitHub Copilot has a maximum token limit for how much context it can process at once. When you have many files open or a long chat history, Copilot prioritizes:
 
 1. **Closest proximity**: Code immediately surrounding your cursor
-2. **Explicitly referenced files**: Files you @-mention in chat
+2. **Explicitly referenced files**: Files you @-mention in chat for CLI, and #-mention for IDE's (VS Code, Visual Studio, JetBrains, etc.)
 3. **Recently modified files**: Files you've edited recently
 4. **Direct dependencies**: Files imported by your current file
 
