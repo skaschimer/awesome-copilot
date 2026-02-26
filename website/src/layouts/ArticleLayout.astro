@@ -1,6 +1,7 @@
 ---
 import BaseLayout from './BaseLayout.astro';
 import { getCollection } from 'astro:content';
+import { fundamentalsOrder, referenceOrder } from '../config/learning-hub';
 
 interface Props {
   title: string;
@@ -14,24 +15,6 @@ const { title, description, estimatedReadingTime, lastUpdated, tags } = Astro.pr
 const base = import.meta.env.BASE_URL;
 
 const articles = await getCollection('learning-hub');
-
-const fundamentalsOrder = [
-  'what-are-agents-skills-instructions',
-  'understanding-copilot-context',
-  'copilot-configuration-basics',
-  'defining-custom-instructions',
-  'creating-effective-skills',
-  'building-custom-agents',
-  'understanding-mcp-servers',
-  'automating-with-hooks',
-  'using-copilot-coding-agent',
-  'installing-and-using-plugins',
-  'before-after-customization-examples',
-];
-
-const referenceOrder = [
-  'github-copilot-terminology-glossary',
-];
 
 const fundamentals = articles
   .filter((a) => fundamentalsOrder.includes(a.id))
