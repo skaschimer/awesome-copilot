@@ -6,5 +6,25 @@
     "name": "Awesome Copilot Community"
   },
   "repository": "https://github.com/github/awesome-copilot",
-  "license": "MIT"
+  "license": "MIT",
+  "keywords": [
+    "database",
+    "sql",
+    "postgresql",
+    "sql-server",
+    "dba",
+    "optimization",
+    "queries",
+    "data-management"
+  ],
+  "agents": [
+    "./agents/postgresql-dba.md",
+    "./agents/ms-sql-dba.md"
+  ],
+  "skills": [
+    "./skills/sql-optimization/",
+    "./skills/sql-code-review/",
+    "./skills/postgresql-optimization/",
+    "./skills/postgresql-code-review/"
+  ]
 }

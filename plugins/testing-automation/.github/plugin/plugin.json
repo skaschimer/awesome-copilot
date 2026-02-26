@@ -6,5 +6,28 @@
     "name": "Awesome Copilot Community"
   },
   "repository": "https://github.com/github/awesome-copilot",
-  "license": "MIT"
+  "license": "MIT",
+  "keywords": [
+    "testing",
+    "tdd",
+    "automation",
+    "unit-tests",
+    "integration",
+    "playwright",
+    "jest",
+    "nunit"
+  ],
+  "agents": [
+    "./agents/tdd-red.md",
+    "./agents/tdd-green.md",
+    "./agents/tdd-refactor.md",
+    "./agents/playwright-tester.md"
+  ],
+  "skills": [
+    "./skills/playwright-explore-website/",
+    "./skills/playwright-generate-test/",
+    "./skills/csharp-nunit/",
+    "./skills/java-junit/",
+    "./skills/ai-prompt-engineering-safety-review/"
+  ]
 }

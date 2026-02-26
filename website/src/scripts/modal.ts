@@ -20,28 +20,83 @@ let currentFilePath: string | null = null;
 let currentFileContent: string | null = null;
 let currentFileType: string | null = null;
 let triggerElement: HTMLElement | null = null;
+let originalDocumentTitle: string | null = null;
 
-// Collection data cache
-interface CollectionItem {
+// Resource data cache for title lookups
+interface ResourceItem {
+  title: string;
+  path: string;
+}
+
+interface ResourceData {
+  items: ResourceItem[];
+}
+
+const resourceDataCache: Record<string, ResourceData | null> = {};
+
+const RESOURCE_TYPE_TO_JSON: Record<string, string> = {
+  agent: "agents.json",
+  instruction: "instructions.json",
+  skill: "skills.json",
+  hook: "hooks.json",
+  workflow: "workflows.json",
+  plugin: "plugins.json",
+};
+
+/**
+ * Look up the display title for a resource from its JSON data file
+ */
+async function resolveResourceTitle(
+  filePath: string,
+  type: string
+): Promise<string> {
+  const fallback = filePath.split("/").pop() || filePath;
+  const jsonFile = RESOURCE_TYPE_TO_JSON[type];
+  if (!jsonFile) return fallback;
+
+  if (!(jsonFile in resourceDataCache)) {
+    resourceDataCache[jsonFile] = await fetchData<ResourceData>(jsonFile);
+  }
+
+  const data = resourceDataCache[jsonFile];
+  if (!data) return fallback;
+
+  // Try exact path match first
+  const item = data.items.find((i) => i.path === filePath);
+  if (item) return item.title;
+
+  // For skills/hooks, the modal receives the file path (e.g. skills/foo/SKILL.md)
+  // but JSON stores the folder path (e.g. skills/foo)
+  const parentPath = filePath.substring(0, filePath.lastIndexOf("/"));
+  if (parentPath) {
+    const parentItem = data.items.find((i) => i.path === parentPath);
+    if (parentItem) return parentItem.title;
+  }
+
+  return fallback;
+}
+
+// Plugin data cache
+interface PluginItem {
   path: string;
   kind: string;
   usage?: string | null;
 }
 
-interface Collection {
+interface Plugin {
   id: string;
   name: string;
   description?: string;
   path: string;
-  items: CollectionItem[];
+  items: PluginItem[];
   tags?: string[];
 }
 
-interface CollectionsData {
-  items: Collection[];
+interface PluginsData {
+  items: Plugin[];
 }
 
-let collectionsCache: CollectionsData | null = null;
+let pluginsCache: PluginsData | null = null;
 
 /**
  * Get all focusable elements within a container
@@ -287,7 +342,7 @@ export function setupInstallDropdown(containerId: string): void {
 /**
  * Open file viewer modal
  * @param filePath - Path to the file
- * @param type - Resource type (agent, prompt, instruction, etc.)
+ * @param type - Resource type (agent, instruction, etc.)
  * @param updateUrl - Whether to update the URL hash (default: true)
  * @param trigger - The element that triggered the modal (for focus return)
  */
@@ -299,7 +354,7 @@ export async function openFileModal(
 ): Promise<void> {
   const modal = document.getElementById("file-modal");
   const title = document.getElementById("modal-title");
-  const modalContent = document.getElementById("modal-content");
+  let modalContent = document.getElementById("modal-content");
   const contentEl = modalContent?.querySelector("code");
   const installDropdown = document.getElementById("install-dropdown");
   const installBtnMain = document.getElementById(
@@ -329,17 +384,32 @@ export async function openFileModal(
   }
 
   // Show modal with loading state
-  title.textContent = filePath.split("/").pop() || filePath;
+  const fallbackName = filePath.split("/").pop() || filePath;
+  title.textContent = fallbackName;
   modal.classList.remove("hidden");
+
+  // Update document title to reflect the open file
+  if (!originalDocumentTitle) {
+    originalDocumentTitle = document.title;
+  }
+  document.title = `${fallbackName} | Awesome GitHub Copilot`;
+
+  // Resolve the proper title from JSON data asynchronously
+  resolveResourceTitle(filePath, type).then((resolvedTitle) => {
+    if (currentFilePath === filePath) {
+      title.textContent = resolvedTitle;
+      document.title = `${resolvedTitle} | Awesome GitHub Copilot`;
+    }
+  });
 
   // Set focus to close button for accessibility
   setTimeout(() => {
     closeBtn?.focus();
   }, 0);
 
-  // Handle collections differently - show as item list
-  if (type === "collection") {
-    await openCollectionModal(
+  // Handle plugins differently - show as item list
+  if (type === "plugin") {
+    await openPluginModal(
       filePath,
       title,
       modalContent,
@@ -359,9 +429,16 @@ export async function openFileModal(
   if (copyBtn) copyBtn.style.display = "inline-flex";
   if (downloadBtn) downloadBtn.style.display = "inline-flex";
 
-  // Restore pre/code structure if it was replaced by collection view
-  if (!modalContent.querySelector("pre")) {
-    modalContent.innerHTML = '<pre id="modal-content"><code></code></pre>';
+  // Restore pre/code structure if it was replaced by plugin view
+  if (modalContent.tagName !== 'PRE') {
+    const modalBody = modalContent.parentElement;
+    if (modalBody) {
+      const pre = document.createElement("pre");
+      pre.id = "modal-content";
+      pre.innerHTML = "<code></code>";
+      modalBody.replaceChild(pre, modalContent);
+      modalContent = pre;
+    }
   }
   const codeEl = modalContent.querySelector("code");
 
@@ -392,9 +469,9 @@ export async function openFileModal(
 }
 
 /**
- * Open collection modal with item list
+ * Open plugin modal with item list
  */
-async function openCollectionModal(
+async function openPluginModal(
   filePath: string,
   title: HTMLElement,
   modalContent: HTMLElement,
@@ -402,48 +479,57 @@ async function openCollectionModal(
   copyBtn: HTMLElement | null,
   downloadBtn: HTMLElement | null
 ): Promise<void> {
-  // Hide install dropdown and copy/download for collections
+  // Hide install dropdown and copy/download for plugins
   if (installDropdown) installDropdown.style.display = "none";
   if (copyBtn) copyBtn.style.display = "none";
   if (downloadBtn) downloadBtn.style.display = "none";
 
-  // Show loading
-  modalContent.innerHTML =
-    '<div class="collection-loading">Loading collection...</div>';
-
-  // Load collections data if not cached
-  if (!collectionsCache) {
-    collectionsCache = await fetchData<CollectionsData>("collections.json");
+  // Replace <pre> with a <div> so plugin content isn't styled as preformatted text
+  const modalBody = modalContent.parentElement;
+  if (modalBody) {
+    const div = document.createElement("div");
+    div.id = "modal-content";
+    div.innerHTML = '<div class="collection-loading">Loading plugin...</div>';
+    modalBody.replaceChild(div, modalContent);
+    modalContent = div;
+  } else {
+    modalContent.innerHTML = '<div class="collection-loading">Loading plugin...</div>';
   }
 
-  if (!collectionsCache) {
+  // Load plugins data if not cached
+  if (!pluginsCache) {
+    pluginsCache = await fetchData<PluginsData>("plugins.json");
+  }
+
+  if (!pluginsCache) {
     modalContent.innerHTML =
-      '<div class="collection-error">Failed to load collection data.</div>';
+      '<div class="collection-error">Failed to load plugin data.</div>';
     return;
   }
 
-  // Find the collection
-  const collection = collectionsCache.items.find((c) => c.path === filePath);
-  if (!collection) {
+  // Find the plugin
+  const plugin = pluginsCache.items.find((c) => c.path === filePath);
+  if (!plugin) {
     modalContent.innerHTML =
-      '<div class="collection-error">Collection not found.</div>';
+      '<div class="collection-error">Plugin not found.</div>';
     return;
   }
 
   // Update title
-  title.textContent = collection.name;
+  title.textContent = plugin.name;
+  document.title = `${plugin.name} | Awesome GitHub Copilot`;
 
-  // Render collection view
+  // Render plugin view
   modalContent.innerHTML = `
     <div class="collection-view">
       <div class="collection-description">${escapeHtml(
-        collection.description || ""
+        plugin.description || ""
       )}</div>
       ${
-        collection.tags && collection.tags.length > 0
+        plugin.tags && plugin.tags.length > 0
           ? `
         <div class="collection-tags">
-          ${collection.tags
+          ${plugin.tags
             .map((t) => `<span class="resource-tag">${escapeHtml(t)}</span>`)
             .join("")}
         </div>
@@ -451,10 +537,10 @@ async function openCollectionModal(
           : ""
       }
       <div class="collection-items-header">
-        <strong>${collection.items.length} items in this collection</strong>
+        <strong>${plugin.items.length} items in this plugin</strong>
       </div>
       <div class="collection-items-list">
-        ${collection.items
+        ${plugin.items
           .map(
             (item) => `
           <div class="collection-item" data-path="${escapeHtml(
@@ -484,7 +570,7 @@ async function openCollectionModal(
     </div>
   `;
 
-  // Add click handlers to collection items
+  // Add click handlers to plugin items
   modalContent.querySelectorAll(".collection-item").forEach((el) => {
     el.addEventListener("click", () => {
       const path = (el as HTMLElement).dataset.path;
@@ -514,6 +600,12 @@ export function closeModal(updateUrl = true): void {
   // Update URL for deep linking
   if (updateUrl) {
     updateHash(null);
+  }
+
+  // Restore original document title
+  if (originalDocumentTitle) {
+    document.title = originalDocumentTitle;
+    originalDocumentTitle = null;
   }
 
   // Return focus to trigger element

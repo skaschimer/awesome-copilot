@@ -8,15 +8,16 @@ import { setupModal, openFileModal } from '../modal';
 interface Manifest {
   counts: {
     agents: number;
-    prompts: number;
     instructions: number;
     skills: number;
-    collections: number;
+    hooks: number;
+    workflows: number;
+    plugins: number;
     tools: number;
   };
 }
 
-interface Collection {
+interface Plugin {
   id: string;
   name: string;
   description?: string;
@@ -26,8 +27,8 @@ interface Collection {
   itemCount: number;
 }
 
-interface CollectionsData {
-  items: Collection[];
+interface PluginsData {
+  items: Plugin[];
 }
 
 export async function initHomepage(): Promise<void> {
@@ -35,7 +36,7 @@ export async function initHomepage(): Promise<void> {
   const manifest = await fetchData<Manifest>('manifest.json');
   if (manifest && manifest.counts) {
     // Populate counts in cards
-    const countKeys = ['agents', 'prompts', 'instructions', 'skills', 'collections', 'tools'] as const;
+    const countKeys = ['agents', 'instructions', 'skills', 'hooks', 'workflows', 'plugins', 'tools'] as const;
     countKeys.forEach(key => {
       const countEl = document.querySelector(`.card-count[data-count="${key}"]`);
       if (countEl && manifest.counts[key] !== undefined) {
@@ -96,11 +97,11 @@ export async function initHomepage(): Promise<void> {
     }
   }
 
-  // Load featured collections
-  const collectionsData = await fetchData<CollectionsData>('collections.json');
-  if (collectionsData && collectionsData.items) {
-    const featured = collectionsData.items.filter(c => c.featured).slice(0, 6);
-    const featuredEl = document.getElementById('featured-collections');
+  // Load featured plugins
+  const pluginsData = await fetchData<PluginsData>('plugins.json');
+  if (pluginsData && pluginsData.items) {
+    const featured = pluginsData.items.filter(c => c.featured).slice(0, 6);
+    const featuredEl = document.getElementById('featured-plugins');
     if (featuredEl) {
       if (featured.length > 0) {
         featuredEl.innerHTML = featured.map(c => `
@@ -118,11 +119,11 @@ export async function initHomepage(): Promise<void> {
         featuredEl.querySelectorAll('.card').forEach(el => {
           el.addEventListener('click', () => {
             const path = (el as HTMLElement).dataset.path;
-            if (path) openFileModal(path, 'collection');
+            if (path) openFileModal(path, 'plugin');
           });
         });
       } else {
-        featuredEl.innerHTML = '<p style="text-align: center; color: var(--color-text-muted);">No featured collections yet</p>';
+        featuredEl.innerHTML = '<p style="text-align: center; color: var(--color-text-muted);">No featured plugins yet</p>';
       }
     }
   }
