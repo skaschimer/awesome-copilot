@@ -21,9 +21,9 @@
 #
 # For more information: https://github.github.com/gh-aw/introduction/overview/
 #
-# Weekly scan of agents, prompts, instructions, and skills to identify potential duplicate resources and report them for review
+# Weekly scan of agents, instructions, and skills to identify potential duplicate resources and report them for review
 #
-# gh-aw-metadata: {"schema_version":"v1","frontmatter_hash":"1d668110ac075fdafff9cb8739f075f375255d31851a38c88e9ca3f7741c9af2"}
+# gh-aw-metadata: {"schema_version":"v1","frontmatter_hash":"ff58c3ff9cf9181e74e682ba6117a448bb9a2a9e52c012dc53d86d7697f3b565"}
 
 name: "Duplicate Resource Detector"
 "on":
@@ -929,7 +929,7 @@ jobs:
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
         env:
           WORKFLOW_NAME: "Duplicate Resource Detector"
-          WORKFLOW_DESCRIPTION: "Weekly scan of agents, prompts, instructions, and skills to identify potential duplicate resources and report them for review"
+          WORKFLOW_DESCRIPTION: "Weekly scan of agents, instructions, and skills to identify potential duplicate resources and report them for review"
           HAS_PATCH: ${{ needs.agent.outputs.has_patch }}
         with:
           script: |

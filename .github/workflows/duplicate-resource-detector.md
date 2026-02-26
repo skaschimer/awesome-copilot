@@ -1,5 +1,5 @@
 ---
-description: Weekly scan of agents, prompts, instructions, and skills to identify potential duplicate resources and report them for review
+description: Weekly scan of agents, instructions, and skills to identify potential duplicate resources and report them for review
 on:
   schedule: weekly
 permissions:
@@ -26,7 +26,6 @@ You are an AI agent that audits the resources in this repository to find potenti
 Scan all resources in the following directories and identify groups of resources that may be duplicates or near-duplicates based on their **name**, **description**, and **content**:
 
 - `agents/` (`.agent.md` files)
-- `prompts/` (`.prompt.md` files)
 - `instructions/` (`.instructions.md` files)
 - `skills/` (folders — check `SKILL.md` inside each)
 
@@ -45,15 +44,15 @@ Use bash to read files efficiently. For skills, read `skills/<name>/SKILL.md`.
 
 Compare resources and flag groups that look like potential duplicates. Consider resources as potential duplicates when they share **two or more** of the following signals:
 
-- **Similar names** — file names or `name` fields that share key terms (e.g., `react-testing.prompt.md` and `react-unit-testing.prompt.md`)
+- **Similar names** — file names or `name` fields that share key terms (e.g., `react-testing.agent.md` and `react-unit-testing.agent.md`)
 - **Similar descriptions** — descriptions that describe the same task, technology, or domain with only minor wording differences
 - **Overlapping scope** — resources that target the same language/framework/tool and the same activity (e.g., two separate "Python best practices" instructions)
-- **Cross-type overlap** — an agent and a prompt (or instruction and agent) that cover the same topic so thoroughly that one may make the other redundant
+- **Cross-type overlap** — an agent and an instruction (or instruction and skill) that cover the same topic so thoroughly that one may make the other redundant
 
 Be pragmatic. Resources that cover related but distinct topics are NOT duplicates. For example:
-- `react.instructions.md` (general React coding standards) and `react-testing.prompt.md` (React testing prompts) are **not** duplicates — they serve different purposes.
+- `react.instructions.md` (general React coding standards) and `react-testing.agent.md` (React testing agent) are **not** duplicates — they serve different purposes.
 - `python-fastapi.instructions.md` and `python-flask.instructions.md` are **not** duplicates — they target different frameworks.
-- `code-review.agent.md` and `code-review.prompt.md` that both do the same style of code review **are** potential duplicates worth flagging.
+- `code-review.agent.md` and `code-review.instructions.md` that both do the same style of code review **are** potential duplicates worth flagging.
 
 ### Step 3: Check for Known Accepted Duplicates
 
@@ -98,7 +97,7 @@ Review each group below. If the resources are intentionally separate, check the 
 | Resource | Type | Description |
 |----------|------|-------------|
 | `agents/foo.agent.md` | Agent | Does X for Y |
-| `prompts/foo.prompt.md` | Prompt | Also does X for Y |
+| `instructions/foo.instructions.md` | Instruction | Also does X for Y |
 
 **Why flagged:** <Brief explanation of the similarity>
 
@@ -121,7 +120,7 @@ Use `<details>` blocks to collapse groups if there are more than 10.
 - Be conservative — only flag resources where there is a genuine risk of redundancy.
 - Group related duplicates together (don't list the same pair twice in separate groups).
 - Sort groups by confidence (strongest duplicate signals first).
-- Include cross-type duplicates (e.g., an agent and a prompt doing the same thing).
+- Include cross-type duplicates (e.g., an agent and an instruction doing the same thing).
 - Limit the report to the top 20 most likely duplicate groups to keep it actionable.
 - For skills, use the folder name and description from `SKILL.md`.
 - Process resources in batches to stay within time limits — prioritize name and description comparison, then spot-check content for top candidates.
