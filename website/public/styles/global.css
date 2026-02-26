@@ -1598,7 +1598,7 @@ a:hover {
 
 .learning-hub-sidebar {
   position: sticky;
-  top: 24px;
+  top: calc(var(--header-height) + 24px);
   max-height: calc(100vh - 48px);
   overflow-y: auto;
 }

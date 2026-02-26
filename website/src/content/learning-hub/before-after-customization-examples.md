@@ -16,8 +16,6 @@ relatedArticles:
   - ./defining-custom-instructions.md
 ---
 
-# Before/After Customization Examples
-
 The power of GitHub Copilot customization becomes clear when you see concrete examples of how agents, skills, and instructions transform everyday development workflows. This article presents real-world scenarios showing the dramatic difference between default Copilot behavior and customized experiences that align with your team's standards, tools, and practices.
 
 > Note: The following examples illustrate typical before-and-after scenarios. The actual before and after code may vary depending on the model used and any other context present at generation time.

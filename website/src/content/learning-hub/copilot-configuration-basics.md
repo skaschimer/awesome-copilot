@@ -364,11 +364,11 @@ A: Use the `excludedFiles` setting in your IDE configuration or create a workspa
 
 **Q: Can I have different settings per project?**
 
-A: Yes! Use workspace settings (`.vscode/settings.json`) for project-specific preferences that don't need to be shared, or use repository settings (`.github/copilot/`) for team-wide customizations that should be version-controlled.
+A: Yes! Use workspace settings (`.vscode/settings.json`) for project-specific preferences that don't need to be shared, or use repository settings (for example, files in `.github/agents/`, `.github/skills/`, `.github/instructions/`, and `.github/copilot-instructions.md`) for team-wide customizations that should be version-controlled.
 
 **Q: How do team settings override personal settings?**
 
-A: Repository settings in `.github/copilot/` have the highest precedence, followed by workspace settings, then user settings. This means team-defined instructions and agents will apply even if your personal settings differ, ensuring consistency across the team.
+A: Repository-level Copilot configuration (such as `.github/agents/`, `.github/skills/`, `.github/instructions/`, and `.github/copilot-instructions.md`) has the highest precedence, followed by workspace settings, then user settings. This means team-defined instructions and agents will apply even if your personal settings differ, ensuring consistency across the team.
 
 **Q: Where should I put customizations that apply to all my projects?**
 

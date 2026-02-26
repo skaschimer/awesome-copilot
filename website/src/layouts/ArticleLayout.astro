@@ -14,15 +14,32 @@ interface Props {
 const { title, description, estimatedReadingTime, lastUpdated, tags } = Astro.props;
 const base = import.meta.env.BASE_URL;
 
+const createOrderIndexMap = (order: string[]) => {
+  const map = new Map<string, number>();
+  for (let i = 0; i < order.length; i += 1) {
+    map.set(order[i], i);
+  }
+  return map;
+};
+
 const articles = await getCollection('learning-hub');
 
+const fundamentalsOrderIndex = createOrderIndexMap(fundamentalsOrder);
+const referenceOrderIndex = createOrderIndexMap(referenceOrder);
+
 const fundamentals = articles
-  .filter((a) => fundamentalsOrder.includes(a.id))
-  .sort((a, b) => fundamentalsOrder.indexOf(a.id) - fundamentalsOrder.indexOf(b.id));
+  .filter((a) => fundamentalsOrderIndex.has(a.id))
+  .sort(
+    (a, b) =>
+      (fundamentalsOrderIndex.get(a.id) ?? 0) - (fundamentalsOrderIndex.get(b.id) ?? 0),
+  );
 
 const reference = articles
-  .filter((a) => referenceOrder.includes(a.id))
-  .sort((a, b) => referenceOrder.indexOf(a.id) - referenceOrder.indexOf(b.id));
+  .filter((a) => referenceOrderIndex.has(a.id))
+  .sort(
+    (a, b) =>
+      (referenceOrderIndex.get(a.id) ?? 0) - (referenceOrderIndex.get(b.id) ?? 0),
+  );
 
 const currentSlug = Astro.url.pathname.replace(/\/$/, '').split('/').pop();
 ---

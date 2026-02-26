@@ -14,8 +14,6 @@ relatedArticles:
   - ./copilot-configuration-basics.md
 ---
 
-# GitHub Copilot Terminology Glossary
-
 New to GitHub Copilot customization? This glossary defines common terms you'll encounter while exploring agents, skills, instructions, and related concepts in the Awesome GitHub Copilot ecosystem.
 
 Use this page as a quick reference when reading articles in the Learning Hub or browsing the repository.
