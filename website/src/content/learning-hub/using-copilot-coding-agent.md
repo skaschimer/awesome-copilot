@@ -208,7 +208,9 @@ The agent will read your feedback, make changes, and push new commits to the sam
 
 Hooks are especially valuable with the coding agent because they provide deterministic guardrails for autonomous work:
 
-- **`copilotAgentCommit`**: Format code, run linters, and validate changes before every commit the agent makes
+- **`preToolUse`**: Approve or deny tool executions — block dangerous commands and enforce security policies
+- **`postToolUse`**: Format code, run linters, and validate changes after edits
+- **`agentStop`**: Run final checks (e.g., full lint pass) when the agent finishes responding
 - **`sessionStart`**: Log the start of autonomous sessions for governance
 - **`sessionEnd`**: Send notifications when the agent finishes
 

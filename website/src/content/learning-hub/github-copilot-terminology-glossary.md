@@ -185,9 +185,9 @@ A standardized protocol for connecting AI assistants like GitHub Copilot to exte
 
 ### Hook
 
-A shell command or script that runs automatically in response to lifecycle events during a Copilot agent session. Hooks are defined in a `hooks.json` file and can trigger on events like session start, prompt submission, or before a commit. They provide deterministic automation—linting, formatting, governance scanning—that doesn't depend on the AI remembering to do it.
+A shell command or script that runs automatically in response to lifecycle events during a Copilot agent session. Hooks are stored as JSON files in `.github/hooks/` and can trigger on events like session start/end, prompt submission, before/after tool use, and when errors occur. They provide deterministic automation—linting, formatting, governance scanning—that doesn't depend on the AI remembering to do it.
 
-**Example**: A `copilotAgentCommit` hook that runs Prettier before every commit the agent makes.
+**Example**: A `postToolUse` hook that runs Prettier after the agent edits files, or a `preToolUse` hook that blocks dangerous shell commands.
 
 **When to use**: For deterministic automation that must happen reliably, like formatting code, running linters, or auditing prompts for compliance.
 
