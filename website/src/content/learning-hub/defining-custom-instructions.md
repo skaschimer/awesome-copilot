@@ -10,14 +10,14 @@ tags:
   - customization
   - fundamentals
 relatedArticles:
-  - ./what-are-agents-prompts-instructions.md
-  - ./creating-effective-prompts.md
+  - ./what-are-agents-skills-instructions.md
+  - ./creating-effective-skills.md
   - ./copilot-configuration-basics.md
 prerequisites:
   - Basic understanding of GitHub Copilot features
 ---
 
-Custom instructions are persistent configuration files that automatically guide GitHub Copilot's behavior when working with specific files or directories in your codebase. Unlike prompts that require explicit invocation, instructions work silently in the background, ensuring Copilot consistently follows your team's standards, conventions, and architectural decisions.
+Custom instructions are persistent configuration files that automatically guide GitHub Copilot's behavior when working with specific files or directories in your codebase. Unlike skills that require explicit invocation (by a user or an agent), instructions work silently in the background, ensuring Copilot consistently follows your team's standards, conventions, and architectural decisions.
 
 This article explains how to create effective custom instructions, when to use them, and how they integrate with your development workflow.
 
@@ -38,10 +38,10 @@ Custom instructions are markdown files (`.instructions.md`) that contain:
 
 ### How Instructions Differ from Other Customizations
 
-**Instructions vs Prompts**:
-- Instructions are always active for matching files; prompts require explicit invocation
-- Instructions provide passive context; prompts drive specific tasks
-- Use instructions for standards that apply repeatedly; use prompts for one-time operations
+**Instructions vs Skills**:
+- Instructions are always active for matching files; skills require explicit invocation (by users or agents)
+- Instructions provide passive context; skills drive specific tasks with bundled resources
+- Use instructions for standards that apply repeatedly; use skills for on-demand operations
 
 **Instructions vs Agents**:
 - Instructions are lightweight context; agents are specialized personas with tool access
@@ -307,11 +307,11 @@ A: No. Instructions are for persistent standards that apply repeatedly. Document
 Now that you understand custom instructions, you can:
 
 - **Explore Repository Examples**: Browse [Instructions Directory](../instructions/) - Over 120 real-world examples covering frameworks, languages, and domains
-- **Learn About Prompts**: [Creating Effective Prompts](../learning-hub/creating-effective-prompts/) - Discover when to use prompts instead of instructions
+- **Learn About Skills**: [Creating Effective Skills](../learning-hub/creating-effective-skills/) - Discover when to use skills instead of instructions
 - **Understand Agents**: Building Custom Agents _(coming soon)_ - See how agents complement instructions for complex workflows
 - **Configuration Basics**: [Copilot Configuration Basics](../learning-hub/copilot-configuration-basics/) - Learn how to organize and manage your customizations
 
 **Suggested Reading Order**:
 1. This article (defining custom instructions)
-2. [Creating Effective Prompts](../learning-hub/creating-effective-prompts/) - Learn complementary customization type
+2. [Creating Effective Skills](../learning-hub/creating-effective-skills/) - Learn complementary customization type
 3. Choosing the Right Customization _(coming soon)_ - Decision framework for when to use each type

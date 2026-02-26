@@ -10,7 +10,7 @@ tags:
   - setup
   - fundamentals
 relatedArticles:
-  - ./what-are-agents-prompts-instructions.md
+  - ./what-are-agents-skills-instructions.md
   - ./understanding-copilot-context.md
 prerequisites:
   - Basic familiarity with GitHub Copilot
@@ -39,7 +39,7 @@ Repository settings live in your codebase (typically in `.github/` although some
 
 **Common repository-level customizations**:
 - Custom instructions for coding conventions
-- Reusable prompts for common tasks
+- Reusable skills for common tasks
 - Specialized agents for project workflows
 - Custom agents for domain expertise
 
@@ -160,9 +160,11 @@ A well-organized Copilot configuration directory looks like this:
 ├── agents/
 │   ├── terraform-expert.agent.md
 │   └── api-reviewer.agent.md
-├── prompts/
-│   ├── generate-test.prompt.md
-│   └── refactor-component.prompt.md
+├── skills/
+│   ├── generate-tests/
+│   │   └── SKILL.md
+│   └── refactor-component/
+│       └── SKILL.md
 └── instructions/
     ├── typescript-conventions.instructions.md
     └── api-design.instructions.md
@@ -186,22 +188,28 @@ Guide users through creating, reviewing, and deploying infrastructure code.
 
 **When to use**: Create agents for domain-specific tasks like infrastructure management, API design, or security reviews.
 
-### Reusable Prompts
+### Reusable Skills
 
-Prompts are reusable templates for common tasks. Store them in `.github/prompts/`.
+Skills are self-contained folders that package reusable capabilities. Store them in `.github/skills/`.
 
-**Example prompt** (`generate-test.prompt.md`):
+**Example skill** (`generate-tests/SKILL.md`):
 ```markdown
 ---
-mode: 'agent'
-description: 'Generate comprehensive unit tests for a component'
+name: generate-tests
+description: 'Generate comprehensive unit tests for a component, covering happy path, edge cases, and error conditions'
 ---
+
+# generate-tests
 
 Generate unit tests for the selected code that:
 - Cover all public methods and edge cases
 - Use our testing conventions from @testing-utils.ts
 - Include descriptive test names
+
+See [references/test-patterns.md](references/test-patterns.md) for standard patterns.
 ```
+
+Skills can also bundle reference files, templates, and scripts in their folder, giving the AI richer context than a single file can provide. Unlike the older prompt format, skills can be discovered and invoked by agents automatically.
 
 **When to use**: For repetitive tasks your team performs regularly, like generating tests, creating documentation, or refactoring patterns.
 
@@ -234,7 +242,7 @@ Follow these steps to establish effective team-wide Copilot configuration:
 Start by creating the `.github/` directory in your repository root:
 
 ```bash
-mkdir -p .github/{agents,prompts,instructions}
+mkdir -p .github/{agents,skills,instructions}
 ```
 
 ### 2. Document Your Conventions
@@ -255,16 +263,18 @@ Our team follows these practices:
 - Keep functions small and focused
 ```
 
-### 3. Build Reusable Prompts
+### 3. Build Reusable Skills
 
-Identify repetitive tasks and create prompts for them:
+Identify repetitive tasks and create skills for them:
 
 ```markdown
-<!-- .github/prompts/add-error-handling.prompt.md -->
+<!-- .github/skills/add-error-handling/SKILL.md -->
 ---
-mode: 'agent'
-description: 'Add comprehensive error handling to existing code'
+name: add-error-handling
+description: 'Add comprehensive error handling to existing code following team patterns'
 ---
+
+# add-error-handling
 
 Add error handling to the selected code:
 - Catch and handle potential errors
@@ -285,7 +295,7 @@ Add error handling to the selected code:
 Make Copilot configuration part of your onboarding process:
 
 1. Point new members to your `.github/` directory
-2. Explain which agents and prompts exist and when to use them
+2. Explain which agents and skills exist and when to use them
 3. Encourage exploration and contributions
 4. Include example usage in your project README
 
@@ -368,8 +378,8 @@ A: Use user-level settings in your IDE for personal preferences that should appl
 
 Now that you understand Copilot configuration, explore how to create powerful customizations:
 
-- **[What are Agents, Prompts, and Instructions](../learning-hub/what-are-agents-prompts-instructions/)** - Understand the customization types you can configure
+- **[What are Agents, Skills, and Instructions](../learning-hub/what-are-agents-skills-instructions/)** - Understand the customization types you can configure
 - **[Understanding Copilot Context](../learning-hub/understanding-copilot-context/)** - Learn how configuration affects context usage
 - **[Defining Custom Instructions](../learning-hub/defining-custom-instructions/)** - Create persistent context for your projects
-- **[Creating Effective Prompts](../learning-hub/creating-effective-prompts/)** - Build reusable task templates
+- **[Creating Effective Skills](../learning-hub/creating-effective-skills/)** - Build reusable task folders with bundled assets
 - **Building Custom Agents** _(coming soon)_ - Develop specialized assistants

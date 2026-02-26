@@ -1,6 +1,6 @@
 ---
 title: 'Before/After Customization Examples'
-description: 'See real-world transformations showing how custom agents, prompts, and instructions dramatically improve GitHub Copilot effectiveness.'
+description: 'See real-world transformations showing how custom agents, skills, and instructions dramatically improve GitHub Copilot effectiveness.'
 authors:
   - GitHub Copilot Learning Hub Team
 lastUpdated: '2025-12-12'
@@ -11,14 +11,14 @@ tags:
   - fundamentals
   - best-practices
 relatedArticles:
-  - ./what-are-agents-prompts-instructions.md
-  - ./creating-effective-prompts.md
+  - ./what-are-agents-skills-instructions.md
+  - ./creating-effective-skills.md
   - ./defining-custom-instructions.md
 ---
 
 # Before/After Customization Examples
 
-The power of GitHub Copilot customization becomes clear when you see concrete examples of how agents, prompts, and instructions transform everyday development workflows. This article presents real-world scenarios showing the dramatic difference between default Copilot behavior and customized experiences that align with your team's standards, tools, and practices.
+The power of GitHub Copilot customization becomes clear when you see concrete examples of how agents, skills, and instructions transform everyday development workflows. This article presents real-world scenarios showing the dramatic difference between default Copilot behavior and customized experiences that align with your team's standards, tools, and practices.
 
 > Note: The following examples illustrate typical before-and-after scenarios. The actual before and after code may vary depending on the model used and any other context present at generation time.
 
@@ -142,17 +142,17 @@ describe('UserService', () => {
 - No mocking strategy
 - Incomplete assertions
 
-### After: With Custom Testing Prompt
+### After: With Custom Testing Skill
 
-Create `.github/prompts/generate-test.prompt.md`:
+Create a skill folder `.github/skills/generate-tests/` with a `SKILL.md`:
 
 ````markdown
 ---
-agent: 'agent'
-description: 'Generate comprehensive test suites using our testing patterns'
-tools: ['changes', 'codebase', 'edit/editFiles', 'execute/runTests']
-model: 'gpt-4o'
+name: generate-tests
+description: 'Generate comprehensive test suites using our testing patterns, including fixtures, setup/teardown, and thorough assertions'
 ---
+
+# generate-tests
 
 Generate a comprehensive test suite for the selected code following these patterns:
 
@@ -172,6 +172,8 @@ Generate a comprehensive test suite for the selected code following these patter
 - Verify all relevant properties of returned objects
 - Check error messages and types for failure cases
 - Assert side effects (database changes, API calls, events)
+
+See [references/test-patterns.md](references/test-patterns.md) for standard patterns and [templates/test-template.ts](templates/test-template.ts) for a starter structure.
 
 **Example Pattern**:
 ```typescript
@@ -215,7 +217,7 @@ describe('UserService', () => {
 Generate tests following this pattern for the selected code.
 ````
 
-Now when you select code and use `/generate-test`, Copilot produces comprehensive test suites:
+Now when you select code and use `/generate-tests`, or when an agent detects a testing need, Copilot produces comprehensive test suites:
 
 ```typescript
 // user-service.test.ts
@@ -436,17 +438,17 @@ Developers manually review pull requests and write comments, which can be time-c
 
 Time investment: 20-30 minutes per PR
 
-### After: With Code Review Prompt
+### After: With Code Review Skill
 
-Create `prompts/review-pr.prompt.md`:
+Create a skill folder `skills/review-pr/` with a `SKILL.md`:
 
 ````markdown
 ---
-agent: 'plan'
-description: 'Generate comprehensive code review with actionable feedback'
-tools: ['search/changes', 'search/codebase', 'edit/*']
-model: 'gpt-4o'
+name: review-pr
+description: 'Generate comprehensive code review with actionable feedback, covering correctness, security, performance, and maintainability'
 ---
+
+# review-pr
 
 Analyze the current git diff and provide a structured code review with:
 
@@ -478,6 +480,8 @@ Use markdown with code blocks for suggestions. For each issue, provide:
 - Why it matters
 - Suggested fix with code example
 
+See [references/review-checklist.md](references/review-checklist.md) for the standard review checklist.
+
 Example format:
 ## 🔴 Critical Issues
 
@@ -495,7 +499,7 @@ function processUser(user: User) {
 ```
 ````
 
-Using this prompt on a PR generates structured, actionable feedback:
+Using this skill on a PR (via `/review-pr` or agent invocation) generates structured, actionable feedback:
 
 ````markdown
 ## Summary
@@ -579,7 +583,7 @@ app.post('/login', loginLimiter, authController.login);
 These examples demonstrate how customization transforms GitHub Copilot from a general-purpose assistant into a team-specific expert:
 
 1. **Instructions** embed your team's patterns into every suggestion automatically
-2. **Prompts** standardize workflows and ensure consistent quality
+2. **Skills** standardize workflows with bundled resources and enable agent discovery
 3. **Agents** bring specialized expertise for complex domains
 4. **Combination** of all three creates a comprehensive development assistant
 

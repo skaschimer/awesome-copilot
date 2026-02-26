@@ -10,13 +10,13 @@ tags:
   - terminology
   - reference
 relatedArticles:
-  - ./what-are-agents-prompts-instructions.md
+  - ./what-are-agents-skills-instructions.md
   - ./copilot-configuration-basics.md
 ---
 
 # GitHub Copilot Terminology Glossary
 
-New to GitHub Copilot customization? This glossary defines common terms you'll encounter while exploring agents, prompts, instructions, and related concepts in the Awesome GitHub Copilot ecosystem.
+New to GitHub Copilot customization? This glossary defines common terms you'll encounter while exploring agents, skills, instructions, and related concepts in the Awesome GitHub Copilot ecosystem.
 
 Use this page as a quick reference when reading articles in the Learning Hub or browsing the repository.
 
@@ -30,7 +30,7 @@ A specialized configuration file (`*.agent.md`) that defines a GitHub Copilot pe
 
 **When to use**: For recurring workflows that benefit from deep tooling integrations and persistent conversational context.
 
-**Learn more**: [What are Agents, Prompts, and Instructions](/learning-hub/what-are-agents-prompts-instructions/)
+**Learn more**: [What are Agents, Skills, and Instructions](/learning-hub/what-are-agents-skills-instructions/)
 
 ---
 
@@ -56,9 +56,9 @@ Previously, "chat mode" was an alternative term for [Agent](#agent) that describ
 
 **Note**: Collections are a concept specific to the Awesome GitHub Copilot repository and are not part of standard GitHub Copilot terminology.
 
-A curated grouping of related prompts, instructions, and agents organized around a specific theme or workflow. Collections are defined in YAML files (`*.collection.yml`) in the `collections/` directory and help users discover related customizations together.
+A curated grouping of related skills, instructions, and agents organized around a specific theme or workflow. Collections are defined in YAML files (`*.collection.yml`) in the `collections/` directory and help users discover related customizations together.
 
-**Example**: The "Awesome Copilot" collection bundles meta-prompts for discovering and generating GitHub Copilot customizations.
+**Example**: The "Awesome Copilot" collection bundles meta-skills for discovering and generating GitHub Copilot customizations.
 
 **Learn more**: [Collections README](../../docs/README.collections.md)
 
@@ -87,7 +87,7 @@ The front matter is what controls:
 - **Model selection**: Which AI model powers the customization
 - **Scope**: Where the customization applies (e.g., `applyTo` patterns for instructions)
 
-**Note**: Not all fields are common across all customization types. Refer to the specific documentation for agents, prompts, or instructions to see which fields apply to each type.
+**Note**: Not all fields are common across all customization types. Refer to the specific documentation for agents, skills, or instructions to see which fields apply to each type.
 
 **Example**:
 ```yaml
@@ -99,7 +99,7 @@ tools: ['codebase']
 ---
 ```
 
-**Used in**: Prompts, agents, instructions, and Learning Hub articles.
+**Used in**: Skills, agents, instructions, and Learning Hub articles.
 
 ---
 
@@ -126,11 +126,11 @@ A configuration file (`*.instructions.md`) that provides persistent background c
 
 **When to use**: For long-lived guidance that applies across many sessions, like coding standards or compliance requirements.
 
-**Learn more**: [What are Agents, Prompts, and Instructions](/learning-hub/what-are-agents-prompts-instructions/), [Defining Custom Instructions](/learning-hub/defining-custom-instructions/)
+**Learn more**: [What are Agents, Skills, and Instructions](/learning-hub/what-are-agents-skills-instructions/), [Defining Custom Instructions](/learning-hub/defining-custom-instructions/)
 
 ---
 
-## Prompts & Interactions
+## Skills & Interactions
 
 ### Persona
 
@@ -144,13 +144,28 @@ The identity, tone, and behavioral characteristics defined for an [Agent](#agent
 
 ### Prompt
 
-A reusable chat template (`*.prompt.md`) that captures a specific task or workflow. Prompts define the message content Copilot should execute and can include mode hints, model preferences, and tool recommendations. They're invoked using the `/` command in GitHub Copilot Chat.
+**Deprecated** — Prompts (`*.prompt.md`) were reusable chat templates that captured specific tasks or workflows, invoked using the `/` command in GitHub Copilot Chat. Prompts have been superseded by [Skills](#skill), which offer the same slash-command invocation plus agent discovery, bundled assets, and cross-platform portability.
 
-**Example**: `/create-readme` might execute a prompt that generates comprehensive README documentation.
+If you have existing prompts, consider migrating them to skills. See [Creating Effective Skills](/learning-hub/creating-effective-skills/) for guidance.
 
-**When to use**: For standardizing how Copilot responds to recurring tasks without needing long-lived conversational state.
+**See**: [Skill](#skill)
 
-**Learn more**: [What are Agents, Prompts, and Instructions](/learning-hub/what-are-agents-prompts-instructions/), [Creating Effective Prompts](/learning-hub/creating-effective-prompts/)
+---
+
+### Skill
+
+A self-contained folder containing a `SKILL.md` file and optional bundled assets (reference documents, templates, scripts) that packages a reusable capability for GitHub Copilot. Skills follow the open [Agent Skills specification](https://agentskills.io/home) and can be invoked by users via `/command` or discovered and invoked by agents automatically.
+
+**Key advantages**:
+- **Agent discovery**: Extended frontmatter lets agents find and invoke skills automatically
+- **Bundled assets**: Reference files, templates, and scripts provide richer context
+- **Cross-platform**: Portable across coding agent systems via the Agent Skills specification
+
+**Example**: A `/generate-tests` skill might include a `SKILL.md` with testing instructions, a `references/test-patterns.md` with common patterns, and a `templates/test-template.ts` starter file.
+
+**When to use**: For standardizing how Copilot responds to recurring tasks, especially when bundled resources improve quality.
+
+**Learn more**: [What are Agents, Skills, and Instructions](/learning-hub/what-are-agents-skills-instructions/), [Creating Effective Skills](/learning-hub/creating-effective-skills/)
 
 ---
 
@@ -175,7 +190,7 @@ Capabilities that GitHub Copilot can invoke to perform actions or retrieve infor
 1. **Built-in tools**: Native capabilities like `codebase` (code search), `terminalCommand` (running commands), and `web` (web search)
 2. **MCP tools**: External integrations provided by MCP servers (e.g., database queries, cloud resource management, or API calls)
 
-Agents and prompts can specify which tools they require or recommend in their front matter.
+Agents and skills can specify which tools they require or recommend in their front matter.
 
 **Example front matter**:
 ```yaml

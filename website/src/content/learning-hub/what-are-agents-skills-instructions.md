@@ -1,9 +1,9 @@
 ---
-title: 'What are Agents, Prompts, and Instructions'
+title: 'What are Agents, Skills, and Instructions'
 description: 'Understand the primary customization primitives that extend GitHub Copilot for specific workflows.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: '2025-11-25'
+lastUpdated: '2026-02-26'
 estimatedReadingTime: '7 minutes'
 ---
 
@@ -25,22 +25,34 @@ When you assign an issue to Copilot or open the **Agents** panel in VS Code, the
 - You want Copilot to proactively execute commands or fetch context via MCP.
 - You need persona-level guardrails that persist throughout a coding session.
 
-## Prompts
+## Skills
 
-Prompts (`*.prompt.md`) capture reusable chat macros. They define:
+Skills are self-contained folders that package reusable capabilities for GitHub Copilot. Each skill lives in its own directory and contains a `SKILL.md` file along with optional bundled assets such as reference documents, templates, and scripts.
 
-- A short name (used as `/command` in VS Code Chat).
-- Optional mode and model hints (for example, `plan` vs `code` or `gpt-4.1-mini`).
-- Recommended tools to enable before running the prompt.
-- The actual message template Copilot should execute.
+A `SKILL.md` defines:
 
-Prompts shine when you want consistency across teammates—think "Create release notes" or "Audit accessibility". Store them in `prompts/` and trigger them directly from VS Code.
+- A **name** (used as a `/command` in VS Code Chat and for agent discovery).
+- A **description** that tells agents and users when the skill is relevant.
+- Detailed instructions for how the skill should be executed.
+- References to any bundled assets the skill needs.
 
-### When to reach for a prompt
+Skills follow the open [Agent Skills specification](https://agentskills.io/home), making them portable across coding agent systems beyond GitHub Copilot.
 
-- You want to standardize how Copilot responds to a task.
-- You prefer to drive the conversation, but with guardrails.
-- You do not need Copilot to maintain long-lived state beyond a single invocation.
+### Why skills over prompts
+
+Skills replace the earlier prompt file (`*.prompt.md`) pattern and offer several advantages:
+
+- **Agent discovery**: Skills include extended frontmatter that lets agents find and invoke them automatically—prompts could only be triggered manually via a slash command.
+- **Richer context**: Skills can bundle reference files, scripts, templates, and other assets alongside their instructions, giving the AI much more to work with.
+- **Cross-platform portability**: The Agent Skills specification is supported across multiple coding agent systems, so your investment travels with you.
+- **Slash command support**: Like prompts, skills can still be invoked via `/command` in VS Code Chat.
+
+### When to reach for a skill
+
+- You want to standardize how Copilot responds to a recurring task.
+- You need bundled resources (templates, schemas, scripts) to complete the task.
+- You want agents to discover and invoke the capability automatically.
+- You prefer to drive the conversation, but with guardrails and rich context.
 
 ## Instructions
 
@@ -63,7 +75,7 @@ Instructions sit under `instructions/` and can be scoped globally, per language,
 Think of these artifacts as complementary layers:
 
 1. **Instructions** lay the groundwork with long-lived guardrails.
-2. **Prompts** let you trigger quick workflows or templates on demand.
+2. **Skills** let you trigger rich, reusable workflows on demand—and let agents discover those workflows automatically.
 3. **Agents** bring the most opinionated behavior, bundling tools and instructions into a single persona.
 
 By combining all three, teams can achieve:
@@ -75,7 +87,7 @@ By combining all three, teams can achieve:
 ## Next steps
 
 - Explore the rest of the **Fundamentals** track for deeper dives on chat modes, collections, and MCP servers.
-- Browse the [Awesome Agents](../agents/), [Prompts](../prompts/), and [Instructions](../instructions/) directories for inspiration.
+- Browse the [Awesome Agents](../agents/), [Skills](../skills/), and [Instructions](../instructions/) directories for inspiration.
 - Try generating your own artifacts, then add them to the repo to keep the Learning Hub evolving.
 
 ---

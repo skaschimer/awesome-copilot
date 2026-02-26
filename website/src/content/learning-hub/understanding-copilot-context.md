@@ -10,7 +10,7 @@ tags:
   - fundamentals
   - how-it-works
 relatedArticles:
-  - ./what-are-agents-prompts-instructions.md
+  - ./what-are-agents-skills-instructions.md
 ---
 
 Context is the foundation of how GitHub Copilot generates relevant, accurate suggestions. Understanding what Copilot "sees" and how it uses that information helps you write better prompts, get higher-quality completions, and work more effectively with AI assistance. This article explains the types of context Copilot uses and how to optimize your development environment for better results.
@@ -156,7 +156,7 @@ A: Yes, you have several ways to control context:
 - Open/close files to change what's available to Copilot
 - Use `#` mentions to explicitly reference specific files, symbols or functions
 - Configure `.gitignore` to exclude files from workspace context
-- Use instructions and prompts to provide persistent context for specific scenarios
+- Use instructions and skills to provide persistent context for specific scenarios
 
 **Q: Does closing a file remove it from context?**
 
@@ -166,7 +166,7 @@ A: Yes, closing a file can remove it from Copilot's active context. However, fil
 
 Now that you understand how context works in GitHub Copilot, explore these related topics:
 
-- **[What are Agents, Prompts, and Instructions](../learning-hub/what-are-agents-prompts-instructions/)** - Learn about customization types that provide persistent context
+- **[What are Agents, Skills, and Instructions](../learning-hub/what-are-agents-skills-instructions/)** - Learn about customization types that provide persistent context
 - **[Copilot Configuration Basics](../learning-hub/copilot-configuration-basics/)** - Configure settings to optimize context usage
-- **[Creating Effective Prompts](../learning-hub/creating-effective-prompts/)** - Use context effectively in your prompts
+- **[Creating Effective Skills](../learning-hub/creating-effective-skills/)** - Use context effectively in your skills
 - **Common Pitfalls and Solutions** _(coming soon)_ - Avoid context-related mistakes
