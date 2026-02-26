@@ -1,4 +1,5 @@
 ---
+name: Relevance Check
 description: "Slash command to evaluate whether an issue or pull request is still relevant to the project"
 on:
   slash_command:

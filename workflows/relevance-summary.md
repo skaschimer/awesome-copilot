@@ -1,4 +1,5 @@
 ---
+name: Relevance Summary
 description: "Manually triggered workflow that summarizes all open issues and PRs with a /relevance-check response into a single issue"
 on:
   workflow_dispatch:
