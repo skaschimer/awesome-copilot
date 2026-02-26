@@ -49,5 +49,6 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
-          git commit -m "chore: publish from staged [skip ci]" --allow-empty
+          git add -f plugins/*/agents/ plugins/*/skills/
+          git commit -m "chore: publish from staged" --allow-empty
           git push origin HEAD:main --force
