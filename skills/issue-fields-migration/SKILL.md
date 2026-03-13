@@ -1,11 +1,16 @@
 ---
 name: issue-fields-migration
-description: 'Migrate field values from GitHub Project V2 fields or repo labels to org-level issue fields. Use this skill when users need to bulk-copy metadata (priority, status, dates, text, numbers) from project fields or labels to issue fields, or when they ask about migrating, transferring, or copying project field data or labels to issue fields.'
+description: 'Bulk-migrate metadata to GitHub issue fields from two sources: repo labels (e.g. priority labels to a Priority field) and Project V2 fields. Use when users say "migrate my labels to issue fields", "migrate project fields to issue fields", "convert labels to issue fields", "copy project field values to issue fields", or ask about adopting issue fields. Issue fields are org-level typed metadata (single select, text, number, date) that replace label-based workarounds with structured, searchable, cross-repo fields.'
 ---
 
 # Issue Fields Migration
 
-Bulk-copy field values from Project V2 fields or repo labels to org-level issue fields. This skill guides you through discovering field mappings, previewing changes, and executing the migration with progress reporting. Supports two migration sources: project fields (single project) and repo labels (one or more repos).
+[Issue fields](https://github.blog/changelog/2026-03-12-issue-fields-structured-issue-metadata-is-in-public-preview/) are org-level typed metadata (single select, text, number, date) that replace label-based workarounds with structured, searchable, cross-repo fields. Every organization gets `Priority`, `Effort`, `Start date`, and `Target date` preconfigured, with support for up to 25 custom fields.
+
+This skill bulk-migrates existing metadata into issue fields from two sources:
+
+- **Repo labels**: Convert labels like `p0`, `p1`, `priority/high` into structured issue field values (e.g. the Priority field). Supports migrating multiple labels at once and optionally removing them after migration.
+- **Project V2 fields**: Copy field values (single select, text, number, date, iteration) from a GitHub Project into the equivalent org-level issue fields.
 
 ## When to Use
 
